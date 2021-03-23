@@ -1,0 +1,5 @@
+Package: xkeyboard-config
+Version: 2.5
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description: 

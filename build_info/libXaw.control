@@ -1,0 +1,5 @@
+Package: libXaw
+Version: 1.0.13
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description: 
