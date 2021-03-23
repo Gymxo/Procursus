@@ -1,5 +1,5 @@
-Package: xterm
-Version: 1
+Package: libXft
+Version: 2.3.3
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
-Description: 
+Description:

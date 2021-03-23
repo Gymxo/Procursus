@@ -1,0 +1,4 @@
+Package: glproto
+Version: 1.4.17
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@

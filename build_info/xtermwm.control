@@ -1,5 +1,5 @@
-Package: xterm
-Version: 1
+Package: mesa-demos
+Version: 8.4.0
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
 Description: 
