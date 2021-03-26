@@ -14,8 +14,8 @@ ifneq ($(wildcard $(BUILD_WORK)/glew/.build_complete),)
 glew:
 	@echo "Using previously built glew."
 else
-glew: glew-setup libx11 libxau libxmu xorgproto
-	cd $(BUILD_WORK)/glew 
+glew: glew-setup libx11 libxau libxmu xorgproto 
+	cd $(BUILD_WORK)/glew && make 
 	+$(MAKE) -C $(BUILD_WORK)/glew
 	+$(MAKE) -C $(BUILD_WORK)/glew install \
 		DESTDIR=$(BUILD_STAGE)/glew

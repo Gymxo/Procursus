@@ -1,5 +1,5 @@
-Package: xorg-server
-Version: 1.20.10
+Package: xf86-video-dummy
+Version: 0.3.8
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
 Description:
