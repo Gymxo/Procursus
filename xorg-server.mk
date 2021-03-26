@@ -20,8 +20,11 @@ xorg-server: xorg-server-setup libx11 libxau libxmu xorgproto font-util libpixma
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
 		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var
-	+$(MAKE) -C $(BUILD_WORK)/xorg-server
+		--localstatedir=$(MEMO_PREFIX)/var \
+		--enable-xorg \
+		--with-default-font-path \
+		--enable-xephyr
+	+$(MAKE) -v -C $(BUILD_WORK)/xorg-server
 	+$(MAKE) -C $(BUILD_WORK)/xorg-server install \
 		DESTDIR=$(BUILD_STAGE)/xorg-server
 	+$(MAKE) -C $(BUILD_WORK)/xorg-server install \

@@ -7,8 +7,9 @@ MESA-DEMOS_VERSION := 8.4.0
 DEB_MESA-DEMOS_V   ?= $(MESA-DEMOS_VERSION)
 
 mesa-demos-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://gitlab.freedesktop.org/mesa/demos/-/archive/mesa-demos-$(MESA-DEMOS_VERSION)/demos-mesa-demos-$(MESA-DEMOS_VERSION).tar.gz
-	$(call EXTRACT_TAR,demos-mesa-demos-$(MESA-DEMOS_VERSION).tar.gz,demos-mesa-demos-$(MESA-DEMOS_VERSION),mesa-demos)
+	wget -q -nc -P $(BUILD_SOURCE) https://archive.mesa3d.org/demos/mesa-demos-$(MESA-DEMOS_VERSION).tar.gz{,.sig} 
+	$(call PGP_VERIFY,mesa-demos-$(MESA-DEMOS_VERSION).tar.gz)
+	$(call EXTRACT_TAR,mesa-demos-$(MESA-DEMOS_VERSION).tar.gz,mesa-demos-$(MESA-DEMOS_VERSION),mesa-demos)
 
 ifneq ($(wildcard $(BUILD_WORK)/mesa-demos/.build_complete),)
 mesa-demos:

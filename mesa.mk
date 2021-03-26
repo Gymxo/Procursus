@@ -35,7 +35,7 @@ ifneq ($(wildcard $(BUILD_WORK)/mesa/.build_complete),)
 mesa:
 	@echo "Using previously built mesa."
 else
-mesa: mesa-setup libx11 libxext libxcb libxdamage libxxf86vm gettext expat zstd
+mesa: mesa-setup libx11 libxext libxcb libxdamage libxxf86vm gettext expat zstd libxrandr
 	cd $(BUILD_WORK)/mesa/build && PKG_CONFIG="pkg-config" meson \
 		--cross-file cross.txt \
 		-Diconv=auto \
@@ -45,8 +45,7 @@ mesa: mesa-setup libx11 libxext libxcb libxdamage libxxf86vm gettext expat zstd
 		-Ddri-drivers=swrast \
 		-Dgallium-drivers= \
 		-Dplatforms=x11 \
-		-Dgles1=disabled \
-		..
+		-Dgles1=disabled 
 	cd $(BUILD_WORK)/mesa/build; \
 		DESTDIR="$(BUILD_STAGE)/mesa" meson install; \
 		DESTDIR="$(BUILD_BASE)" meson install

@@ -1,5 +1,5 @@
-Package: xorg-server
-Version: 1.20.10
+Package: mesa-demos
+Version: 8.4.0
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
-Description:
+Description: 
