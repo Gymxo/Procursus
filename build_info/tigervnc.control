@@ -1,0 +1,6 @@
+Package: tigervnc
+Version: 1.11.0
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: libx11-6, libgeneral0, libxfont2, libgnutls30, libxau6, libpixman-1-0, libgl1-mesa-glx, libxdmcp6, libjpeg62-turbo, libxdamage1
+Description:
