@@ -17,7 +17,7 @@ else
 xkeyboard-config: xkeyboard-config-setup libx11 libxau libxmu xorgproto xxhash
 	cd $(BUILD_WORK)/xkeyboard-config && ./autogen.sh \
 		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=/usr \
+		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
 		--sysconfdir=$(MEMO_PREFIX)/etc \
 		--localstatedir=$(MEMO_PREFIX)/var 
 	+$(MAKE) -C $(BUILD_WORK)/xkeyboard-config

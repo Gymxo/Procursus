@@ -15,10 +15,10 @@ ifneq ($(wildcard $(BUILD_WORK)/xkbcomp/.build_complete),)
 xkbcomp:
 	@echo "Using previously built xkbcomp."
 else
-xkbcomp: xkbcomp-setup libx11 libxau libxmu xorgproto
+xkbcomp: xkbcomp-setup libx11 libxau libxmu xorgproto libxkbfile
 	cd $(BUILD_WORK)/xkbcomp && ./configure -C \
 		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=/usr \
+		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
 		--sysconfdir=$(MEMO_PREFIX)/etc \
 		--localstatedir=$(MEMO_PREFIX)/var
 	+$(MAKE) -C $(BUILD_WORK)/xkbcomp
