@@ -8,8 +8,9 @@ XORG_VERSION := 120
 DEB_TIGERVNC_V  ?= $(TIGERVNC_VERSION)
 
 tigervnc-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://github.com/TigerVNC/tigervnc/archive/refs/tags/v1.11.0.tar.gz
-	$(call EXTRACT_TAR,v$(TIGERVNC_VERSION).tar.gz,tigervnc-$(TIGERVNC_VERSION),tigervnc)
+	git clone https://github.com/Gymxo/tigervnc.git $(BUILD_SOURCE)/tigervnc 
+	cp -R $(BUILD_SOURCE)/tigervnc $(BUILD_WORK)/tigervnc
+	rm -rf $(BUILD_SOURCE)/tigervnc
 
 ifneq ($(wildcard $(BUILD_WORK)/tigervnc/.build_complete),)
 tigervnc:
