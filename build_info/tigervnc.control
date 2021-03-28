@@ -1,4 +1,4 @@
-Package: tigervnc
+Package: Tigervnc
 Version: @DEB_TIGERVNC_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@

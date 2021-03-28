@@ -5,7 +5,7 @@ endif
 SUBPROJECTS    += tigervnc
 TIGERVNC_VERSION := 1.11.0
 XORG_VERSION := 120
-DEB_TIGERVNC_V   ?= $(TIGERVNC_VERSION)
+DEB_TIGERVNC_V  ?= $(TIGERVNC_VERSION)
 
 tigervnc-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://github.com/TigerVNC/tigervnc/archive/refs/tags/v1.11.0.tar.gz
