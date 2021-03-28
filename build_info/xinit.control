@@ -1,0 +1,5 @@
+Package: xinit
+Version: 1.4.1
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description:

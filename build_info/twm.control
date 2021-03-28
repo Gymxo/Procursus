@@ -1,0 +1,5 @@
+Package: twm
+Version: 1.0.11
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description:
