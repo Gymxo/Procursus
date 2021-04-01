@@ -8,9 +8,9 @@ XORG_VERSION := 120
 DEB_TIGERVNC_V  ?= $(TIGERVNC_VERSION)
 
 tigervnc-setup: setup
-	git clone https://github.com/Gymxo/tigervnc.git $(BUILD_SOURCE)/tigervnc 
-	cp -R $(BUILD_SOURCE)/tigervnc $(BUILD_WORK)/tigervnc
-	rm -rf $(BUILD_SOURCE)/tigervnc
+	wget -q -nc -P $(BUILD_SOURCE) https://github.com/TigerVNC/tigervnc/archive/refs/tags/v1.11.0.tar.gz
+	$(call EXTRACT_TAR,v$(TIGERVNC_VERSION).tar.gz,tigervnc-$(TIGERVNC_VERSION),tigervnc)
+	$(call DO_PATCH,tigervnc,tigervnc,-p1)
 
 ifneq ($(wildcard $(BUILD_WORK)/tigervnc/.build_complete),)
 tigervnc:
@@ -21,11 +21,11 @@ tigervnc: tigervnc-setup libx11 libxau libxmu xorgproto libpixman
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_SYSTEM_NAME=Darwin \
 		-DCMAKE_CROSSCOMPILING=true \
-		-DCMAKE_INSTALL_PREFIX=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
-		-DCMAKE_INSTALL_NAME_DIR=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_NAME_DIR=/usr \
 		-DCMAKE_OSX_SYSROOT="$(TARGET_SYSROOT)" \
 		-DCMAKE_FIND_ROOT_PATH=$(BUILD_BASE) \
-		-DCMAKE_INSTALL_RPATH=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
+		-DCMAKE_INSTALL_RPATH=/usr \
 		-DBUILD_VIEWER=NO
 	+$(MAKE) -C $(BUILD_WORK)/tigervnc
 	+$(MAKE) -C $(BUILD_WORK)/tigervnc install \
