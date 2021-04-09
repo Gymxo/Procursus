@@ -9,6 +9,7 @@ DEB_X11VNC_V   ?= $(X11VNC_VERSION)
 x11vnc-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://github.com/LibVNC/x11vnc/archive/refs/tags/$(X11VNC_VERSION).tar.gz
 	$(call EXTRACT_TAR,0.9.16.tar.gz,x11vnc-$(X11VNC_VERSION),x11vnc)
+	$(call DO_PATCH,x11vnc,x11vnc,-p1)
 
 ifneq ($(wildcard $(BUILD_WORK)/x11vnc/.build_complete),)
 x11vnc:
@@ -19,7 +20,8 @@ x11vnc: x11vnc-setup libx11 libxau libxmu xorgproto openssl libvncserver
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
 		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var
+		--localstatedir=$(MEMO_PREFIX)/var \
+		--with-x
 	+$(MAKE) -C $(BUILD_WORK)/x11vnc
 	+$(MAKE) -C $(BUILD_WORK)/x11vnc install \
 		DESTDIR=$(BUILD_STAGE)/x11vnc
