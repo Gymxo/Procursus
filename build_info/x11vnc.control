@@ -1,5 +1,5 @@
-Package: xbitmaps
-Version: 1.1.0
+Package: x11vnc
+Version: 0.9.16
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
 Depends: 

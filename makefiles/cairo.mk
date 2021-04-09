@@ -23,9 +23,14 @@ cairo: cairo-setup freetype gettext fontconfig glib2.0 libpng16 liblzo2 libpixma
 		--enable-tee \
 		--enable-pref-utils \
 		--enable-svg \
-		--enable-xcb \
-		--enable-xlib \
-		--enable-gobject
+		--disable-xcb \
+		--enable-gobject \
+		FONTCONFIG_CFLAGS="-I$(BUILD_BASE)/usr/include/freetype2 -I$(BUILD_BASE)/usr/include/libpng16" \
+		FREETYPE_CFLAGS="-I$(BUILD_BASE)/usr/include/freetype2 -I$(BUILD_BASE)/usr/include/libpng16" \
+		GOBJECT_CFLAGS="-I$(BUILD_BASE)/usr/include/glib-2.0 -I$(BUILD_BASE)/usr/include/glib-2.0/include" \
+		glib_CFLAGS="-I$(BUILD_BASE)/usr/include/glib-2.0 -I$(BUILD_BASE)/usr/include/glib-2.0/include -I$(BUILD_BASE)/usr/lib/glib-2.0/include" \
+		pixman_CFLAGS="-I$(BUILD_BASE)/usr/include/pixman-1" \
+		png_CFLAGS="-I$(BUILD_BASE)/usr/include/libpng16"
 	+$(MAKE) -C $(BUILD_WORK)/cairo \
 		CFLAGS="$(CFLAGS) -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/glib-2.0/include"
 	+$(MAKE) -C $(BUILD_WORK)/cairo install \

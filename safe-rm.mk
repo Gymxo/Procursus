@@ -15,7 +15,7 @@ safe-rm:
 	@echo "Using previously built safe-rm."
 else
 safe-rm: safe-rm-setup 
-	cd $(BUILD_WORK)/safe-rm && make \
+	cd $(BUILD_WORK)/safe-rm && gmake all \
 
 safe-rm-package: safe-rm-stage
 	# safe-rm.mk Package Structure

@@ -1,5 +1,5 @@
-Package: xbitmaps
-Version: 1.1.0
+Package: xmh
+Version: 1.0.3
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
 Depends: 

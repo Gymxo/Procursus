@@ -20,8 +20,7 @@ quartz-wm: quartz-wm-setup libx11 libxau libxmu xorgproto xxhash
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
 		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var \
-		--build=arm64
+		--localstatedir=$(MEMO_PREFIX)/var 
 	+$(MAKE) -C $(BUILD_WORK)/quartz-wm
 	+$(MAKE) -C $(BUILD_WORK)/quartz-wm install \
 		DESTDIR=$(BUILD_STAGE)/quartz-wm

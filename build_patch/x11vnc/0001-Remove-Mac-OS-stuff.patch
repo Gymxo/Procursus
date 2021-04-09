@@ -1,0 +1,1724 @@
+From bb2c58ff9896da58077d52889b2aed7de414d188 Mon Sep 17 00:00:00 2001
+From: Gymxo <55960119+Gymxo@users.noreply.github.com>
+Date: Thu, 8 Apr 2021 12:19:45 -0400
+Subject: [PATCH] Remove Mac OS stuff
+
+---
+ src/Makefile.am   |  10 ---
+ src/cleanup.c     |  16 +---
+ src/connections.c |  12 ---
+ src/cursor.c      |  26 +------
+ src/inet.c        |   4 -
+ src/keyboard.c    |  10 ---
+ src/linuxfb.c     |  29 +-------
+ src/pointer.c     |   8 +-
+ src/remote.c      | 131 ---------------------------------
+ src/scan.c        | 107 +--------------------------
+ src/screen.c      |  99 +++----------------------
+ src/sslhelper.c   |   6 +-
+ src/uinput.c      |  25 +------
+ src/unixpw.c      |   2 +-
+ src/userinput.c   | 183 +---------------------------------------------
+ src/util.c        |   3 -
+ src/v4l.c         |  11 +--
+ src/win_utils.c   |  19 -----
+ src/x11vnc.c      | 120 +-----------------------------
+ src/xevents.c     |   9 ---
+ src/xwrappers.c   |  18 -----
+ 21 files changed, 28 insertions(+), 820 deletions(-)
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 11168c7..a3bad0a 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -53,16 +53,6 @@ x11vnc_SOURCES = \
+ 	keyboard.h \
+ 	linuxfb.c \
+ 	linuxfb.h \
+-	macosx.c \
+-	macosxCG.c \
+-	macosxCG.h \
+-	macosxCGP.c \
+-	macosxCGP.h \
+-	macosxCGS.c \
+-	macosxCGS.h \
+-	macosx.h \
+-	macosx_opengl.c \
+-	macosx_opengl.h \
+ 	nox11_funcs.h \
+ 	nox11.h \
+ 	options.c \
+diff --git a/src/cleanup.c b/src/cleanup.c
+index 090ba79..7e2d4de 100644
+--- a/src/cleanup.c
++++ b/src/cleanup.c
+@@ -44,8 +44,6 @@ so, delete this exception statement from your version.
+ #include "sslcmds.h"
+ #include "sslhelper.h"
+ #include "connections.h"
+-#include "macosx.h"
+-#include "macosxCG.h"
+ #include "avahi.h"
+ #include "screen.h"
+ #include "xrecord.h"
+@@ -173,18 +171,6 @@ void clean_up_exit(int ret) {
+ 		ssh_pid = 0;
+ 	}
+ 
+-#ifdef MACOSX
+-	if (client_connect_file) {
+-		if (strstr(client_connect_file, "/tmp/x11vnc-macosx-remote")
+-		    == client_connect_file) {
+-			unlink(client_connect_file);
+-		}
+-	}
+-	if (macosx_console) {
+-		macosxCG_fini();
+-	}
+-#endif
+-
+ 	if (pipeinput_fh != NULL) {
+ 		pclose(pipeinput_fh);
+ 		pipeinput_fh = NULL;
+@@ -492,7 +478,7 @@ static void crash_shell(void) {
+ 		}
+ 
+ 		if (*str == 'q' && *(str+1) == '\0') {
+-			fprintf(stderr, "quitting.\n");
++			fprintf(stderr, "quiting.\n");
+ 			return;
+ 		} else if (*str == 'h' && *(str+1) == '\0') {
+ 			crash_shell_help();
+diff --git a/src/connections.c b/src/connections.c
+index 10d6148..d97e4db 100644
+--- a/src/connections.c
++++ b/src/connections.c
+@@ -49,8 +49,6 @@ so, delete this exception statement from your version.
+ #include "xwrappers.h"
+ #include "xevents.h"
+ #include "win_utils.h"
+-#include "macosx.h"
+-#include "macosxCG.h"
+ #include "userinput.h"
+ #include "pointer.h"
+ #include "xrandr.h"
+@@ -954,11 +952,6 @@ void client_gone(rfbClientPtr client) {
+ 		CLIENT_UNLOCK;
+ 		clean_up_exit(0);
+ 	}
+-#ifdef MACOSX
+-	if (macosx_console && client_count == 0) {
+-		macosxCG_refresh_callback_off();
+-	}
+-#endif
+ 	CLIENT_UNLOCK;
+ }
+ 
+@@ -4091,11 +4084,6 @@ enum rfbNewClientAction new_client(rfbClientPtr client) {
+ 		 */
+ 		autorepeat(0, 0);
+ 	}
+-#ifdef MACOSX
+-	if (macosx_console && client_count == 1) {
+-		macosxCG_refresh_callback_on();
+-	}
+-#endif
+ 	if (use_solid_bg && client_count == 1) {
+ 		solid_bg(0);
+ 	}
+diff --git a/src/cursor.c b/src/cursor.c
+index 7955789..1b6e05c 100644
+--- a/src/cursor.c
++++ b/src/cursor.c
+@@ -38,7 +38,6 @@ so, delete this exception statement from your version.
+ #include "screen.h"
+ #include "scan.h"
+ #include "unixpw.h"
+-#include "macosx.h"
+ #include "xi2_devices.h"
+ 
+ int xfixes_present = 0;
+@@ -1267,12 +1266,6 @@ static int get_exact_cursor(int init) {
+ 		return -1;
+ 	}
+ 
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		return macosx_get_cursor();
+-	}
+-#endif
+-
+ 	if (rawfb_vnc_reflect) {
+ 		int last_idx = (int) get_cursor_serial(1);
+ 		if (last_idx) {
+@@ -1311,7 +1304,7 @@ static int get_exact_cursor(int init) {
+ 
+ 		/* retrieve the cursor info + pixels from server: */
+ 		xfc = XFixesGetCursorImage(dpy);
+-		if (xfc) {
++		{
+ 			/* 2017-07-09, Stephan Fuhrmann: This fixes an implementation flaw for 64 bit systems.
+ 			 * The XFixesCursorImage structure says xfc->pixels is (unsigned long*) in the structure, but
+ 			 * the protocol spec says it's 32 bit per pixel
+@@ -1379,11 +1372,6 @@ fprintf(stderr, "sc: %d  %d/%d %d - %d %d\n", serial, w, h, cbpp, xhot, yhot);
+ 			 * got a hit with an existing cursor,
+ 			 * use that one.
+ 			 */
+-#ifdef MACOSX
+-			if (now > curs_times[i] + 1) {
+-				continue;
+-			}
+-#endif
+ 			last_cursor = curs_index[i];
+ 			curs_times[i] = now;
+ 			last_index = i;
+@@ -1833,8 +1821,6 @@ void cursor_position(int x, int y, rfbClientPtr client) {
+ 		if (y >= dpy_y) y = dpy_y-1;
+ 	}
+ 
+-	if (rotating)
+-	    rotate_cursor_coords(x, y, &x, &y, screen->width, screen->height);
+ 
+ 	if(client == NULL) {
+ 	/* handle screen's master cursor */
+@@ -1993,22 +1979,12 @@ int check_x11_pointer(void) {
+ 
+ 	if (unixpw_in_progress) return 0;
+ 
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		ret = macosx_get_cursor_pos(&root_x, &root_y);
+-	} else {
+-		RAWFB_RET(0)
+-	}
+-#else
+-
+ 	RAWFB_RET(0)
+ 
+ #   if NO_X11
+ 	return 0;
+ #   endif
+ 
+-#endif
+-
+ #ifdef HAVE_XI2
+ #if ! NO_X11
+ 	/* if we are in multipointer mode,
+diff --git a/src/inet.c b/src/inet.c
+index d0528e0..81f13e0 100644
+--- a/src/inet.c
++++ b/src/inet.c
+@@ -670,10 +670,6 @@ int listen_unix(char *file) {
+ 		return -1;
+ 	}
+ 	saun.sun_family = AF_UNIX;
+-	if(strlen(file) + 1 > sizeof(saun.sun_path)) {
+-	        rfbLogPerror("listen_unix: socket name too long");
+-		return -1;
+-	}
+ 	strcpy(saun.sun_path, file);
+ 	unlink(file);
+ 
+diff --git a/src/keyboard.c b/src/keyboard.c
+index 6dd161d..5e6b60b 100644
+--- a/src/keyboard.c
++++ b/src/keyboard.c
+@@ -46,7 +46,6 @@ so, delete this exception statement from your version.
+ #include "v4l.h"
+ #include "linuxfb.h"
+ #include "uinput.h"
+-#include "macosx.h"
+ #include "screen.h"
+ #include "xi2_devices.h"
+ 
+@@ -2761,13 +2760,6 @@ static void modifier_tweak_keyboard(rfbBool down, rfbKeySym keysym,
+ 
+ void initialize_keyboard_and_pointer(void) {
+ 
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		initialize_remap(remap_file);
+-		initialize_pointer_map(pointer_remap);
+-	}
+-#endif
+-
+ 	RAWFB_RET_VOID
+ 
+ 	if (use_modifier_tweak) {
+@@ -2928,8 +2920,6 @@ static void pipe_keyboard(rfbBool down, rfbKeySym keysym, rfbClientPtr client) {
+ 		console_key_command(down, keysym, client);
+ 	} else if (pipeinput_int == PIPEINPUT_UINPUT) {
+ 		uinput_key_command(down, keysym, client);
+-	} else if (pipeinput_int == PIPEINPUT_MACOSX) {
+-		macosx_key_command(down, keysym, client);
+ 	} else if (pipeinput_int == PIPEINPUT_VNC) {
+ 		vnc_reflect_send_key((uint32_t) keysym, down);
+ 	}
+diff --git a/src/linuxfb.c b/src/linuxfb.c
+index e1c028b..89305a2 100644
+--- a/src/linuxfb.c
++++ b/src/linuxfb.c
+@@ -41,7 +41,6 @@ so, delete this exception statement from your version.
+ #include "allowed_input_t.h"
+ #include "uinput.h"
+ #include "keyboard.h"
+-#include "macosx.h"
+ 
+ #if HAVE_SYS_IOCTL_H
+ #include <sys/ioctl.h>
+@@ -53,41 +52,15 @@ so, delete this exception statement from your version.
+ char *console_guess(char *str, int *fd);
+ void console_key_command(rfbBool down, rfbKeySym keysym, rfbClientPtr client);
+ void console_pointer_command(int mask, int x, int y, rfbClientPtr client);
+-void linux_dev_fb_msg(char *);
+-
+-/* Returns offset into fb memory based on yoffset. */
+-int rawfb_get_offset(int *fd)
+-{
+-#if HAVE_LINUX_FB_H
+-	int offset;
+-	struct fb_var_screeninfo var_info;
+-	if (ioctl(*fd, FBIOGET_VSCREENINFO, &var_info)) {
+-		perror("ioctl");
+-		return 0;
+-	}
+ 
+-	/* todo: How should x offset be handled? */
+-	if (var_info.xoffset != 0) {
+-		rfbLog("rawfb xoffset handling not implemented");
+-	}
+ 
+-	if (var_info.yoffset != 0) {
+-		offset = main_bytes_per_line * var_info.yoffset;
+-		return offset;
+-	}
+-#endif
+-	return 0;
+-}
++void linux_dev_fb_msg(char *);
+ 
+ char *console_guess(char *str, int *fd) {
+ 	char *q, *in = strdup(str);
+ 	char *atparms = NULL, *file = NULL;
+ 	int do_input, have_uinput, tty = -1;
+ 
+-#ifdef MACOSX
+-	return macosx_console_guess(str, fd);
+-#endif
+-
+ 
+ 	if (strstr(in, "/dev/fb") == in) {
+ 		free(in);
+diff --git a/src/pointer.c b/src/pointer.c
+index c0f6433..6b2f33a 100644
+--- a/src/pointer.c
++++ b/src/pointer.c
+@@ -47,7 +47,6 @@ so, delete this exception statement from your version.
+ #include "linuxfb.h"
+ #include "uinput.h"
+ #include "scan.h"
+-#include "macosx.h"
+ #include "screen.h"
+ #include "xi2_devices.h"
+ 
+@@ -631,8 +630,6 @@ static void pipe_pointer(int mask, int x, int y, rfbClientPtr client) {
+ 		console_pointer_command(mask, x, y, client);
+ 	} else if (pipeinput_int == PIPEINPUT_UINPUT) {
+ 		uinput_pointer_command(mask, x, y, client);
+-	} else if (pipeinput_int == PIPEINPUT_MACOSX) {
+-		macosx_pointer_command(mask, x, y, client);
+ 	} else if (pipeinput_int == PIPEINPUT_VNC) {
+ 		vnc_reflect_send_pointer(x, y, mask);
+ 	}
+@@ -764,7 +761,7 @@ void pointer_event(int mask, int x, int y, rfbClientPtr client) {
+ 	INPUT_LOCK;
+ 
+ 	if ((pipeinput_fh != NULL || pipeinput_int) && mask >= 0) {
+-		pipe_pointer(mask, x, y, client);	/* MACOSX here. */
++		pipe_pointer(mask, x, y, client);	/* OSX here. */
+ 		if (! pipeinput_tee) {
+ 			if (! view_only || raw_fb) {	/* raw_fb hack */
+ 				got_user_input++;
+@@ -1095,9 +1092,6 @@ if (0) fprintf(stderr, "initialize_pipeinput: %s -- %s\n", pipeinput_str, p);
+ 		pipeinput_int = PIPEINPUT_UINPUT;
+ 		initialize_uinput();
+ 		return;
+-	} else if (strstr(p, "MACOSX") == p) {
+-		pipeinput_int = PIPEINPUT_MACOSX;
+-		return;
+ 	} else if (strstr(p, "VNC") == p) {
+ 		pipeinput_int = PIPEINPUT_VNC;
+ 		return;
+diff --git a/src/remote.c b/src/remote.c
+index e74191b..207f43b 100644
+--- a/src/remote.c
++++ b/src/remote.c
+@@ -830,10 +830,6 @@ int remote_control_access_ok(void) {
+ #endif	/* NO_X11 */
+ }
+ 
+-#ifdef MACOSX
+-void macosxCG_keycode_inject(int down, int keycode);
+-#endif
+-
+ int rc_npieces = 0;
+ 
+ /*
+@@ -4396,15 +4392,6 @@ char *process_remote_cmd(char *cmd, int stringonly) {
+ 		rfbLog("remote_cmd: insert keycode %d down=%d\n", kc, down);
+ 
+ 		if (macosx_console) {
+-#ifdef MACOSX
+-			if (down == -1) {
+-				macosxCG_keycode_inject(1, kc);
+-				usleep(50*1000);
+-				macosxCG_keycode_inject(0, kc);
+-			} else {
+-				macosxCG_keycode_inject(down, kc);
+-			}
+-#endif
+ 		} else {
+ 			X_LOCK;
+ 			if (down == -1) {
+@@ -5586,124 +5573,6 @@ char *process_remote_cmd(char *cmd, int stringonly) {
+ 		rfbLog("set crash_debug to: %d\n", crash_debug);
+ 		goto done;
+ 	}
+-	if (!strcmp(p, "macnosaver")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, macosx_noscreensaver); goto qry;
+-		}
+-		rfbLog("remote_cmd: turn on macnosaver.\n");
+-		macosx_noscreensaver = 1;
+-		goto done;
+-	}
+-	if (!strcmp(p, "macsaver") || !strcmp(p, "nomacnosaver")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, !macosx_noscreensaver); goto qry;
+-		}
+-		rfbLog("remote_cmd: turn off macnosaver.\n");
+-		macosx_noscreensaver = 0;
+-		goto done;
+-	}
+-	if (!strcmp(p, "macnowait")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, !macosx_wait_for_switch); goto qry;
+-		}
+-		rfbLog("remote_cmd: disable macosx_wait_for_switch.\n");
+-		macosx_wait_for_switch = 0;
+-		goto done;
+-	}
+-	if (!strcmp(p, "macwait") || !strcmp(p, "nomacnowait")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, macosx_wait_for_switch); goto qry;
+-		}
+-		rfbLog("remote_cmd: enable macosx_wait_for_switch.\n");
+-		macosx_wait_for_switch = 1;
+-		goto done;
+-	}
+-	if (strstr(p, "macwheel") == p) {
+-		COLON_CHECK("macwheel:")
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s%s%d", p, co, macosx_mouse_wheel_speed);
+-			goto qry;
+-		}
+-		p += strlen("macwheel:");
+-		macosx_mouse_wheel_speed = atoi(p);
+-		rfbLog("set macosx_mouse_wheel_speed to: %d\n", macosx_mouse_wheel_speed);
+-		goto done;
+-	}
+-	if (!strcmp(p, "macnoswap")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, !macosx_swap23); goto qry;
+-		}
+-		rfbLog("remote_cmd: disable macosx_swap23.\n");
+-		macosx_swap23 = 0;
+-		goto done;
+-	}
+-	if (!strcmp(p, "macswap") || !strcmp(p, "nomacnoswap")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, macosx_swap23); goto qry;
+-		}
+-		rfbLog("remote_cmd: enable macosx_swap23.\n");
+-		macosx_swap23 = 1;
+-		goto done;
+-	}
+-	if (!strcmp(p, "macnoresize")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, !macosx_resize); goto qry;
+-		}
+-		rfbLog("remote_cmd: disable macosx_resize.\n");
+-		macosx_resize = 0;
+-		goto done;
+-	}
+-	if (!strcmp(p, "macresize") || !strcmp(p, "nomacnoresize")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, macosx_resize); goto qry;
+-		}
+-		rfbLog("remote_cmd: enable macosx_resize.\n");
+-		macosx_resize = 1;
+-		goto done;
+-	}
+-	if (strstr(p, "maciconanim") == p) {
+-		COLON_CHECK("maciconanim:")
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s%s%d", p, co, macosx_icon_anim_time);
+-			goto qry;
+-		}
+-		p += strlen("maciconanim:");
+-		macosx_icon_anim_time = atoi(p);
+-		rfbLog("set macosx_icon_anim_time to: %d\n", macosx_icon_anim_time);
+-		goto done;
+-	}
+-	if (!strcmp(p, "macmenu")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, macosx_ncache_macmenu); goto qry;
+-		}
+-		rfbLog("remote_cmd: enable macosx_ncache_macmenu.\n");
+-		macosx_ncache_macmenu = 1;
+-		goto done;
+-	}
+-	if (!strcmp(p, "macnomenu") || !strcmp(p, "nomacmenu")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, !macosx_ncache_macmenu); goto qry;
+-		}
+-		rfbLog("remote_cmd: disable macosx_ncache_macmenu.\n");
+-		macosx_ncache_macmenu = 0;
+-		goto done;
+-	}
+-	if (!strcmp(p, "macuskbd")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, macosx_us_kbd); goto qry;
+-		}
+-		rfbLog("remote_cmd: enable macosx_us_kbd.\n");
+-		macosx_us_kbd = 1;
+-		goto done;
+-	}
+-	if (!strcmp(p, "nomacuskbd")) {
+-		if (query) {
+-			snprintf(buf, bufn, "ans=%s:%d", p, !macosx_us_kbd); goto qry;
+-		}
+-		rfbLog("remote_cmd: disable macosx_us_kbd.\n");
+-		macosx_us_kbd = 0;
+-		goto done;
+-	}
+ 	if (strstr(p, "hack") == p) { /* skip-cmd-list */
+ 		COLON_CHECK("hack:")
+ 		if (query) {
+diff --git a/src/scan.c b/src/scan.c
+index ebada04..0ebbadd 100644
+--- a/src/scan.c
++++ b/src/scan.c
+@@ -44,7 +44,6 @@ so, delete this exception statement from your version.
+ #include "cleanup.h"
+ #include "unixpw.h"
+ #include "screen.h"
+-#include "macosx.h"
+ #include "userinput.h"
+ 
+ /*
+@@ -69,7 +68,6 @@ int scan_for_updates(int count_only);
+ void rotate_curs(char *dst_0, char *src_0, int Dx, int Dy, int Bpp);
+ void rotate_coords(int x, int y, int *xo, int *yo, int dxi, int dyi);
+ void rotate_coords_inverse(int x, int y, int *xo, int *yo, int dxi, int dyi);
+-void rotate_cursor_coords(int x, int y, int *xo, int *yo, int dxi, int dyi);
+ 
+ static void set_fs_factor(int max);
+ static char *flip_ximage_byte_order(XImage *xim);
+@@ -321,7 +319,7 @@ static int shm_create(XShmSegmentInfo *shm, XImage **ximg_ptr, int w, int h,
+ 
+ #if HAVE_XSHM
+ 	shm->shmid = shmget(IPC_PRIVATE,
+-	    xim->bytes_per_line * xim->height, IPC_CREAT | 0600);
++	    xim->bytes_per_line * xim->height, IPC_CREAT | 0777);
+ 
+ 	if (shm->shmid == -1) {
+ 		rfbErr("shmget(%s) failed.\n", name);
+@@ -580,7 +578,7 @@ static void save_hint(hint_t hint, int loc) {
+ 
+ /*
+  * Glue together horizontal "runs" of adjacent changed tiles into one big
+- * rectangle change "hint" to be passed to the vnc machinery.
++ * rectangle change "hint" to be passed to the vnc hinery.
+  */
+ static void hint_updates(void) {
+ 	hint_t hint;
+@@ -1386,41 +1384,6 @@ void rotate_coords(int x, int y, int *xo, int *yo, int dxi, int dyi) {
+ 	}
+ }
+ 
+-
+-/* 
+- rotate cursor coordinates for `rotating` rotation. assumes that dxi and dyi are **not** rotated.
+- separate from rotate_coords because it returns incorrect coords for 90, 90y & 270 deg rotations.
+-*/
+-void rotate_cursor_coords(int x, int y, int *xo, int *yo, int dxi, int dyi) {
+-	int xi = x, yi = y;
+-
+-	if (rotating == ROTATE_NONE) {
+-		*xo = xi;
+-		*yo = yi;
+-	} else if (rotating == ROTATE_X) {
+-		*xo = dxi - xi;
+-		*yo = yi;
+-	} else if (rotating == ROTATE_Y) {
+-		*xo = xi;
+-		*yo = dyi - yi;
+-	} else if (rotating == ROTATE_XY) {
+-		*xo = dxi - xi;
+-		*yo = dyi - yi;
+-	} else if (rotating == ROTATE_90) {
+-		*xo = dxi - yi;
+-		*yo = xi;
+-	} else if (rotating == ROTATE_90X) {
+-		*xo = yi;
+-		*yo = xi;
+-	} else if (rotating == ROTATE_90Y) {
+-		*xo = dxi - yi;
+-		*yo = dyi - xi;
+-	} else if (rotating == ROTATE_270) {
+-		*xo = yi;
+-		*yo = dyi - xi;
+-	}
+-}
+-
+ void rotate_coords_inverse(int x, int y, int *xo, int *yo, int dxi, int dyi) {
+ 	int xi = x, yi = y;
+ 
+@@ -3249,53 +3212,6 @@ static int scan_display(int ystart, int rescan) {
+ 
+ 		/* grab the horizontal scanline from the display: */
+ 
+-#ifndef NO_NCACHE
+-/* XXX Y test */
+-if (ncache > 0) {
+-	int gotone = 0;
+-	if (macosx_console) {
+-		if (macosx_checkevent(NULL)) {
+-			gotone = 1;
+-		}
+-	} else {
+-#if !NO_X11
+-		XEvent ev;
+-		if (raw_fb_str) {
+-			;
+-		} else if (XEventsQueued(dpy, QueuedAlready) == 0) {
+-			;	/* XXX Y resp */
+-		} else if (XCheckTypedEvent(dpy, MapNotify, &ev)) {
+-			gotone = 1;
+-		} else if (XCheckTypedEvent(dpy, UnmapNotify, &ev)) {
+-			gotone = 2;
+-		} else if (XCheckTypedEvent(dpy, CreateNotify, &ev)) {
+-			gotone = 3;
+-		} else if (XCheckTypedEvent(dpy, ConfigureNotify, &ev)) {
+-			gotone = 4;
+-		} else if (XCheckTypedEvent(dpy, VisibilityNotify, &ev)) {
+-			gotone = 5;
+-		}
+-		if (gotone) {
+-			XPutBackEvent(dpy, &ev);
+-		}
+-#endif
+-	}
+-	if (gotone) {
+-		static int nomsg = 1;
+-		if (nomsg) {
+-			if (dnowx() > 20) {
+-				nomsg = 0;
+-			}
+-		} else {
+-if (ncdb) fprintf(stderr, "\n*** SCAN_DISPLAY CHECK_NCACHE/%d *** %d rescan=%d\n", gotone, y, rescan);
+-		}
+-		X_UNLOCK;
+-		check_ncache(0, 1);
+-		X_LOCK;
+-	}
+-}
+-#endif
+-
+ 		XRANDR_SET_TRAP_RET(-1, "scan_display-set");
+ 		copy_image(scanline, 0, y, 0, 0);
+ 		XRANDR_CHK_TRAP_RET(-1, "scan_display-chk");
+@@ -3371,13 +3287,9 @@ if (ncdb) fprintf(stderr, "\n*** SCAN_DISPLAY CHECK_NCACHE/%d *** %d rescan=%d\n
+ 		}
+ 		y += NSCAN;
+ 	}
+-
+ 	X_UNLOCK;
+-
+ 	return tile_count;
+ }
+-
+-
+ int scanlines[NSCAN] = {
+ 	 0, 16,  8, 24,  4, 20, 12, 28,
+ 	10, 26, 18,  2, 22,  6, 30, 14,
+@@ -3439,18 +3351,8 @@ int scan_for_updates(int count_only) {
+ 		if (cmap8to24 && scan_count % 1 == 0) {
+ 			check_for_multivis();
+ 		}
+-#ifdef MACOSX
+-		if (macosx_console) {
+-			macosx_event_loop();
+-		}
+-#endif
+ 		if (use_xdamage) {
+ 			/* first pass collecting DAMAGE events: */
+-#ifdef MACOSX
+-			if (macosx_console) {
+-				collect_non_X_xdamage(-1, -1, -1, -1, 0);
+-			} else 
+-#endif
+ 			{
+ 				if (rawfb_vnc_reflect) {
+ 					collect_non_X_xdamage(-1, -1, -1, -1, 0);
+@@ -3481,11 +3383,6 @@ int scan_for_updates(int count_only) {
+ 	 * the unchanged tiles are read in again).
+ 	 */
+ 	if (use_xdamage) {
+-#ifdef MACOSX
+-		if (macosx_console) {
+-			;
+-		} else 
+-#endif
+ 		{
+ 			if (rawfb_vnc_reflect) {
+ 				;
+diff --git a/src/screen.c b/src/screen.c
+index 48326a4..8f59b85 100644
+--- a/src/screen.c
++++ b/src/screen.c
+@@ -53,8 +53,6 @@ so, delete this exception statement from your version.
+ #include "sslhelper.h"
+ #include "v4l.h"
+ #include "linuxfb.h"
+-#include "macosx.h"
+-#include "macosxCG.h"
+ #include "avahi.h"
+ #include "solid.h"
+ #include "inet.h"
+@@ -109,7 +107,6 @@ static int choose_delay(double dt);
+ int rawfb_reset = -1;
+ int rawfb_dev_video = 0;
+ int rawfb_vnc_reflect = 0;
+-int rawfb_double_buffer = 0;
+ 
+ /*
+  * X11 and rfb display/screen related routines
+@@ -725,13 +722,6 @@ void set_raw_fb_params(int restore) {
+ 			    "use_solid_bg\n");
+ 			use_solid_bg = 0;
+ 		}
+-#ifndef MACOSX
+-		if (raw_fb_str && strstr(raw_fb_str, "vnc") == raw_fb_str) {
+-			;
+-		} else {
+-			multiple_cursors_mode = strdup("arrow");
+-		}
+-#endif
+ 	}
+ 	if (using_shm) {
+ 		if (verbose) rfbLog("  rawfb: turning off using_shm\n");
+@@ -1030,11 +1020,6 @@ void do_new_fb(int reset_mem) {
+ 		settle_clients(1);
+ 	}
+ 
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		macosxCG_fini();
+-	}
+-#endif
+ 	if (reset_mem == 1) {
+ 		/* reset_mem == 2 is a hack for changing users... */
+ 		clean_shm(0);
+@@ -1694,12 +1679,6 @@ if (db) fprintf(stderr, "initialize_raw_fb reset\n");
+ 		return NULL;
+ 	}
+ 
+-#ifdef MACOSX
+-	if (raw_fb_addr != NULL && macosx_console && raw_fb_addr == macosx_get_fb_addr()) {
+-		raw_fb_addr = NULL;
+-	}
+-#endif
+-
+ 	if (raw_fb_addr || raw_fb_seek) {
+ 		if (raw_fb_shm) {
+ 			shmdt(raw_fb_addr);
+@@ -1943,25 +1922,14 @@ if (db) fprintf(stderr, "initialize_raw_fb reset\n");
+ 
+ 
+ 	/* +O offset */
+-	char *end = NULL;
+ 	if ((q = strrchr(str, '+')) != NULL) {
+-		end = q;
+-		if (sscanf(q, "+%d", &raw_fb_offset) != 1) {
++		if (sscanf(q, "+%d", &raw_fb_offset) == 1) {
++			*q = '\0';
++		} else {
+ 			raw_fb_offset = 0;
+ 		}
+ 	}
+-
+-	/* #VWxVH virtual dimensions */
+-	if ((q = strrchr(str, '#')) != NULL) {
+-		if (q < end) end = q;
+-		if (sscanf(q, "#%dx%d", &raw_fb_virt_x, &raw_fb_virt_y) != 2) {
+-			raw_fb_virt_x = 0;
+-			raw_fb_virt_y = 0;
+-		}
+-	}
+-
+-	if (end != NULL) *end = '\0';
+-
++	/* :R/G/B masks */
+ 	if ((q = strrchr(str, ':')) != NULL) {
+ 		if (sscanf(q, ":%lx/%lx/%lx", &rm, &gm, &bm) == 3) {
+ 			*q = '\0';
+@@ -2150,7 +2118,7 @@ if (db) fprintf(stderr, "initialize_raw_fb reset\n");
+ 	} else if (strstr(str, "map:") == str || strstr(str, "mmap:") == str
+ 	    || strstr(str, "file:") == str) {
+ 		/* map:/path/... or file:/path  */
+-		int fd, do_mmap = 1, size, vsize = 0;
++		int fd, do_mmap = 1, size;
+ 		struct stat sbuf;
+ 
+ 		if (*str == 'f') {
+@@ -2190,15 +2158,9 @@ if (db) fprintf(stderr, "initialize_raw_fb reset\n");
+ 			size = w*h*raw_fb_native_bpp/8 + raw_fb_offset;
+ 		} else if (xform24to32) {
+ 			size = w*h*24/8 + raw_fb_offset;
+-		} else if (raw_fb_virt_x != 0 && raw_fb_virt_y != 0) {
+-			size = w*h*b/8;
+-			vsize = raw_fb_virt_x*raw_fb_virt_y*b/8;
+-			rawfb_double_buffer = 1;
+-			rfbLog("virtual size: %d", vsize);
+ 		} else {
+ 			size = w*h*b/8 + raw_fb_offset;
+ 		}
+-
+ 		if (fstat(fd, &sbuf) == 0) {
+ 			if (S_ISREG(sbuf.st_mode)) {
+ 				if (0) size = sbuf.st_size;
+@@ -2206,15 +2168,7 @@ if (db) fprintf(stderr, "initialize_raw_fb reset\n");
+ 				rfbLog("raw fb is non-regular file: %s\n", q);
+ 			}
+ 		}
+-
+-		if (do_macosx) {
+-			raw_fb_addr = macosx_get_fb_addr();
+-			raw_fb_mmap = size;
+-			rfbLog("rawfb: macosx fb: %s\n", q);
+-			rfbLog("   w: %d h: %d b: %d addr: %p sz: %d\n", w, h,
+-			    b, raw_fb_addr, size);
+-			last_mode = 0;
+-		} else if (do_reflect) {
++		if (do_reflect) {
+ 			raw_fb_mmap = size;
+ 			rfbLog("rawfb: vnc fb: %s\n", q);
+ 			rfbLog("   w: %d h: %d b: %d addr: %p sz: %d\n", w, h,
+@@ -2223,11 +2177,8 @@ if (db) fprintf(stderr, "initialize_raw_fb reset\n");
+ 
+ 		} else if (do_mmap) {
+ #if LIBVNCSERVER_HAVE_MMAP
+-			if (vsize != 0) {
+-				raw_fb_addr = mmap(0, vsize, PROT_READ, MAP_SHARED, fd, 0);
+-			} else {
+-				raw_fb_addr = mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
+-			}
++			raw_fb_addr = mmap(0, size, PROT_READ, MAP_SHARED,
++			    fd, 0);
+ 
+ 			if (raw_fb_addr == MAP_FAILED || raw_fb_addr == NULL) {
+ 				rfbLogEnable(1);
+@@ -2244,13 +2195,8 @@ if (db) fprintf(stderr, "initialize_raw_fb reset\n");
+ 				raw_fb_mmap = size;
+ 
+ 				rfbLog("rawfb: mmap file: %s\n", q);
+-				if (vsize != 0) {
+-					rfbLog("   w: %d h: %d b: %d addr: %p sz: %d\n", w, h,
+-						b, raw_fb_addr, vsize);
+-				} else {
+-					rfbLog("   w: %d h: %d b: %d addr: %p sz: %d\n", w, h,
+-						b, raw_fb_addr, size);
+-				}
++				rfbLog("   w: %d h: %d b: %d addr: %p sz: %d\n", w, h,
++				    b, raw_fb_addr, size);
+ 				last_mode = RAWFB_MMAP;
+ 			}
+ #else
+@@ -2289,11 +2235,6 @@ if (db) fprintf(stderr, "initialize_raw_fb reset\n");
+ 		 * Put cases here were we can determine that
+ 		 * raw_bytes_per_line != dpy_x*b/8
+ 		 */
+-#ifdef MACOSX
+-		if (do_macosx) {
+-			raw_fb_bytes_per_line = macosxCG_CGDisplayBytesPerRow();
+-		}
+-#endif
+ 	}
+ 
+ 	raw_fb_image->bytes_per_line = dpy_x * b/8;
+@@ -3161,15 +3102,6 @@ void initialize_screen(int *argc, char **argv, XImage *fb) {
+ 		} else {
+ 			rot_bytes_per_line = rfb_bytes_per_line;
+ 		}
+-	}
+-
+-#ifndef NO_NCACHE
+-	if (ncache > 0 && !nofb) {
+-# ifdef MACOSX
+-		if (! raw_fb_str || macosx_console) {
+-# else
+-		if (! raw_fb_str) {
+-# endif
+ 			
+ 			char *new_fb;
+ 			int sz = fb->height * fb->bytes_per_line;
+@@ -3189,8 +3121,6 @@ void initialize_screen(int *argc, char **argv, XImage *fb) {
+ 			height *= (ns);
+ 			ncache0 = ncache;
+ 		}
+-	}
+-#endif
+ 
+ 	if (cmap8to24) {
+ 		if (depth <= 8) {
+@@ -4603,9 +4533,6 @@ void watch_loop(void) {
+ 			if (cursor_pos_updates) {
+ 				check_x11_pointer();
+ 			}
+-#ifdef MACOSX
+-			else check_x11_pointer();
+-#endif
+ 			continue;
+ 		}
+ 		if (x11vnc_current < last_new_client + 0.5 && !all_clients_initialized()) {
+@@ -4678,12 +4605,6 @@ void watch_loop(void) {
+ 			/* Now, for scanning and drawing soft cursors (i.e. writing to the framebuffer),
+ 			   make sure we're not sending any updates to clients (i.e. reading the framebuffer).
+ 			   Otherwise we get flicker! */
+-
+-			/* Update offset in case local framebuffer is double buffered */
+-			if (rawfb_double_buffer) {
+-				raw_fb_offset = rawfb_get_offset(&raw_fb_fd);
+-			}
+-
+ 			if(use_threads){
+ 			  rfbClientPtr cl;
+ 			  rfbClientIteratorPtr iter = rfbGetClientIterator(screen);
+diff --git a/src/sslhelper.c b/src/sslhelper.c
+index ba680b3..1a3e747 100644
+--- a/src/sslhelper.c
++++ b/src/sslhelper.c
+@@ -1596,11 +1596,7 @@ static int switch_to_anon_dh(void) {
+ 	if (ssl_client_mode) {
+ 		return 1;
+ 	}
+-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+-	/* Security level must be set to 0 for unauthenticated suites. */
+-	SSL_CTX_set_security_level(ctx, 0);
+-#endif
+-	if (!SSL_CTX_set_cipher_list(ctx, "ADH:@SECLEVEL=0")) {
++	if (!SSL_CTX_set_cipher_list(ctx, "ADH:@STRENGTH")) {
+ 		return 0;
+ 	}
+ 	if (!add_anon_dh()) {
+diff --git a/src/uinput.c b/src/uinput.c
+index d71bcde..28fbad3 100644
+--- a/src/uinput.c
++++ b/src/uinput.c
+@@ -54,11 +54,6 @@ so, delete this exception statement from your version.
+ #include <linux/input.h>
+ #include <linux/uinput.h>
+ 
+-#ifndef input_event_sec
+-#define input_event_sec time.tv_sec
+-#define input_event_usec time.tv_usec
+-#endif
+-
+ #if !defined(EV_SYN) || !defined(SYN_REPORT)
+ #undef UINPUT_OK
+ #endif
+@@ -715,7 +710,6 @@ void parse_uinput_str(char *in) {
+ static void ptr_move(int dx, int dy) {
+ #ifdef UINPUT_OK
+ 	struct input_event ev;
+-	struct timeval tval;
+ 	int d = direct_rel_fd < 0 ? fd : direct_rel_fd;
+ 
+ 	if (injectable && strchr(injectable, 'M') == NULL) {
+@@ -726,9 +720,7 @@ static void ptr_move(int dx, int dy) {
+ 
+ 	if (db) fprintf(stderr, "ptr_move(%d, %d) fd=%d\n", dx, dy, d);
+ 
+-	gettimeofday(&tval, NULL);
+-	ev.input_event_sec = tval.tv_sec;
+-	ev.input_event_usec = tval.tv_usec;
++	gettimeofday(&ev.time, NULL);
+ 	ev.type = EV_REL;
+ 	ev.code = REL_Y;
+ 	ev.value = dy;
+@@ -763,7 +755,6 @@ static void apply_tslib(int *x, int *y) {
+ static void ptr_abs(int x, int y, int p) {
+ #ifdef UINPUT_OK
+ 	struct input_event ev;
+-	struct timeval tval;
+ 	int x0, y0;
+ 	int d = direct_abs_fd < 0 ? fd : direct_abs_fd;
+ 
+@@ -782,9 +773,7 @@ static void ptr_abs(int x, int y, int p) {
+ 
+ 	if (db) fprintf(stderr, "ptr_abs(%d, %d => %d %d, p=%d) fd=%d\n", x0, y0, x, y, p, d);
+ 
+-	gettimeofday(&tval, NULL);
+-	ev.input_event_sec = tval.tv_sec;
+-	ev.input_event_usec = tval.tv_usec;
++	gettimeofday(&ev.time, NULL);
+ 	ev.type = EV_ABS;
+ 	ev.code = ABS_Y;
+ 	ev.value = y;
+@@ -961,7 +950,6 @@ if (0) {usleep(100*1000) ;}
+ static void button_click(int down, int btn) {
+ #ifdef UINPUT_OK
+ 	struct input_event ev;
+-	struct timeval tval;
+ 	int d = direct_btn_fd < 0 ? fd : direct_btn_fd;
+ 
+ 	if (injectable && strchr(injectable, 'B') == NULL) {
+@@ -971,9 +959,7 @@ static void button_click(int down, int btn) {
+ 	if (db) fprintf(stderr, "button_click: btn %d %s fd=%d\n", btn, down ? "down" : "up", d);
+ 
+ 	memset(&ev, 0, sizeof(ev));
+-	gettimeofday(&tval, NULL);
+-	ev.input_event_sec = tval.tv_sec;
+-	ev.input_event_usec = tval.tv_usec;
++	gettimeofday(&ev.time, NULL);
+ 	ev.type = EV_KEY;
+ 	ev.value = down;
+ 
+@@ -1244,7 +1230,6 @@ void uinput_pointer_command(int mask, int x, int y, rfbClientPtr client) {
+ void uinput_key_command(int down, int keysym, rfbClientPtr client) {
+ #ifdef UINPUT_OK
+ 	struct input_event ev;
+-	struct timeval tval;
+ 	int scancode;
+ 	allowed_input_t input;
+ 	int d = direct_key_fd < 0 ? fd : direct_key_fd;
+@@ -1268,9 +1253,7 @@ void uinput_key_command(int down, int keysym, rfbClientPtr client) {
+ 	if (db) fprintf(stderr, "uinput_key_command: %d -> %d %s fd=%d\n", keysym, scancode, down ? "down" : "up", d);
+ 
+ 	memset(&ev, 0, sizeof(ev));
+-	gettimeofday(&tval, NULL);
+-	ev.input_event_sec = tval.tv_sec;
+-	ev.input_event_usec = tval.tv_usec;
++	gettimeofday(&ev.time, NULL);
+ 	ev.type = EV_KEY;
+ 	ev.code = (unsigned char) scancode;
+ 	ev.value = down;
+diff --git a/src/unixpw.c b/src/unixpw.c
+index e2cb016..9a43cec 100644
+--- a/src/unixpw.c
++++ b/src/unixpw.c
+@@ -757,7 +757,7 @@ int unixpw_list_match(char *user) {
+ }
+ 
+ int crypt_verify(char *user, char *pass) {
+-#if !defined UNIXPW_CRYPT || !defined HAVE_LIBCRYPT
++#ifndef UNIXPW_CRYPT
+ 	return 0;
+ #else
+ 	struct passwd *pwd;
+diff --git a/src/userinput.c b/src/userinput.c
+index 40f58f8..fb75f68 100644
+--- a/src/userinput.c
++++ b/src/userinput.c
+@@ -49,8 +49,6 @@ so, delete this exception statement from your version.
+ #include "xrandr.h"
+ #include "8to24.h"
+ #include "unixpw.h"
+-#include "macosx.h"
+-#include "macosxCGS.h"
+ #include "cursor.h"
+ #include "screen.h"
+ #include "connections.h"
+@@ -145,11 +143,6 @@ int get_wm_frame_pos(int *px, int *py, int *x, int *y, int *w, int *h,
+ 	unsigned int mask;
+ #endif
+ 
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		return macosx_get_wm_frame_pos(px, py, x, y, w, h, frame, win);
+-	}
+-#endif
+ 
+ 	RAWFB_RET(0)
+ 
+@@ -3275,11 +3268,6 @@ if (db2) fprintf(stderr, "sw: %d/%lx\n", k, swin);
+ 			}
+ 
+ 			/* skip some unwanted cases: */
+-#ifndef MACOSX
+-			if (swin == None) {
+-				continue;
+-			}
+-#endif
+ 			if (boff <= (int) swin && (int) swin < boff + bwin) {
+ 				;	/* blackouts */
+ 			} else if (! stack_list[k].fetched ||
+@@ -4182,74 +4170,10 @@ if (ncdb) fprintf(stderr, "do_COPY: %.4f -- post_portion done.\n", dnow() - ntim
+ }
+ 
+ void check_macosx_iconify(Window orig_frame, Window frame, int flush) {
+-#ifdef MACOSX
+-	static double last = 0.0;
+-	double now;
+-	int j, m = 5, idx = -1, ok = 0, unmapped = 0;
+-
+-	if (! macosx_console) {
+-		return;
+-	}
+-
+-	now = dnow();
+-	if (now < last + 0.3) {
+-		return;
+-	}
+-	last = now;
+-
+-	if (ncache > 0 && orig_frame != None) {
+-		idx = lookup_win_index(orig_frame);
+-		if (idx >= 0) {
+-			if (cache_list[idx].map_state == IsUnmapped) {
+-if (0) fprintf(stderr, "FAW orig_frame unmapped.\n");
+-				unmapped = 1;
+-				m = 3;
+-			}
+-		}
+-	}
+-
+-	if (unmapped) {
+-		;
+-	} else if (orig_frame && macosxCGS_follow_animation_win(orig_frame, -1, 0)) {
+-		if (0) fprintf(stderr, "FAW orig_frame %d\n", (int) orig_frame);
+-	} else if (0 && frame && macosxCGS_follow_animation_win(frame, -1, 0)) {
+-		if (0) fprintf(stderr, "FAW frame      %d\n", (int) frame);
+-	}
+-	for (j=0; j<m; j++) {
+-		macosxCGS_get_all_windows();
+-		if (macosx_checkevent(NULL)) {
+-			ok = 1;
+-			if (0) fprintf(stderr, "Check Event    1\n");
+-		} else {
+-			if (0) fprintf(stderr, "Check Event    0\n");
+-		}
+-		if (ok) {
+-			break;
+-		}
+-		usleep(10 * 1000);
+-	}
+-	if (ok) {
+-		if (flush) {
+-			fb_push_wait(0.1, FB_COPY|FB_MOD);
+-		}
+-		check_ncache(0, 2);
+-	}
+-#else
+ 	if (!orig_frame || !frame || !flush) {}
+-#endif
+ }
+ 
+ void check_macosx_click_frame(void) {
+-#ifdef MACOSX
+-	if (macosx_console) {
+-if (0) fprintf(stderr, "macosx_click_frame: 0x%x\n", macosx_click_frame);
+-		check_macosx_iconify(macosx_click_frame, None, 0);
+-		macosx_click_frame = None;
+-		if (button_mask && !macosx_checkevent(NULL)) {
+-			check_macosx_iconify(None, None, 0);
+-		}
+-	}
+-#endif
+ }
+ 
+ int clipped(int idx);
+@@ -4369,15 +4293,7 @@ int check_wireframe(void) {
+ 	if (unixpw_in_progress) return 0;
+ 	if (copyrect_drag_delay) {}
+ 
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		;
+-	} else {
+-		RAWFB_RET(0)
+-	}
+-#else
+ 	RAWFB_RET(0)
+-#endif
+ 
+ 	if (nofb) {
+ 		return 0;
+@@ -4421,9 +4337,6 @@ if (db) fprintf(stderr, "\n*** button down!!  x: %d  y: %d\n", cursor_x, cursor_
+ 	if (! get_wm_frame_pos(&px, &py, &x, &y, &w, &h, &frame, NULL)) {
+ if (db) fprintf(stderr, "NO get_wm_frame_pos-1: 0x%lx\n", frame);
+ 		X_UNLOCK;
+-#ifdef MACOSX
+-		check_macosx_click_frame();
+-#endif
+ 		return 0;
+ 	}
+ 	X_UNLOCK;
+@@ -4469,9 +4382,6 @@ if (db) fprintf(stderr, "OUTSIDE CLIPSHIFT\n");
+ 	}
+ 	if (! try_it) {
+ if (db) fprintf(stderr, "INTERIOR\n");
+-#ifdef MACOSX
+-		check_macosx_click_frame();
+-#endif
+ 		return 0;
+ 	}
+ 
+@@ -4603,12 +4513,7 @@ if (db) fprintf(stderr, "INTERIOR\n");
+ 			/* what was this for? */
+ 			Window frame;
+ 			int px, py, x, y, w, h;
+-#ifdef MACOSX
+-			if (macosx_console) {
+-				macosx_get_cursor_pos(&x, &y);
+-			}
+-			else
+-#endif
++
+ 			get_wm_frame_pos(&px, &py, &x, &y, &w, &h, &frame, NULL);
+ #endif
+ 		}
+@@ -5640,13 +5545,7 @@ int check_user_input(double dt, double dtr, int tile_diffs, int *cnt) {
+ 			return 1;	/* short circuit watch_loop */
+ 		}
+ 	}
+-#ifdef MACOSX
+-	if (! macosx_console) {
+-		RAWFB_RET(0)
+-	}
+-#else
+ 	RAWFB_RET(0)
+-#endif
+ 
+ 	if (use_xrecord) {
+ 		int rc = check_xrecord();
+@@ -5783,11 +5682,6 @@ void snapshot_cache_list(int free_only, double allowed_age) {
+ 	cache_list_num = 0;
+ 	last_free = now;
+ 
+-#ifdef MACOSX
+-	if (! macosx_console) {
+-		RAWFB_RET_VOID
+-	}
+-#else
+ 	RAWFB_RET_VOID
+ #endif
+ 
+@@ -5865,13 +5759,7 @@ void quick_snap(Window *wins, int *size) {
+ 	Window r, w;
+ 	Window *list;
+ 
+-#ifdef MACOSX
+-	if (1 || ! macosx_console) {
+-		RAWFB_RET_VOID
+-	}
+-#else
+ 	RAWFB_RET_VOID
+-#endif
+ 
+ 
+ #if NO_X11 && !defined(MACOSX)
+@@ -7008,23 +6896,7 @@ double restore_delay1 = 0.05;
+ static double dtA, dtB;
+ 
+ int valid_wr(int idx, Window win, XWindowAttributes *attr) {
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		/* this is all to avoid animation changing WxH+X+Y... */
+-		if (idx >= 0) {
+-			int rc = valid_window(win, attr, 1);
+-			attr->x = cache_list[idx].x;
+-			attr->y = cache_list[idx].y;
+-			attr->width = cache_list[idx].width;
+-			attr->height = cache_list[idx].height;
+-			return rc;
+-		} else {
+-			return valid_window(win, attr, 1);
+-		}
+-	}
+-#else
+ 	if (!idx) {}
+-#endif
+ 	return valid_window(win, attr, 1);
+ }
+ 
+@@ -7734,15 +7606,6 @@ if (sync && ncdb) fprintf(stderr, "XSELECTINPUT: 0x%lx  sync=%d err=%d/%d\n", w,
+ }
+ 
+ Bool xcheckmaskevent(Display *d, long mask, XEvent *ev) {
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		if (macosx_checkevent(ev)) {
+-			return True;
+-		} else {
+-			return False;
+-		}
+-	}
+-#endif
+ 	RAWFB_RET(False);
+ 
+ #if NO_X11
+@@ -8916,25 +8779,15 @@ int check_ncache(int reset, int mode) {
+ 
+ 	if (unixpw_in_progress) return -1;
+ 
+-#ifdef MACOSX
+-	if (! macosx_console) {
+-		RAWFB_RET(-1)
+-	}
+-	if (! screen) {
+-		return -1;
+-	}
+-#else
+ 	RAWFB_RET(-1)
+ 	if (! screen || ! dpy) {
+ 		return -1;
+ 	}
+-#endif
+ 
+ 	now = dnow();
+ 
+ #ifdef NO_NCACHE
+ 	ncache = 0;
+-#endif
+ 
+ 	if (reset && (first || cache_list_len == 0)) {
+ 		return -1;
+@@ -9088,19 +8941,6 @@ if (hack_val == 2) {
+ 	block_stats();
+ 	hack_val = 1;
+ }
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		static double last_all_windows = 0.0;
+-		if (! macosx_checkevent(NULL)) {
+-			if (now > last_all_windows + 0.05) {
+-				macosxCGS_get_all_windows();
+-				last_all_windows = dnow();
+-			}
+-		}
+-		/* XXX Y */
+-		rootwin = -1;
+-	}
+-#endif
+ 
+ 	n = 0;
+ 	ttot = 0;
+@@ -9871,8 +9711,6 @@ if (ncdb) fprintf(stderr, "----%02d: VisibilityNotify 0x%lx  %3d  state: %s U/P
+ 				}
+ 				if (desktop_change) {
+ 					;
+-				} else if (macosx_console && n_VN_p == 0) {
+-					;	/* XXXX not working well yet with UnmapNotify ... */
+ 				} else if (state == VisibilityUnobscured) {
+ 					int ok = 1;
+ 					if (ncache <= 2) {
+@@ -10031,18 +9869,6 @@ if (ncdb) fprintf(stderr, "----%02d: MapNotify        0x%lx  %3d\n", ik, win, id
+ 						STORE(idx, win, attr);
+ 					}
+ 
+-					if (macosx_console) {
+-#ifdef MACOSX
+-						macosxCGS_follow_animation_win(win, -1, 1);
+-						if (valid_window(win, &attr, 1)) {
+-							STORE(idx, win, attr);
+-							SCHED(win, 1);
+-						}
+-						/* XXX Y */
+-						if (cache_list[idx].vis_state == -1)  {
+-							cache_list[idx].vis_state = VisibilityUnobscured;
+-						}
+-#endif
+ 					}
+ 					X_LOCK;
+ 					pixels += cache_list[idx].width * cache_list[idx].height;
+@@ -10069,11 +9895,6 @@ if (ncdb) fprintf(stderr, "----%02d: UnmapNotify      0x%lx  %3d\n", ik, win, id
+ 				if (idx < 0) {
+ 					continue;
+ 				}
+-				if (macosx_console) {
+-					if (mode == 2) {
+-						cache_list[idx].map_state = IsViewable;
+-					}
+-				}
+ 
+ #if 0
+ /*
+@@ -10194,4 +10015,4 @@ if (ncdb) fprintf(stderr, "\n");
+ 	return pixels;
+ }
+ #endif
+-
++}
+diff --git a/src/util.c b/src/util.c
+index 6a52ebf..a82a1a4 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -47,9 +47,6 @@ int hxl = 0;
+ #ifdef LIBVNCSERVER_HAVE_LIBPTHREAD
+ MUTEX(x11Mutex);
+ MUTEX(scrollMutex);
+-MUTEX(clientMutex);
+-MUTEX(inputMutex);
+-MUTEX(pointerMutex);
+ #endif
+ 
+ int nfix(int i, int n);
+diff --git a/src/v4l.c b/src/v4l.c
+index 018c273..2a45da8 100644
+--- a/src/v4l.c
++++ b/src/v4l.c
+@@ -41,18 +41,11 @@ so, delete this exception statement from your version.
+ #include "keyboard.h"
+ #include "allowed_input_t.h"
+ 
+-#if HAVE_LIBV4L1_VIDEODEV_H || HAVE_LINUX_VIDEODEV_H
++#if HAVE_LINUX_VIDEODEV_H
+ #if HAVE_SYS_IOCTL_H
+ #include <sys/ioctl.h>
+ #define CONFIG_VIDEO_V4L1_COMPAT
+-#if HAVE_LIBV4L1_VIDEODEV_H
+-#include <libv4l1-videodev.h>
+-#if HAVE_LINUX_VIDEODEV2_H
+-#include <linux/videodev2.h>
+-#endif
+-#else
+ #include <linux/videodev.h>
+-#endif
+ #ifdef __LINUX_VIDEODEV2_H
+ # ifndef HAVE_V4L2
+ # define HAVE_V4L2 1
+@@ -1346,7 +1339,7 @@ static void parse_str(char *str, char **dev, char **settings, char **atparms) {
+ 		}
+                 if (stat(s, &sbuf) != 0) {
+ 			rfbLogPerror("stat");
+-			rfbLog("You will need to specify the video device more explicitly.\n");
++			rfbLog("You will need to specify the video device more explicity.\n");
+ 		}
+ 
+ 		*dev = s;
+diff --git a/src/win_utils.c b/src/win_utils.c
+index dc3c67b..b38b9ae 100644
+--- a/src/win_utils.c
++++ b/src/win_utils.c
+@@ -39,7 +39,6 @@ so, delete this exception statement from your version.
+ #include "xwrappers.h"
+ #include "connections.h"
+ #include "xrandr.h"
+-#include "macosx.h"
+ #include "win_utils.h"
+ 
+ winattr_t *stack_list = NULL;
+@@ -106,12 +105,6 @@ int valid_window(Window win, XWindowAttributes *attr_ret, int bequiet) {
+ 		return 0;
+ 	}
+ 
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		return macosx_valid_window(win, attr_ret);
+-	}
+-#endif
+-
+ 	RAWFB_RET(0)
+ 
+ #if NO_X11
+@@ -218,13 +211,7 @@ void snapshot_stack_list(int free_only, double allowed_age) {
+ 	stack_list_num = 0;
+ 	last_free = now;
+ 
+-#ifdef MACOSX
+-	if (! macosx_console) {
+-		RAWFB_RET_VOID
+-	}
+-#else
+ 	RAWFB_RET_VOID
+-#endif
+ 
+ #if NO_X11 && !defined(MACOSX)
+ 	num = rc = i = j = 0;	/* compiler warnings */
+@@ -360,12 +347,6 @@ Window query_pointer(Window start) {
+ 	unsigned int mask;
+ #endif
+ 
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		macosx_get_cursor_pos(&rx, &ry);
+-	}
+-#endif
+-
+ 	RAWFB_RET(None)
+ 
+ #if NO_X11
+diff --git a/src/x11vnc.c b/src/x11vnc.c
+index 1a549cf..2105132 100644
+--- a/src/x11vnc.c
++++ b/src/x11vnc.c
+@@ -1749,6 +1749,7 @@ static void store_homedir_passwd(char *file) {
+ 
+ 	str1[0] = '\0';
+ 	str2[0] = '\0';
++
+ 	/* storepasswd */
+ 	if (no_external_cmds || !cmd_ok("storepasswd")) {
+ 		fprintf(stderr, "-nocmds cannot be used with -storepasswd\n");
+@@ -1779,12 +1780,6 @@ static void store_homedir_passwd(char *file) {
+ 	if ((p = strchr(str2, '\n')) != NULL) {
+ 		*p = '\0';
+ 	}
+-	if (8 < strlen(str1)) {
+-		/* RFC6143 states: "the password is truncated to eight characters" */
+-		/* there's room for ambiguity (characters vs bytes) */
+-		fprintf(stderr, "** password exceeds maximum 8 bytes.\n");
+-		exit(1);
+-	}
+ 	if (strcmp(str1, str2)) {
+ 		fprintf(stderr, "** passwords differ.\n");
+ 		exit(1);
+@@ -3921,56 +3916,6 @@ int main(int argc, char* argv[]) {
+ 			pipeinput_str = strdup(argv[++i]);
+ 			continue;
+ 		}
+-		if (!strcmp(arg, "-macnodim")) {
+-			macosx_nodimming = 1;
+-			continue;
+-		}
+-		if (!strcmp(arg, "-macnosleep")) {
+-			macosx_nosleep = 1;
+-			continue;
+-		}
+-		if (!strcmp(arg, "-macnosaver")) {
+-			macosx_noscreensaver = 1;
+-			continue;
+-		}
+-		if (!strcmp(arg, "-macnowait")) {
+-			macosx_wait_for_switch = 0;
+-			continue;
+-		}
+-		if (!strcmp(arg, "-macwheel")) {
+-			CHECK_ARGC
+-			macosx_mouse_wheel_speed = atoi(argv[++i]);
+-			continue;
+-		}
+-		if (!strcmp(arg, "-macnoswap")) {
+-			macosx_swap23 = 0;
+-			continue;
+-		}
+-		if (!strcmp(arg, "-macnoresize")) {
+-			macosx_resize = 0;
+-			continue;
+-		}
+-		if (!strcmp(arg, "-maciconanim")) {
+-			CHECK_ARGC
+-			macosx_icon_anim_time = atoi(argv[++i]);
+-			continue;
+-		}
+-		if (!strcmp(arg, "-macmenu")) {
+-			macosx_ncache_macmenu = 1;
+-			continue;
+-		}
+-		if (!strcmp(arg, "-macuskbd")) {
+-			macosx_us_kbd = 1;
+-			continue;
+-		}
+-		if (!strcmp(arg, "-macnoopengl")) {
+-			macosx_no_opengl = 1;
+-			continue;
+-		}
+-		if (!strcmp(arg, "-macnorawfb")) {
+-			macosx_no_rawfb = 1;
+-			continue;
+-		}
+ 		if (!strcmp(arg, "-gui")) {
+ 			launch_gui = 1;
+ 			if (i < argc-1) {
+@@ -4244,34 +4189,6 @@ int main(int argc, char* argv[]) {
+ 		launch_gui = 0;
+ 	}
+ 
+-#ifdef MACOSX
+-	if (! use_dpy) {
+-		/* we need this for gui since no X properties */
+-		if (!client_connect_file && !client_connect) {
+-			char *user = get_user_name();
+-			char *str = (char *) malloc(strlen(user) + strlen("/tmp/x11vnc-macosx-remote.") + 1);
+-			struct stat sb;
+-			sprintf(str, "/tmp/x11vnc-macosx-remote.%s", user);
+-			if (!remote_cmd && !query_cmd) {
+-				unlink(str);
+-				if (stat(str, &sb) != 0) {
+-					int fd = open(str, O_WRONLY|O_EXCL|O_CREAT, 0600);
+-					if (fd >= 0) {
+-						close(fd);
+-						client_connect_file = str;
+-					}
+-				}
+-			} else {
+-				client_connect_file = str;
+-			}
+-			if (client_connect_file) {
+-				if (!got_inetd) {
+-					rfbLog("MacOS X: set -connect file to %s\n", client_connect_file);
+-				}
+-			}
+-		}
+-	}
+-#endif
+ 	if (got_rfbport_str != NULL && !strcasecmp(got_rfbport_str, "prompt")) {
+ 		char *opts, tport[32];
+ 
+@@ -5087,20 +5004,9 @@ int main(int argc, char* argv[]) {
+ 		}
+ 	}
+ 
+-#ifdef MACOSX
+-	if (use_dpy && !strcmp(use_dpy, "console")) {
+-		;
+-	} else
+-#endif
+ 	if (use_dpy && strcmp(use_dpy, "")) {
+ 		dpy = XOpenDisplay_wr(use_dpy);
+-#ifdef MACOSX
+-	} else if (!subwin && getenv("DISPLAY")
+-	    && strstr(getenv("DISPLAY"), "/tmp/") ) {
+-		/* e.g. /tmp/launch-XlspvM/:0 on leopard */
+-		rfbLog("MacOSX: Ignoring $DISPLAY '%s'\n", getenv("DISPLAY"));
+-		rfbLog("MacOSX: Use -display $DISPLAY to force it.\n");
+-#endif
++
+ 	} else if (raw_fb_str != NULL && raw_fb_str[0] != '+' && !got_noviewonly) {
+ 		rfbLog("Not opening DISPLAY in -rawfb mode (force via -rawfb +str)\n");
+ 		dpy = NULL; /* don't open it. */
+@@ -5158,12 +5064,6 @@ int main(int argc, char* argv[]) {
+ #endif
+ 	}
+ 
+-#ifdef MACOSX
+-	if (! dpy && ! raw_fb_str) {
+-		raw_fb_str = strdup("console");
+-	}
+-#endif
+-
+ 	if (! dpy && raw_fb_str) {
+ 		rfbLog("Continuing without X display in -rawfb mode.\n");
+ 		use_multipointer = 0; /* XI2 multipointer makes no sense without X */
+@@ -5704,9 +5604,6 @@ int main(int argc, char* argv[]) {
+ 		int doit = 0;
+ 		/* XXX this needs improvement (esp. for remote control) */
+ 		if (! raw_fb_str || strstr(raw_fb_str, "console") == raw_fb_str) {
+-#ifdef MACOSX
+-			doit = 1;
+-#endif
+ 		}
+ 		if (raw_fb_str && strstr(raw_fb_str, "vnc") == raw_fb_str) {
+ 			doit = 1;
+@@ -5925,19 +5822,6 @@ int main(int argc, char* argv[]) {
+ 		}
+ 	}
+ 
+-#ifdef MACOSX
+-	if (remote_cmd || query_cmd) {
+-		;
+-	} else if (macosx_console) {
+-		double dt = dnow();
+-		copy_screen();
+-		dt = dnow() - dt;
+-		rfbLog("macosx_console: copied screen in %.3f sec %.1f MB/sec\n",
+-		    dt, dpy_x * dpy_y * bpp / (1e+6 * 8 * dt));
+-
+-	}
+-#endif
+-
+ 	if (! quiet) {
+ 		rfbLog("screen setup finished.\n");
+ 		if (SHOW_NO_PASSWORD_WARNING && !nopw) {
+diff --git a/src/xevents.c b/src/xevents.c
+index aec6523..3700b82 100644
+--- a/src/xevents.c
++++ b/src/xevents.c
+@@ -45,7 +45,6 @@ so, delete this exception statement from your version.
+ #include "connections.h"
+ #include "unixpw.h"
+ #include "cleanup.h"
+-#include "macosx.h"
+ #include "screen.h"
+ #include "pm.h"
+ #include "pointer.h"
+@@ -1763,14 +1762,6 @@ void xcut_receive(char *text, int len, rfbClientPtr cl) {
+ 		return;
+ 	}
+ 
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		macosx_set_sel(text, len);
+-		INPUT_UNLOCK;
+-		return;
+-	}
+-#endif
+-
+ 	if (rawfb_vnc_reflect) {
+ 		vnc_reflect_send_cuttext(text, len);
+ 		INPUT_UNLOCK;
+diff --git a/src/xwrappers.c b/src/xwrappers.c
+index 2a53b75..9f4bb97 100644
+--- a/src/xwrappers.c
++++ b/src/xwrappers.c
+@@ -38,7 +38,6 @@ so, delete this exception statement from your version.
+ #include "xevents.h"
+ #include "connections.h"
+ #include "cleanup.h"
+-#include "macosx.h"
+ #include "xi2_devices.h"
+ #include "xwrappers.h"
+ 
+@@ -717,23 +716,12 @@ static void copy_raw_fb_24_to_32(XImage *dest, int x, int y, unsigned int w,
+ 	}
+ }
+ 
+-#ifdef MACOSX
+-void macosx_copy_opengl(char *, int, int, unsigned int, unsigned int);
+-#endif
+-
+ void copy_raw_fb(XImage *dest, int x, int y, unsigned int w, unsigned int h) {
+ 	char *src, *dst;
+ 	unsigned int line;
+ 	int pixelsize = bpp/8;
+ 	static int db = -1;
+ 
+-#ifdef MACOSX
+-	if (macosx_console && macosx_read_opengl) {
+-		macosx_copy_opengl(dest->data, x, y, w, h);
+-		return;
+-	}
+-#endif
+-
+ 	if (xform24to32) {
+ 		copy_raw_fb_24_to_32(dest, x, y, w, h);
+ 		return;
+@@ -1641,12 +1629,6 @@ Status XQueryTree_wr(Display *display, Window w, Window *root_return,
+     Window *parent_return, Window **children_return,
+     unsigned int *nchildren_return) {
+ 
+-#ifdef MACOSX
+-	if (macosx_console) {
+-		return macosx_xquerytree(w, root_return, parent_return,
+-		    children_return, nchildren_return);
+-	}
+-#endif
+ #if NO_X11
+ 	if (!display || !w || !root_return || !parent_return
+ 	    || !children_return || !nchildren_return) {}
+-- 
+2.24.3 (Apple Git-128)
+

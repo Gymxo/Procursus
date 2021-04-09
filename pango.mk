@@ -3,29 +3,42 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS    += pango
-PANGO_VERSION := 1.0.8
+PANGO_VERSION := 1.48.4
 DEB_PANGO_V   ?= $(PANGO_VERSION)
 
 pango-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://gitlab.gnome.org/GNOME/pango/-/archive/1.48.4/pango-1.48.4.tar.gz
-	$(call PGP_VERIFY,pango-$(PANGO_VERSION).tar.gz)
-	$(call EXTRACT_TAR,pango-$(PANGO_VERSION).tar.gz,pango-$(PANGO_VERSION),pango)
+	wget -q -nc -P $(BUILD_SOURCE) https://download.gnome.org/sources/pango/1.48/pango-1.48.4.tar.xz
+	$(call EXTRACT_TAR,pango-$(PANGO_VERSION).tar.xz,pango-$(PANGO_VERSION),pango)
+	$(call DO_PATCH,pango,pango,-p1)
+	mkdir -p $(BUILD_WORK)/pango/build
+
+	echo -e "[host_machine]\n \
+	cpu_family = '$(shell echo $(GNU_HOST_TRIPLE) | cut -d- -f1)'\n \
+	cpu = '$(MEMO_ARCH)'\n \
+	endian = 'little'\n \
+	system = 'darwin'\n \
+	[properties]\n \
+	root = '$(BUILD_BASE)'\n \
+	skip_sanity_check = true\n \
+	sys_root = '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk'\n \
+	objcpp_args = ['-arch', 'arm64']\n \
+	objcpp_link_args = ['-arch', 'arm64']\n \
+	[paths]\n \
+	prefix ='/usr'\n \
+	[binaries]\n \
+	c = '$(CC)'\n \
+	cpp = '$(CXX)'\n" > $(BUILD_WORK)/pango/build/cross.txt
 
 ifneq ($(wildcard $(BUILD_WORK)/pango/.build_complete),)
 pango:
 	@echo "Using previously built pango."
 else
 pango: pango-setup libx11 libxau libxmu xorgproto libfribidi
-	cd $(BUILD_WORK)/pango && ./configure -C \
-		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=/usr \
-		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var
-	+$(MAKE) -C $(BUILD_WORK)/pango
-	+$(MAKE) -C $(BUILD_WORK)/pango install \
-		DESTDIR=$(BUILD_STAGE)/pango
-	+$(MAKE) -C $(BUILD_WORK)/pango install \
-		DESTDIR=$(BUILD_BASE)
+	cd $(BUILD_WORK)/pango/build && PKG_CONFIG="pkg-config" meson \
+		--cross-file cross.txt
+	cd $(BUILD_WORK)/pango/build; \
+		DESTDIR="$(BUILD_STAGE)/pango" meson install; \
+		DESTDIR="$(BUILD_BASE)" meson install
 	touch $(BUILD_WORK)/pango/.build_complete
 endif
 

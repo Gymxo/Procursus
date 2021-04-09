@@ -1,5 +1,5 @@
-Package: xbitmaps
-Version: 1.1.0
+Package: oclock
+Version: 1.0.4
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
 Depends: 
