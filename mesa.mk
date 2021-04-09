@@ -13,6 +13,8 @@ mesa-setup: setup
 	$(SED) -i -e "s/with_dri_platform = 'apple'/with_dri_platform = 'none'/" \
 		-e "/dep_xcb_shm = dependency('xcb-shm')/a dep_xxf86vm = dependency('xxf86vm')" $(BUILD_WORK)/mesa/meson.build
 	$(SED) -i "s|OpenGL/gl.h|GL/gl.h|" $(BUILD_WORK)/mesa/src/mesa/main/texcompress_s3tc_tmp.h
+	wget -q -nc -P $(BUILD_WORK)/mesa http://www.linuxfromscratch.org/patches/blfs/svn/mesa-20.3.4-add_xdemos-1.patch
+	cd $(BUILD_WORK)/mesa && patch -Np1 -i mesa-20.3.4-add_xdemos-1.patch
 	mkdir -p $(BUILD_WORK)/mesa/build
 
 	echo -e "[host_machine]\n \
@@ -62,10 +64,15 @@ mesa-package: mesa-stage
 		$(BUILD_DIST)/libgles2-mesa/usr/lib \
 		$(BUILD_DIST)/libgles2-mesa-dev/usr/{include,lib/pkgconfig} \
 		$(BUILD_DIST)/libglapi-mesa/usr/lib \
-		$(BUILD_DIST)/mesa-common-dev/usr/{include,lib/pkgconfig}
+		$(BUILD_DIST)/mesa-common-dev/usr/{include,lib/pkgconfig} \
+		$(BUILD_DIST)/mesa-demos/usr/bin 
 	
 	# mesa.mk Prep libgl1-mesa-glx
 	cp -a $(BUILD_STAGE)/mesa/usr/lib/libGL.1.dylib $(BUILD_DIST)/libgl1-mesa-glx/usr/lib
+
+	# mesa.mk Prep mesa-demos
+	cp -a $(BUILD_STAGE)/mesa/usr/bin/glxgears $(BUILD_DIST)/mesa-demos/usr/bin
+	cp -a $(BUILD_STAGE)/mesa/usr/bin/glxinfo $(BUILD_DIST)/mesa-demos/usr/bin
 
 	# mesa.mk Prep libgl1-mesa-dri
 	cp -a $(BUILD_STAGE)/mesa/usr/lib/dri $(BUILD_DIST)/libgl1-mesa-dri/usr/lib
@@ -95,6 +102,7 @@ mesa-package: mesa-stage
 	$(call SIGN,libgl1-mesa-dri,general.xml)
 	$(call SIGN,libgles2-mesa,general.xml)
 	$(call SIGN,libglapi-mesa,general.xml)
+	$(call SIGN,mesa-demos,general.xml)
 	
 	# mesa.mk Make .debs
 	$(call PACK,libgl1-mesa-glx,DEB_MESA_V)
@@ -104,9 +112,10 @@ mesa-package: mesa-stage
 	$(call PACK,libgles2-mesa-dev,DEB_MESA_V)
 	$(call PACK,libglapi-mesa,DEB_MESA_V)
 	$(call PACK,mesa-common-dev,DEB_MESA_V)
+	$(call PACK,mesa-demos,DEB_MESA_V)
 	
 	# mesa.mk Build cleanup
 	rm -rf $(BUILD_DIST)/libgl1-mesa-{glx,dri,dev} $(BUILD_DIST)/libgles2-mesa{,-dev} \
-		$(BUILD_DIST)/libglapi-mesa  $(BUILD_DIST)/mesa-common-dev
+		$(BUILD_DIST)/libglapi-mesa  $(BUILD_DIST)/mesa-common-dev $(BUILD_DIST)/mesa-demos
 
 .PHONY: mesa mesa-package

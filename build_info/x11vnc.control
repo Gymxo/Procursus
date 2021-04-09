@@ -1,0 +1,7 @@
+Package: x11vnc
+Version: 0.9.16
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: 
+Section: X11
+Description:

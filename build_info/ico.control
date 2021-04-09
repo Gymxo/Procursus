@@ -1,0 +1,7 @@
+Package: ico
+Version: 1.0.5
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: 
+Section: X11
+Description:

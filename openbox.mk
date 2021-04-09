@@ -19,7 +19,8 @@ openbox: openbox-setup libx11 libxau libxmu xorgproto xxhash
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
 		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var
+		--localstatedir=$(MEMO_PREFIX)/var \
+		--with-x 
 	+$(MAKE) -C $(BUILD_WORK)/openbox
 	+$(MAKE) -C $(BUILD_WORK)/openbox install \
 		DESTDIR=$(BUILD_STAGE)/openbox

@@ -1,0 +1,7 @@
+Package: xdm
+Version: 1.1.12
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: 
+Section: X11
+Description:

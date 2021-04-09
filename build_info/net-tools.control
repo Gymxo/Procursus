@@ -1,0 +1,6 @@
+Package: hostname
+Version: 1
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: 
+Description:

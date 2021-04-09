@@ -1,0 +1,7 @@
+Package: xmh
+Version: 1.0.3
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: 
+Section: X11
+Description:

@@ -1,0 +1,7 @@
+Package: xbitmaps
+Version: 1.1.0
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: 
+Section: X11
+Description:
