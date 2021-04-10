@@ -3,11 +3,11 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS  += mesa
-MESA_VERSION := 20.3.4
+MESA_VERSION := 21.0.2
 DEB_MESA_V   ?= $(MESA_VERSION)
 
 mesa-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://mesa.freedesktop.org/archive/mesa-$(MESA_VERSION).tar.xz{,.sig}   
+	wget -q -nc -P $(BUILD_SOURCE) 
 	$(call PGP_VERIFY,mesa-$(MESA_VERSION).tar.xz)
 	$(call EXTRACT_TAR,mesa-$(MESA_VERSION).tar.xz,mesa-$(MESA_VERSION),mesa)
 	$(SED) -i -e "s/with_dri_platform = 'apple'/with_dri_platform = 'none'/" \
@@ -44,7 +44,7 @@ mesa: mesa-setup libx11 libxext libxcb libxdamage libxxf86vm gettext expat zstd 
 		-Dbsymbolic_functions=false \
 		-Ddtrace=false \
 		-Db_ndebug=true \
-		-Ddri-drivers=swrast \
+		-Ddri-drivers=auto \
 		-Dgallium-drivers= \
 		-Dplatforms=x11 \
 		-Dgles1=disabled 
