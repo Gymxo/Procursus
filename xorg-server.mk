@@ -15,15 +15,18 @@ ifneq ($(wildcard $(BUILD_WORK)/xorg-server/.build_complete),)
 xorg-server:
 	@echo "Using previously built xorg-server."
 else
-xorg-server: xorg-server-setup libx11 libxau libxmu xorgproto font-util libpixman libpng16 mesa libxfont2 libxkbfile glproto 
-	cd $(BUILD_WORK)/xorg-server && ./configure -C \
+xorg-server: xorg-server-setup libx11 libxau libxmu xorgproto font-util libpixman libpng16 mesa libxfont2 libxkbfile glproto libdmx libxpm libXaw libXres
+	cd $(BUILD_WORK)/xorg-server && export ACLOCAL='aclocal -I $(BUILD_BASE)/usr/share/aclocal' && ./autogen.sh -C \
 		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=/usr \
+		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
 		--sysconfdir=$(MEMO_PREFIX)/etc \
 		--localstatedir=$(MEMO_PREFIX)/var \
 		--enable-xorg \
+		--enable-xnest \
+		--enable-xvfb \
 		--with-default-font-path \
-		--enable-xephyr
+		--enable-xephyr \
+		--disable-glamor
 	+$(MAKE) -v -C $(BUILD_WORK)/xorg-server
 	+$(MAKE) -C $(BUILD_WORK)/xorg-server install \
 		DESTDIR=$(BUILD_STAGE)/xorg-server
