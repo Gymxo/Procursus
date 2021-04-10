@@ -15,15 +15,16 @@ ifneq ($(wildcard $(BUILD_WORK)/xorg-server/.build_complete),)
 xorg-server:
 	@echo "Using previously built xorg-server."
 else
-xorg-server: xorg-server-setup libx11 libxau libxmu xorgproto font-util libpixman libpng16 mesa libxfont2 libxkbfile glproto xcb-util-image xcb-util-keysyms
+xorg-server: xorg-server-setup libx11 libxau libxmu xorgproto font-util libpixman libpng16 mesa libxfont2 libxkbfile glproto 
 	cd $(BUILD_WORK)/xorg-server && ./configure -C \
-		$(DEFAULT_CONFIGURE_FLAGS) \
-		--enable-kdrive \
+		--host=$(GNU_HOST_TRIPLE) \
+		--prefix=/usr \
+		--sysconfdir=$(MEMO_PREFIX)/etc \
+		--localstatedir=$(MEMO_PREFIX)/var \
 		--enable-xorg \
-		--disable-glamor \
 		--with-default-font-path \
 		--enable-xephyr
-	+$(MAKE) -C $(BUILD_WORK)/xorg-server
+	+$(MAKE) -v -C $(BUILD_WORK)/xorg-server
 	+$(MAKE) -C $(BUILD_WORK)/xorg-server install \
 		DESTDIR=$(BUILD_STAGE)/xorg-server
 	+$(MAKE) -C $(BUILD_WORK)/xorg-server install \

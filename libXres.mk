@@ -20,8 +20,7 @@ libXres: libXres-setup libx11 libxau libxmu xorgproto xxhash
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
 		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var \
-		--enable-malloc0returnsnull=no
+		--localstatedir=$(MEMO_PREFIX)/var
 	+$(MAKE) -C $(BUILD_WORK)/libXres
 	+$(MAKE) -C $(BUILD_WORK)/libXres install \
 		DESTDIR=$(BUILD_STAGE)/libXres
