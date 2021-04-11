@@ -9,6 +9,7 @@ DEB_LIBEPOXY_V   ?= $(LIBEPOXY_VERSION)
 libepoxy-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://github.com/anholt/libepoxy/releases/download/1.5.5/libepoxy-1.5.5.tar.xz
 	$(call EXTRACT_TAR,libepoxy-$(LIBEPOXY_VERSION).tar.xz,libepoxy-$(LIBEPOXY_VERSION),libepoxy)
+	$(call DO_PATCH,libepoxy,libepoxy,-p1)
 	mkdir -p $(BUILD_WORK)/libepoxy/_build
 
 	echo -e "[host_machine]\n \
@@ -33,12 +34,10 @@ libepoxy:
 else
 libepoxy: libepoxy-setup libx11 libxau libxmu xorgproto
 	cd $(BUILD_WORK)/libepoxy && cd _build && PKG_CONFIG="pkg-config" meson \
-		--cross-file cross.txt 
-	+$(MAKE) -C $(BUILD_WORK)/libepoxy
-	+$(MAKE) -C $(BUILD_WORK)/libepoxy install \
-		DESTDIR=$(BUILD_STAGE)/libepoxy
-	+$(MAKE) -C $(BUILD_WORK)/libepoxy install \
-		DESTDIR=$(BUILD_BASE)
+		--cross-file cross.txt
+	cd $(BUILD_WORK)/libepoxy/_build; \
+		DESTDIR="$(BUILD_STAGE)/libepoxy" meson install; \
+		DESTDIR="$(BUILD_BASE)" meson install
 	touch $(BUILD_WORK)/libepoxy/.build_complete
 endif
 

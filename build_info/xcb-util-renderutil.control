@@ -1,0 +1,7 @@
+Package: xcb-util-renderutil
+Version: 0.3.9
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Section: X11
+Priority: standard
+Description:

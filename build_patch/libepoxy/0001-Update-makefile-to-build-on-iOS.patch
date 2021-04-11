@@ -1,0 +1,25 @@
+From 2137343ca3e1c3c5bc02e8f303eb2e79539fe208 Mon Sep 17 00:00:00 2001
+From: Gymxo <55960119+Gymxo@users.noreply.github.com>
+Date: Sat, 10 Apr 2021 21:02:49 -0400
+Subject: [PATCH] Update makefile to build on iOS :)
+
+---
+ test/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/meson.build b/test/meson.build
+index 862d57a..2da7249 100644
+--- a/test/meson.build
++++ b/test/meson.build
+@@ -160,7 +160,7 @@ if build_wgl
+ endif
+ 
+ # Apple
+-if host_machine.system().contains('darwin')
++if host_machine.system().contains('anything buy darwin to make this section not add frameworks')
+   opengl_dep = dependency('appleframeworks', modules: ['OpenGL', 'Carbon'], required: true)
+ 
+   cgl_tests = [
+-- 
+2.24.3 (Apple Git-128)
+

@@ -7,7 +7,7 @@ MESA_VERSION := 21.0.2
 DEB_MESA_V   ?= $(MESA_VERSION)
 
 mesa-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) 
+	wget -q -nc -P $(BUILD_SOURCE) https://archive.mesa3d.org/mesa-$(MESA_VERSION).tar.xz{,.sig}
 	$(call PGP_VERIFY,mesa-$(MESA_VERSION).tar.xz)
 	$(call EXTRACT_TAR,mesa-$(MESA_VERSION).tar.xz,mesa-$(MESA_VERSION),mesa)
 	$(SED) -i -e "s/with_dri_platform = 'apple'/with_dri_platform = 'none'/" \
