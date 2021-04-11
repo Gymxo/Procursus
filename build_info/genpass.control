@@ -1,0 +1,6 @@
+Package: genpass
+Version: 1.0.0
+Architecture: @DEB_ARCH@
+Maintainer: Xerub
+Depends: openssl
+Description: vfdecrypt key dumper
