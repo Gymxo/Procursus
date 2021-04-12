@@ -51,4 +51,8 @@ libdmx-package: libdmx-stage
 	# libdmx.mk Build cleanup
 	rm -rf $(BUILD_DIST)/libdmx{1,-dev}
 
+<<<<<<< HEAD
 .PHONY: libdmx libdmx-package
+=======
+.PHONY: libdmx libdmx-package
+>>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0

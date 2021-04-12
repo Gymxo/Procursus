@@ -18,6 +18,7 @@ ifneq ($(wildcard $(BUILD_WORK)/@pkg@/.build_complete),)
 else
 @pkg@: @pkg@-setup
 	cd $(BUILD_WORK)/@pkg@/build && cmake . \
+<<<<<<< HEAD
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_SYSTEM_NAME=Darwin \
 		-DCMAKE_CROSSCOMPILING=true \
@@ -28,6 +29,9 @@ else
 		-DCMAKE_OSX_SYSROOT="$(TARGET_SYSROOT)" \
 		-DCMAKE_C_FLAGS="$(CFLAGS)" \
 		-DCMAKE_FIND_ROOT_PATH=$(BUILD_BASE) \
+=======
+		$(DEFAULT_CMAKE_FLAGS) \
+>>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 		..
 	+$(MAKE) -C $(BUILD_WORK)/@pkg@/build
 	+$(MAKE) -C $(BUILD_WORK)/@pkg@/build install \

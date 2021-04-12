@@ -27,11 +27,16 @@ openpam:
 else
 openpam: openpam-setup libxcrypt
 	cd $(BUILD_WORK)/openpam && ./configure -C \
+<<<<<<< HEAD
 		--build=$$($(BUILD_MISC)/config.guess) \
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
 		--sysconfdir=/etc \
 		--with-modules-dir=/usr/lib/pam \
+=======
+		$(DEFAULT_CONFIGURE_FLAGS) \
+		--with-modules-dir=$(MEMO_PREFX)$(MEMO_SUB_PREFIX)/lib/pam \
+>>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 		--with-pam-unix \
 		CPPFLAGS="$(CPPFLAGS) -DSYSCONFDIR=\\\"$(MEMO_PREFIX)/etc\\\""
 	+$(MAKE) -C $(BUILD_WORK)/openpam install \
@@ -44,8 +49,13 @@ endif
 openpam-package: openpam-stage
 	# openpam.mk Package Structure
 	rm -rf $(BUILD_DIST)/libpam{2,-dev}
+<<<<<<< HEAD
 	mkdir -p $(BUILD_DIST)/libpam{2,-dev}/$(MEMO_PREFX){$(MEMO_SUB_PREFIX)/lib,/etc/pam.d}
 	
+=======
+	mkdir -p $(BUILD_DIST)/libpam{2,-dev}/$(MEMO_PREFX)/{$(MEMO_SUB_PREFIX)/lib,/etc/pam.d}
+
+>>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 	# openpam.mk Prep libpam2
 	cp -a $(BUILD_STAGE)/openpam/$(MEMO_PREFX)$(MEMO_SUB_PREFIX)/lib/libpam.2.dylib $(BUILD_DIST)/libpam2/$(MEMO_PREFX)$(MEMO_SUB_PREFIX)/lib/libpam.2.dylib
 	cp -a $(BUILD_MISC)/pam/other $(BUILD_DIST)/libpam2/$(MEMO_PREFX)/etc/pam.d
@@ -53,6 +63,7 @@ openpam-package: openpam-stage
 	# openpam.mk Prep libpam-dev
 	cp -a $(BUILD_STAGE)/openpam/$(MEMO_PREFX)$(MEMO_SUB_PREFIX)/lib/!(libpam.2.dylib|pam) $(BUILD_DIST)/libpam-dev/$(MEMO_PREFX)$(MEMO_SUB_PREFIX)/lib
 	cp -a $(BUILD_STAGE)/openpam/$(MEMO_PREFX)$(MEMO_SUB_PREFIX)/{include,share} $(BUILD_DIST)/libpam-dev/$(MEMO_PREFX)$(MEMO_SUB_PREFIX)
+<<<<<<< HEAD
 	
 	# openpam.mk Sign
 	$(call SIGN,libpam2,general.xml)
@@ -61,6 +72,16 @@ openpam-package: openpam-stage
 	$(call PACK,libpam2,DEB_OPENPAM_V)
 	$(call PACK,libpam-dev,DEB_OPENPAM_V)
 	
+=======
+
+	# openpam.mk Sign
+	$(call SIGN,libpam2,general.xml)
+
+	# openpam.mk Make .debs
+	$(call PACK,libpam2,DEB_OPENPAM_V)
+	$(call PACK,libpam-dev,DEB_OPENPAM_V)
+
+>>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 	# openpam.mk Build cleanup
 	rm -rf $(BUILD_DIST)/libpam{2,-dev,}
 
