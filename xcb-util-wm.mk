@@ -14,7 +14,7 @@ ifneq ($(wildcard $(BUILD_WORK)/xcb-util-wm/.build_complete),)
 xcb-util-wm:
 	@echo "Using previously built xcb-util-wm."
 else
-xcb-util-wm: xcb-util-wm-setup libx11 libxau libxmu xorgproto xxhash
+xcb-util-wm: xcb-util-wm-setup libxcb
 	cd $(BUILD_WORK)/xcb-util-wm && ./configure -C \
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
@@ -29,19 +29,24 @@ xcb-util-wm: xcb-util-wm-setup libx11 libxau libxmu xorgproto xxhash
 endif
 
 xcb-util-wm-package: xcb-util-wm-stage
-# xcb-util-wm.mk Package Structure
-	rm -rf $(BUILD_DIST)/xcb-util-wm
-	
-# xcb-util-wm.mk Prep xcb-util-wm
-	cp -a $(BUILD_STAGE)/xcb-util-wm $(BUILD_DIST)
-	
-# xcb-util-wm.mk Sign
-	$(call SIGN,xcb-util-wm,general.xml)
-	
-# xcb-util-wm.mk Make .debs
-	$(call PACK,xcb-util-wm,DEB_XCB-UTIL_V)
-	
-# xcb-util-wm.mk Build cleanup
-	rm -rf $(BUILD_DIST)/xcb-util-wm
+	rm -rf $(BUILD_DIST)/libxcb-wm{1,-dev}
+	mkdir -p $(BUILD_DIST)/libxcb-wm{1,-dev}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+
+	# xcb-util-wm.mk Prep libutil-xrm1
+	cp -a $(BUILD_STAGE)/libxcb-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/lib-xrm.1.dylib $(BUILD_DIST)/libxcb-wm1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+
+	# libxcb-wm.mk Prep libxcb-wm-dev
+	cp -a $(BUILD_STAGE)/libxcb-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libxcb-wm.1.dylib) $(BUILD_DIST)/libxcb-wm-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/libxcb-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libxcb-wm-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+
+	# libxcb.mk Sign
+	$(call SIGN,libxcb-wm1,general.xml)
+
+	# libxcb-wm.mk Make .debs
+	$(call PACK,libxcb-wm1,DEB_xcb-wm_V)
+	$(call PACK,libxcb-wm-dev,DEB_xcb-wm_V)
+
+	# libxcb-wm.mk Build cleanup
+	rm -rf $(BUILD_DIST)/libxcb-wm{1,-dev}
 
 .PHONY: xcb-util-wm xcb-util-wm-package

@@ -14,7 +14,7 @@ ifneq ($(wildcard $(BUILD_WORK)/xcb-util-renderutil/.build_complete),)
 xcb-util-renderutil:
 	@echo "Using previously built xcb-util-renderutil."
 else
-xcb-util-renderutil: xcb-util-renderutil-setup libx11 libxau libxmu xorgproto xxhash
+xcb-util-renderutil: xcb-util-renderutil-setup libxcb libXres
 	cd $(BUILD_WORK)/xcb-util-renderutil && ./configure -C \
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
@@ -29,19 +29,24 @@ xcb-util-renderutil: xcb-util-renderutil-setup libx11 libxau libxmu xorgproto xx
 endif
 
 xcb-util-renderutil-package: xcb-util-renderutil-stage
-# xcb-util-renderutil.mk Package Structure
-	rm -rf $(BUILD_DIST)/xcb-util-renderutil
-	
-# xcb-util-renderutil.mk Prep xcb-util-renderutil
-	cp -a $(BUILD_STAGE)/xcb-util-renderutil $(BUILD_DIST)
-	
-# xcb-util-renderutil.mk Sign
-	$(call SIGN,xcb-util-renderutil,general.xml)
-	
-# xcb-util-renderutil.mk Make .debs
-	$(call PACK,xcb-util-renderutil,DEB_XCB-UTIL_V)
-	
-# xcb-util-renderutil.mk Build cleanup
-	rm -rf $(BUILD_DIST)/xcb-util-renderutil
+	rm -rf $(BUILD_DIST)/libxcb-renderutil{1,-dev}
+	mkdir -p $(BUILD_DIST)/libxcb-renderutil{1,-dev}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+
+	# xcb-util-renderutil.mk Prep libutil-xrm1
+	cp -a $(BUILD_STAGE)/libxcb-renderutil/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/lib-xrm.1.dylib $(BUILD_DIST)/libxcb-renderutil1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+
+	# libxcb-renderutil.mk Prep libxcb-renderutil-dev
+	cp -a $(BUILD_STAGE)/libxcb-renderutil/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libxcb-renderutil.1.dylib) $(BUILD_DIST)/libxcb-renderutil-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/libxcb-renderutil/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libxcb-renderutil-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+
+	# libxcb.mk Sign
+	$(call SIGN,libxcb-renderutil1,general.xml)
+
+	# libxcb-renderutil.mk Make .debs
+	$(call PACK,libxcb-renderutil1,DEB_xcb-renderutil_V)
+	$(call PACK,libxcb-renderutil-dev,DEB_xcb-renderutil_V)
+
+	# libxcb-renderutil.mk Build cleanup
+	rm -rf $(BUILD_DIST)/libxcb-renderutil{1,-dev}
 
 .PHONY: xcb-util-renderutil xcb-util-renderutil-package

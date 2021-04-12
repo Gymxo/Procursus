@@ -14,7 +14,7 @@ ifneq ($(wildcard $(BUILD_WORK)/xcb-util-image/.build_complete),)
 xcb-util-image:
 	@echo "Using previously built xcb-util-image."
 else
-xcb-util-image: xcb-util-image-setup libx11 libxau libxmu xorgproto xxhash
+xcb-util-image: xcb-util-image-setup libxcb
 	cd $(BUILD_WORK)/xcb-util-image && ./configure -C \
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
@@ -29,19 +29,24 @@ xcb-util-image: xcb-util-image-setup libx11 libxau libxmu xorgproto xxhash
 endif
 
 xcb-util-image-package: xcb-util-image-stage
-# xcb-util-image.mk Package Structure
-	rm -rf $(BUILD_DIST)/xcb-util-image
-	
-# xcb-util-image.mk Prep xcb-util-image
-	cp -a $(BUILD_STAGE)/xcb-util-image $(BUILD_DIST)
-	
-# xcb-util-image.mk Sign
-	$(call SIGN,xcb-util-image,general.xml)
-	
-# xcb-util-image.mk Make .debs
-	$(call PACK,xcb-util-image,DEB_XCB-UTIL_V)
-	
-# xcb-util-image.mk Build cleanup
-	rm -rf $(BUILD_DIST)/xcb-util-image
+	rm -rf $(BUILD_DIST)/libxcb-image{1,-dev}
+	mkdir -p $(BUILD_DIST)/libxcb-image{1,-dev}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+
+	# xcb-util-image.mk Prep libutil-xrm1
+	cp -a $(BUILD_STAGE)/libxcb-image/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/lib-xrm.1.dylib $(BUILD_DIST)/libxcb-image1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+
+	# libxcb-image.mk Prep libxcb-image-dev
+	cp -a $(BUILD_STAGE)/libxcb-image/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libxcb-image.1.dylib) $(BUILD_DIST)/libxcb-image-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/libxcb-image/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libxcb-image-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+
+	# libxcb-image.mk Sign
+	$(call SIGN,libxcb-image1,general.xml)
+
+	# libxcb-image.mk Make .debs
+	$(call PACK,libxcb-image1,DEB_xcb-image_V)
+	$(call PACK,libxcb-image-dev,DEB_xcb-image_V)
+
+	# libxcb-image.mk Build cleanup
+	rm -rf $(BUILD_DIST)/libxcb-image{1,-dev}
 
 .PHONY: xcb-util-image xcb-util-image-package

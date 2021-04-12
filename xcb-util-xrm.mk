@@ -14,7 +14,7 @@ ifneq ($(wildcard $(BUILD_WORK)/xcb-util-xrm/.build_complete),)
 xcb-util-xrm:
 	@echo "Using previously built xcb-util-xrm."
 else
-xcb-util-xrm: xcb-util-xrm-setup libx11 libxau libxmu xorgproto xxhash
+xcb-util-xrm: xcb-util-xrm-setup libxcb
 	cd $(BUILD_WORK)/xcb-util-xrm && ./configure -C \
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
@@ -29,19 +29,24 @@ xcb-util-xrm: xcb-util-xrm-setup libx11 libxau libxmu xorgproto xxhash
 endif
 
 xcb-util-xrm-package: xcb-util-xrm-stage
-# xcb-util-xrm.mk Package Structure
-	rm -rf $(BUILD_DIST)/xcb-util-xrm
-	
-# xcb-util-xrm.mk Prep xcb-util-xrm
-	cp -a $(BUILD_STAGE)/xcb-util-xrm $(BUILD_DIST)
-	
-# xcb-util-xrm.mk Sign
-	$(call SIGN,xcb-util-xrm,general.xml)
-	
-# xcb-util-xrm.mk Make .debs
-	$(call PACK,xcb-util-xrm,DEB_XCB-UTIL_V)
-	
-# xcb-util-xrm.mk Build cleanup
-	rm -rf $(BUILD_DIST)/xcb-util-xrm
+	rm -rf $(BUILD_DIST)/libxcb-xrm{1,-dev}
+	mkdir -p $(BUILD_DIST)/libxcb-xrm{1,-dev}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+
+	# xcb-util-xrm.mk Prep libutil-xrm1
+	cp -a $(BUILD_STAGE)/libxcb-xrm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/lib-xrm.1.dylib $(BUILD_DIST)/libxcb-xrm1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+
+	# libxcb-xrm.mk Prep libxcb-xrm-dev
+	cp -a $(BUILD_STAGE)/libxcb-xrm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libxcb-xrm.1.dylib) $(BUILD_DIST)/libxcb-xrm-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/libxcb-xrm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libxcb-xrm-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+
+	# libxcb.mk Sign
+	$(call SIGN,libxcb-xrm1,general.xml)
+
+	# libxcb-xrm.mk Make .debs
+	$(call PACK,libxcb-xrm1,DEB_xcb-xrm_V)
+	$(call PACK,libxcb-xrm-dev,DEB_xcb-xrm_V)
+
+	# libxcb-xrm.mk Build cleanup
+	rm -rf $(BUILD_DIST)/libxcb-xrm{1,-dev}
 
 .PHONY: xcb-util-xrm xcb-util-xrm-package
