@@ -15,8 +15,8 @@ ifneq ($(shell umask),0022)
 $(error Please run `umask 022` before running this)
 endif
 
-MEMO_TARGET          ?= darwin-arm64
-MEMO_CFVER           ?= 1700
+MEMO_TARGET          ?= iphoneos-arm64
+MEMO_CFVER           ?= 1600
 # iOS 13.0 == 1665.15.
 CFVER_WHOLE          := $(shell echo $(MEMO_CFVER) | cut -d. -f1)
 
@@ -284,8 +284,6 @@ DEFAULT_CONFIGURE_FLAGS := \
 	--bindir=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin \
 	--mandir=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/man
 
-<<<<<<< HEAD
-=======
 DEFAULT_PERL_MAKE_FLAGS := \
 	INSTALLSITEARCH=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/perl5/$(PERL_MAJOR) \
 	INSTALLARCHLIB=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/perl5/$(PERL_MAJOR) \
@@ -322,17 +320,12 @@ DEFAULT_PERL_BUILD_FLAGS := \
 	install_path=bindoc=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/man/man1 \
 	install_path=html=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/doc/perl5
 
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 export PLATFORM MEMO_ARCH TARGET_SYSROOT MACOSX_SYSROOT GNU_HOST_TRIPLE MEMO_PREFIX MEMO_SUB_PREFIX MEMO_ALT_PREFIX
 export CC CXX AR LD CPP RANLIB STRIP NM LIPO OTOOL I_N_T EXTRA SED
 export BUILD_ROOT BUILD_BASE BUILD_INFO BUILD_WORK BUILD_STAGE BUILD_DIST BUILD_STRAP BUILD_TOOLS
 export DEB_ARCH DEB_ORIGIN DEB_MAINTAINER
 export CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR ACLOCAL_PATH
-<<<<<<< HEAD
-export DEFAULT_CMAKE_FLAGS DEFAULT_CONFIGURE_FLAGS
-=======
 export DEFAULT_CMAKE_FLAGS DEFAULT_CONFIGURE_FLAGS DEFAULT_PERL_MAKE_FLAGS DEFAULT_PERL_BUILD_FLAGS
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 
 HAS_COMMAND = $(shell type $(1) >/dev/null 2>&1 && echo 1)
 ifeq ($(NO_PGP),1)
@@ -618,13 +611,6 @@ endif
 ifneq ($(call HAS_COMMAND,autopoint),1)
 $(error Install autopoint)
 endif
-<<<<<<< HEAD
-=======
-
-ifneq ($(shell tic -V | grep -q 'ncurses 6' && echo 1),1)
-$(error Install ncurses 6)
-endif
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 
 ifneq ($(LEAVE_ME_ALONE),1)
 
@@ -847,11 +833,8 @@ setup:
 	
 	cp -a $(BUILD_MISC)/zlib.pc $(BUILD_BASE)/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig
 
-<<<<<<< HEAD
-=======
 	cp -a $(BUILD_MISC)/zlib.pc $(BUILD_BASE)/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig
 
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 ifeq (,$(findstring darwin,$(MEMO_TARGET)))
 	@# Copy headers from MacOSX.sdk
 	$(CP) -af $(MACOSX_SYSROOT)/usr/include/{arpa,bsm,net,xpc,netinet,servers} $(BUILD_BASE)/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include

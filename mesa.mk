@@ -3,19 +3,11 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS  += mesa
-<<<<<<< HEAD
-MESA_VERSION := 21.0.2
-DEB_MESA_V   ?= $(MESA_VERSION)
-
-mesa-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://archive.mesa3d.org/mesa-$(MESA_VERSION).tar.xz{,.sig}
-=======
 MESA_VERSION := 21.0.0
 DEB_MESA_V   ?= $(MESA_VERSION)
 
 mesa-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://mesa.freedesktop.org/archive/mesa-$(MESA_VERSION).tar.xz{,.sig}
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 	$(call PGP_VERIFY,mesa-$(MESA_VERSION).tar.xz)
 	$(call EXTRACT_TAR,mesa-$(MESA_VERSION).tar.xz,mesa-$(MESA_VERSION),mesa)
 	$(SED) -i -e "s/with_dri_platform = 'apple'/with_dri_platform = 'none'/" \
@@ -52,11 +44,6 @@ mesa: mesa-setup libx11 libxext libxcb libxdamage libxxf86vm gettext expat zstd 
 		-Dbsymbolic_functions=false \
 		-Ddtrace=false \
 		-Db_ndebug=true \
-<<<<<<< HEAD
-		-Ddri-drivers=auto \
-		-Dgallium-drivers= \
-=======
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 		-Dplatforms=x11 \
 		-Dgles1=disabled 
 	cd $(BUILD_WORK)/mesa/build; \
@@ -69,7 +56,6 @@ mesa-package: mesa-stage
 	# mesa.mk Package Structure
 	rm -rf $(BUILD_DIST)/libgl1-mesa-{glx,dri,dev} $(BUILD_DIST)/libgles2-mesa{,-dev} \
 		$(BUILD_DIST)/libglapi-mesa $(BUILD_DIST)/mesa-common-dev
-<<<<<<< HEAD
 	mkdir -p $(BUILD_DIST)/libgl1-mesa-glx/usr/lib \
 		$(BUILD_DIST)/libgl1-mesa-dri/usr/lib \
 		$(BUILD_DIST)/libgl1-mesa-dev/usr/lib/pkgconfig \
@@ -79,16 +65,6 @@ mesa-package: mesa-stage
 		$(BUILD_DIST)/mesa-common-dev/usr/{include,lib/pkgconfig} \
 		$(BUILD_DIST)/mesa-demos/usr/bin 
 	
-=======
-	mkdir -p $(BUILD_DIST)/libgl1-mesa-glx/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
-		$(BUILD_DIST)/libgl1-mesa-dri/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
-		$(BUILD_DIST)/libgl1-mesa-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig \
-		$(BUILD_DIST)/libgles2-mesa/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
-		$(BUILD_DIST)/libgles2-mesa-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{include,lib/pkgconfig} \
-		$(BUILD_DIST)/libglapi-mesa/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
-		$(BUILD_DIST)/mesa-common-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{include,lib/pkgconfig}
-
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 	# mesa.mk Prep libgl1-mesa-glx
 	cp -a $(BUILD_STAGE)/mesa/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libGL.1.dylib $(BUILD_DIST)/libgl1-mesa-glx/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 
@@ -124,12 +100,8 @@ mesa-package: mesa-stage
 	$(call SIGN,libgl1-mesa-dri,general.xml)
 	$(call SIGN,libgles2-mesa,general.xml)
 	$(call SIGN,libglapi-mesa,general.xml)
-<<<<<<< HEAD
 	$(call SIGN,mesa-demos,general.xml)
 	
-=======
-
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 	# mesa.mk Make .debs
 	$(call PACK,libgl1-mesa-glx,DEB_MESA_V)
 	$(call PACK,libgl1-mesa-dri,DEB_MESA_V)
@@ -138,12 +110,8 @@ mesa-package: mesa-stage
 	$(call PACK,libgles2-mesa-dev,DEB_MESA_V)
 	$(call PACK,libglapi-mesa,DEB_MESA_V)
 	$(call PACK,mesa-common-dev,DEB_MESA_V)
-<<<<<<< HEAD
 	$(call PACK,mesa-demos,DEB_MESA_V)
 	
-=======
-
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 	# mesa.mk Build cleanup
 	rm -rf $(BUILD_DIST)/libgl1-mesa-{glx,dri,dev} $(BUILD_DIST)/libgles2-mesa{,-dev} \
 		$(BUILD_DIST)/libglapi-mesa  $(BUILD_DIST)/mesa-common-dev $(BUILD_DIST)/mesa-demos

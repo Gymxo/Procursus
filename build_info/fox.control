@@ -1,0 +1,5 @@
+Package: fox
+Version: @DEB_FOX_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description:

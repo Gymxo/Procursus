@@ -2,11 +2,7 @@ ifneq ($(PROCURSUS),1)
 $(error Use the main Makefile)
 endif
 
-<<<<<<< HEAD
-SUBPROJECTS    += xhost
-=======
 SUBPROJECTS   += xhost
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 XHOST_VERSION := 1.0.8
 DEB_XHOST_V   ?= $(XHOST_VERSION)
 
@@ -31,21 +27,6 @@ xhost: xhost-setup libx11 libxau libxmu xorgproto xxhash
 endif
 
 xhost-package: xhost-stage
-<<<<<<< HEAD
-# xhost.mk Package Structure
-	rm -rf $(BUILD_DIST)/xhost
-	
-# xhost.mk Prep xhost
-	cp -a $(BUILD_STAGE)/xhost $(BUILD_DIST)
-	
-# xhost.mk Sign
-	$(call SIGN,xhost,general.xml)
-	
-# xhost.mk Make .debs
-	$(call PACK,xhost,DEB_XHOST_V)
-	
-# xhost.mk Build cleanup
-=======
 	# xhost.mk Package Structure
 	rm -rf $(BUILD_DIST)/xhost
 
@@ -59,7 +40,6 @@ xhost-package: xhost-stage
 	$(call PACK,xhost,DEB_XHOST_V)
 
 	# xhost.mk Build cleanup
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 	rm -rf $(BUILD_DIST)/xhost
 
 .PHONY: xhost xhost-package

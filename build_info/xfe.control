@@ -1,0 +1,5 @@
+Package: xfe
+Version: @DEB_XFE_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description:

@@ -17,14 +17,7 @@ font-util:
 else
 font-util: font-util-setup
 	cd $(BUILD_WORK)/font-util && ./configure -C \
-<<<<<<< HEAD
-		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=/usr \
-		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var
-=======
 		$(DEFAULT_CONFIGURE_FLAGS)
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 	+$(MAKE) -C $(BUILD_WORK)/font-util
 	+$(MAKE) -C $(BUILD_WORK)/font-util install \
 		DESTDIR=$(BUILD_STAGE)/font-util
@@ -49,8 +42,4 @@ font-util-package: font-util-stage
 # font-util.mk Build cleanup
 	rm -rf $(BUILD_DIST)/font-util
 
-<<<<<<< HEAD
 .PHONY: font-util font-util-package
-=======
-.PHONY: font-util font-util-package
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
