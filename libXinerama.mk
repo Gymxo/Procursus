@@ -20,7 +20,8 @@ libXinerama: libXinerama-setup libx11 libxau libxmu xorgproto
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
 		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var
+		--localstatedir=$(MEMO_PREFIX)/var \
+		--enable-malloc0returnsnull=no
 	+$(MAKE) -C $(BUILD_WORK)/libXinerama
 	+$(MAKE) -C $(BUILD_WORK)/libXinerama install \
 		DESTDIR=$(BUILD_STAGE)/libXinerama

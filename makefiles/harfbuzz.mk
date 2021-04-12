@@ -21,7 +21,6 @@ harfbuzz: harfbuzz-setup cairo freetype glib2.0 graphite2 icu4c fontconfig
 		--with-freetype \
 		--with-fontconfig \
 		--with-glib \
-		--with-gobject \
 		--with-icu \
 		--with-graphite2 \
 		--with-coretext \
