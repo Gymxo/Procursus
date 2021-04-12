@@ -14,7 +14,7 @@ ifneq ($(wildcard $(BUILD_WORK)/xcb-util-cursor/.build_complete),)
 xcb-util-cursor:
 	@echo "Using previously built xcb-util-cursor."
 else
-xcb-util-cursor: xcb-util-cursor-setup libx11 libxau libxmu xorgproto xxhash
+xcb-util-cursor: xcb-util-cursor-setup libxcb
 	cd $(BUILD_WORK)/xcb-util-cursor && ./configure -C \
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
@@ -29,19 +29,24 @@ xcb-util-cursor: xcb-util-cursor-setup libx11 libxau libxmu xorgproto xxhash
 endif
 
 xcb-util-cursor-package: xcb-util-cursor-stage
-# xcb-util-cursor.mk Package Structure
-	rm -rf $(BUILD_DIST)/xcb-util-cursor
-	
-# xcb-util-cursor.mk Prep xcb-util-cursor
-	cp -a $(BUILD_STAGE)/xcb-util-cursor $(BUILD_DIST)
-	
-# xcb-util-cursor.mk Sign
-	$(call SIGN,xcb-util-cursor,general.xml)
-	
-# xcb-util-cursor.mk Make .debs
-	$(call PACK,xcb-util-cursor,DEB_XCB-UTIL_V)
-	
-# xcb-util-cursor.mk Build cleanup
-	rm -rf $(BUILD_DIST)/xcb-util-cursor
+	rm -rf $(BUILD_DIST)/libxcb-cursor{1,-dev}
+	mkdir -p $(BUILD_DIST)/libxcb-cursor{1,-dev}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+
+	# libxcb-curosr.mk Prep libutil-xrm1
+	cp -a $(BUILD_STAGE)/libxcb-cursor/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/lib-xrm.1.dylib $(BUILD_DIST)/libxcb-cursor1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+
+	# libxcb-cursor.mk Prep libxcb-cursor-dev
+	cp -a $(BUILD_STAGE)/libxcb-cursor/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libxcb-cursor.1.dylib) $(BUILD_DIST)/libxcb-cursor-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/libxcb-cursor/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libxcb-cursor-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+
+	# libxcb-cursor.mk Sign
+	$(call SIGN,libxcb-cursor1,general.xml)
+
+	# libxcb-cursor.mk Make .debs
+	$(call PACK,libxcb-cursor1,DEB_xcb-cursor_V)
+	$(call PACK,libxcb-cursor-dev,DEB_xcb-cursor_V)
+
+	# libxcb-cursor.mk Build cleanup
+	rm -rf $(BUILD_DIST)/libxcb-cursor{1,-dev}
 
 .PHONY: xcb-util-cursor xcb-util-cursor-package
