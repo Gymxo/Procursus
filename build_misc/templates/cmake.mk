@@ -7,11 +7,7 @@ SUBPROJECTS   += @pkg@
 DEB_@PKG@_V   ?= $(@PKG@_VERSION)
 
 @pkg@-setup: setup
-<<<<<<< HEAD
-@download@
-=======
 	@download@
->>>>>>> 8dfec09 (moving to as2)
 	$(call EXTRACT_TAR,@pkg@-$(@PKG@_VERSION).tar.gz,@pkg@-$(@PKG@_VERSION),@pkg@)
 	$(call DO_PATCH,@pkg@,@pkg@,-p1)
 	mkdir -p $(BUILD_WORK)/@pkg@/build
@@ -22,20 +18,7 @@ ifneq ($(wildcard $(BUILD_WORK)/@pkg@/.build_complete),)
 else
 @pkg@: @pkg@-setup
 	cd $(BUILD_WORK)/@pkg@/build && cmake . \
-<<<<<<< HEAD
 		$(DEFAULT_CMAKE_FLAGS) \
-=======
-		-DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_SYSTEM_NAME=Darwin \
-		-DCMAKE_CROSSCOMPILING=true \
-		-DCMAKE_INSTALL_NAME_TOOL=$(I_N_T) \
-		-DCMAKE_INSTALL_PREFIX=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
-		-DCMAKE_INSTALL_NAME_DIR=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
-		-DCMAKE_INSTALL_RPATH=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
-		-DCMAKE_OSX_SYSROOT="$(TARGET_SYSROOT)" \
-		-DCMAKE_C_FLAGS="$(CFLAGS)" \
-		-DCMAKE_FIND_ROOT_PATH=$(BUILD_BASE) \
->>>>>>> 8dfec09 (moving to as2)
 		..
 	+$(MAKE) -C $(BUILD_WORK)/@pkg@/build
 	+$(MAKE) -C $(BUILD_WORK)/@pkg@/build install \
@@ -48,11 +31,7 @@ endif
 	rm -rf $(BUILD_DIST)/@pkg@
 	
 	# @pkg@.mk Prep @pkg@
-<<<<<<< HEAD
-	cp -a $(BUILD_STAGE)/@pkg@ $(BUILD_DIST)
-=======
 	cp -a $(BUILD_STAGE)/@pkg@ $(BUILD_DIST)/@pkg@
->>>>>>> 8dfec09 (moving to as2)
 	
 	# @pkg@.mk Sign
 	$(call SIGN,@pkg@,general.xml)
