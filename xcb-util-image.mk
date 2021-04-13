@@ -29,14 +29,14 @@ xcb-util-image: xcb-util-image-setup libxcb
 endif
 
 xcb-util-image-package: xcb-util-image-stage
-	rm -rf $(BUILD_DIST)/libxcb-image{1,-dev}
-	mkdir -p $(BUILD_DIST)/libxcb-image{1,-dev}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	rm -rf $(BUILD_DIST)/libxcb-image{0,-dev}
+	mkdir -p $(BUILD_DIST)/libxcb-image{0,-dev}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 
 	# xcb-util-image.mk Prep libutil-xrm1
-	cp -a $(BUILD_STAGE)/libxcb-image/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/lib-xrm.1.dylib $(BUILD_DIST)/libxcb-image1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/libxcb-image/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/lib-xrm.0.dylib $(BUILD_DIST)/libxcb-image1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 
 	# libxcb-image.mk Prep libxcb-image-dev
-	cp -a $(BUILD_STAGE)/libxcb-image/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libxcb-image.1.dylib) $(BUILD_DIST)/libxcb-image-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/libxcb-image/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libxcb-image.0.dylib) $(BUILD_DIST)/libxcb-image-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 	cp -a $(BUILD_STAGE)/libxcb-image/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libxcb-image-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
 
 	# libxcb-image.mk Sign
