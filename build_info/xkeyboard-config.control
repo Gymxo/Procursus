@@ -1,13 +1,6 @@
 Package: xkeyboard-config
-<<<<<<< HEAD
-Version: @DEB_XCBPROTO_V@
-Architecture: @DEB_ARCH@
-Maintainer: @DEB_MAINTAINER@
-Depends: 
-=======
 Version: @DEB_XKEYBOARD-CONFIG_V@
 Architecture: all
 Maintainer: @DEB_MAINTAINER@
 Section: X11
->>>>>>> b3101346967d65d30c8678c524e834b1862b3ab0
 Description: The non-arch keyboard configuration database for X Window
