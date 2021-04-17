@@ -51,11 +51,19 @@ glib2.0-package: glib2.0-stage
 		$(BUILD_DIST)/libglib2.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{lib,share/glib-2.0} \
 		$(BUILD_DIST)/libglib2.0-bin/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{bin,share} \
 		$(BUILD_DIST)/libglib2.0-dev-bin/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{bin,share/glib-2.0}
+<<<<<<< HEAD
+	
+	# glib2.0.mk Prep libglib2.0-0
+	cp -a $(BUILD_STAGE)/glib2.0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/*2.0.0.dylib $(BUILD_DIST)/libglib2.0-0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/glib2.0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/locale $(BUILD_DIST)/libglib2.0-0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share
+	
+=======
 
 	# glib2.0.mk Prep libglib2.0-0
 	cp -a $(BUILD_STAGE)/glib2.0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/*2.0.0.dylib $(BUILD_DIST)/libglib2.0-0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 	cp -a $(BUILD_STAGE)/glib2.0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/locale $(BUILD_DIST)/libglib2.0-0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share
 
+>>>>>>> as2
 	# glib2.0.mk Prep libglib2.0-dev
 	cp -a $(BUILD_STAGE)/glib2.0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libglib2.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
 	cp -a $(BUILD_STAGE)/glib2.0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(*2.0.0*) $(BUILD_DIST)/libglib2.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
@@ -70,7 +78,11 @@ glib2.0-package: glib2.0-stage
 	cp -a $(BUILD_STAGE)/glib2.0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/{gdbus-codegen,glib-{compile-resources,genmarshal,gettextize,mkenums},gobject-query,gtester{,-report}} $(BUILD_DIST)/libglib2.0-dev-bin/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
 	cp -a $(BUILD_STAGE)/glib2.0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/aclocal $(BUILD_DIST)/libglib2.0-dev-bin/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share
 	cp -a $(BUILD_STAGE)/glib2.0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/glib-2.0/{codegen,gettext} $(BUILD_DIST)/libglib2.0-dev-bin/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/glib-2.0
+<<<<<<< HEAD
+	
+=======
 
+>>>>>>> as2
 	# glib2.0.mk Sign
 	$(call SIGN,libglib2.0-0,general.xml)
 	$(call SIGN,libglib2.0-bin,general.xml)

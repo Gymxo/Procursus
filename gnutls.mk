@@ -51,6 +51,22 @@ gnutls-package: gnutls-stage
 		$(BUILD_DIST)/libgnutls30/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
 		$(BUILD_DIST)/libgnutlsxx28/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
 		$(BUILD_DIST)/libgnutls28-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+<<<<<<< HEAD
+	
+	# gnutls.mk Prep gnutls-bin
+	cp -a $(BUILD_STAGE)/gnutls/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin $(BUILD_DIST)/gnutls-bin/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+	
+	# gnutls.mk Prep libgnutls30
+	cp -a $(BUILD_STAGE)/gnutls/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libgnutls.30.dylib $(BUILD_DIST)/libgnutls30/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	
+	# gnutls.mk Prep libgnutlsxx28
+	cp -a $(BUILD_STAGE)/gnutls/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libgnutlsxx.28.dylib $(BUILD_DIST)/libgnutlsxx28/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	
+	# gnutls.mk Prep libgnutls28-dev
+	cp -a $(BUILD_STAGE)/gnutls/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/{pkgconfig,libgnutls{,xx}.dylib} $(BUILD_DIST)/libgnutls28-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/gnutls/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libgnutls28-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+	
+=======
 
 	# gnutls.mk Prep gnutls-bin
 	cp -a $(BUILD_STAGE)/gnutls/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin $(BUILD_DIST)/gnutls-bin/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
@@ -65,6 +81,7 @@ gnutls-package: gnutls-stage
 	cp -a $(BUILD_STAGE)/gnutls/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/{pkgconfig,libgnutls{,xx}.dylib} $(BUILD_DIST)/libgnutls28-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 	cp -a $(BUILD_STAGE)/gnutls/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libgnutls28-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
 
+>>>>>>> as2
 	# gnutls.mk Sign
 	$(call SIGN,gnutls-bin,general.xml)
 	$(call SIGN,libgnutls30,general.xml)
