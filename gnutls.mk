@@ -27,6 +27,7 @@ ifeq ($(MEMO_TARGET),watchos-arm64)
 else
 	cd $(BUILD_WORK)/gnutls && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
+		--disable-guile \
 		--enable-local-libopts \
 		--with-default-trust-store-file=$(MEMO_PREFIX)/etc/ssl/certs/cacert.pem \
 		P11_KIT_CFLAGS=-I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/p11-kit-1

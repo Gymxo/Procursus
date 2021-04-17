@@ -10,7 +10,7 @@ xz-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://tukaani.org/xz/xz-$(XZ_VERSION).tar.xz{,.sig}
 	$(call PGP_VERIFY,xz-$(XZ_VERSION).tar.xz)
 	$(call EXTRACT_TAR,xz-$(XZ_VERSION).tar.xz,xz-$(XZ_VERSION),xz)
-	mkdir -p $(BUILD_STAGE)/xz/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
+	mkdir -p $(BUILD_STAGE)/xz$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
 
 ifneq ($(wildcard $(BUILD_WORK)/xz/.build_complete),)
 xz:
@@ -43,12 +43,6 @@ xz: xz-setup gettext
 		--disable-lzma-links
 	+$(MAKE) -C $(BUILD_WORK)/xz install \
 		DESTDIR=$(BUILD_STAGE)/xz
-
-ifneq ($(MEMO_ALT_PREFIX),)
-	for bin in $(BUILD_STAGE)/xz/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)$(MEMO_ALT_PREFIX)/bin/*; do \
-		ln -s ../$(MEMO_ALT_PREFIX)/bin/$$(basename $$bin) $(BUILD_STAGE)/xz/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/$$(basename $$bin); \
-	done
-endif # ($(MEMO_ALT_PREFIX),)
 	touch $(BUILD_WORK)/xz/.build_complete
 endif
 

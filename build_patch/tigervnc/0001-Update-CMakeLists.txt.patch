@@ -1,7 +1,7 @@
 From cfe6b253398b4c86381fe272d4f6f9183bf44868 Mon Sep 17 00:00:00 2001
 From: Gymxo <55960119+Gymxo@users.noreply.github.com>
 Date: Sun, 28 Mar 2021 10:42:06 -0400
-Subject: [PATCH 1/2] Update CMakeLists.txt
+Subject: [PATCH 1/7] Update CMakeLists.txt
 
 ---
  CMakeLists.txt | 14 +++++---------
@@ -54,7 +54,7 @@ index 9f1505e0..a8a24f70 100644
  endif()
  
 -option(BUILD_VIEWER "Build TigerVNC viewer" ON)
-+option(BUILD_VIEWER "Build TigerVNC viewer" OFF)
++option(BUILD_VIEWER "Build TigerVNC viewer" ON)
  if(BUILD_VIEWER)
    add_subdirectory(vncviewer)
    add_subdirectory(media)

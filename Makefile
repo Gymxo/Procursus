@@ -612,6 +612,10 @@ ifneq ($(call HAS_COMMAND,autopoint),1)
 $(error Install autopoint)
 endif
 
+ifneq ($(shell tic -V | grep -q 'ncurses 6' && echo 1),1)
+$(error Install ncurses 6)
+endif
+
 ifneq ($(LEAVE_ME_ALONE),1)
 
 ifneq (,$(wildcard $(shell brew --prefix)/opt/docbook-xsl/docbook-xsl))
@@ -830,8 +834,6 @@ setup:
 
 	wget -q -nc -P $(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/bsm \
 		https://opensource.apple.com/source/xnu/xnu-6153.81.5/bsd/bsm/audit_kevents.h
-	
-	cp -a $(BUILD_MISC)/zlib.pc $(BUILD_BASE)/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig
 
 	cp -a $(BUILD_MISC)/zlib.pc $(BUILD_BASE)/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig
 

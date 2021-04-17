@@ -20,7 +20,7 @@ ifneq ($(wildcard $(BUILD_WORK)/imagemagick/.build_complete),)
 imagemagick:
 	@echo "Using previously built imagemagick."
 else
-imagemagick: imagemagick-setup openexr fontconfig freetype glib2.0 ghostscript libheif gettext jbigkit libjemalloc lcms2 liblqr xz openmp openjpeg libpng16 libtiff libwebp libzip libtool
+imagemagick: imagemagick-setup openexr fontconfig freetype glib2.0 ghostscript gettext jbigkit libjemalloc lcms2 liblqr xz openmp openjpeg libpng16 libtiff libwebp libzip libtool
 	cd $(BUILD_WORK)/imagemagick && PKG_CONFIG="pkg-config --define-prefix" ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--enable-osx-universal-binary=no \
@@ -35,22 +35,21 @@ imagemagick: imagemagick-setup openexr fontconfig freetype glib2.0 ghostscript l
 		--with-openjp2 \
 		--with-openexr \
 		--with-webp=yes \
-		--with-heic=yes \
 		--with-gslib \
 		--with-gs-font-dir=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/ghostscript/fonts \
 		--with-lqr \
 		--without-fftw \
-		--without-pango \
+		--with-pango \
 		--without-wmf \
 		--enable-openmp \
 		ac_cv_prog_c_openmp=-Xpreprocessor\ -fopenmp \
 		ac_cv_prog_cxx_openmp=-Xpreprocessor\ -fopenmp \
 		LDFLAGS="$(LDFLAGS) -lomp -lz"
 	$(SED) -i 's/|-fopenmp//' $(BUILD_WORK)/imagemagick/libtool
-	+$(MAKE) -C $(BUILD_WORK)/imagemagick
-	+$(MAKE) -C $(BUILD_WORK)/imagemagick install \
+	+$(MAKE) -i -C $(BUILD_WORK)/imagemagick
+	+$(MAKE) -i -C $(BUILD_WORK)/imagemagick install \
 		DESTDIR=$(BUILD_STAGE)/imagemagick
-	+$(MAKE) -C $(BUILD_WORK)/imagemagick install \
+	+$(MAKE) -i -C $(BUILD_WORK)/imagemagick install \
 		DESTDIR=$(BUILD_BASE)
 	touch $(BUILD_WORK)/imagemagick/.build_complete
 endif

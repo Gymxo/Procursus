@@ -3,33 +3,26 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS      += gtk+
-GTK+_VERSION := 3.24.28
+GTK+_VERSION := 2.18.9
 DEB_GTK+_V   ?= $(GTK+_VERSION)
 
 gtk+-setup: setup
-	wget -q -nc -P$(BUILD_SOURCE) https://download.gnome.org/sources/gtk+/3.24/gtk+-3.24.28.tar.xz
-	$(call EXTRACT_TAR,gtk+-$(GTK+_VERSION).tar.xz,gtk+-$(GTK+_VERSION),gtk+)
+	wget -q -nc -P$(BUILD_SOURCE) https://mirror.umd.edu/gnome/sources/gtk+/2.18/gtk+-2.18.9.tar.gz
+	$(call EXTRACT_TAR,gtk+-$(GTK+_VERSION).tar.gz,gtk+-$(GTK+_VERSION),gtk+)
 
 ifneq ($(wildcard $(BUILD_WORK)/gtk+/.build_complete),)
 gtk+:
 	@echo "Using previously built gtk+."
 else
 gtk+: gtk+-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/gtk+ && ./configure -C \
+	cd $(BUILD_WORK)/gtk+ && autoreconf -fiv && ./configure -h -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--with-x \
 		--disable-gtk-doc-html \
 		--enable-introspection=no \
+		--with-gdktarget=x11 \
 		--disable-cups \
-		--disable-glibtest \
-		--enable-x11-backend \
-		--enable-xdamage \
-		--disable-xcomposite \
-		--enable-xfixes \
-		--enable-xrandr \
-		--enable-xinerama \
-		--enable-xkb \
-		--disable-wayland-backend
+		--with-x
 	+$(MAKE) -i -C $(BUILD_WORK)/gtk+
 	+$(MAKE) -i -C $(BUILD_WORK)/gtk+ install \
 		DESTDIR=$(BUILD_STAGE)/gtk+

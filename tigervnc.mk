@@ -17,7 +17,7 @@ ifneq ($(wildcard $(BUILD_WORK)/tigervnc/.build_complete),)
 tigervnc:
 	@echo "Using previously built tigervnc."
 else
-tigervnc: tigervnc-setup libx11 libxau libxmu xorgproto libpixman gnutls libjpeg-turbo openpam libxdamage libxfixes libxtst libxrandr libxfont2 mesa libgeneral
+tigervnc: tigervnc-setup libx11 libxau libxmu xorgproto libpixman gnutls libjpeg-turbo openpam libxdamage libxfixes libxtst libxrandr libxfont2 mesa libgeneral libxkbfile
 	cd $(BUILD_WORK)/tigervnc && cmake . \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_SYSTEM_NAME=Darwin \
@@ -26,8 +26,7 @@ tigervnc: tigervnc-setup libx11 libxau libxmu xorgproto libpixman gnutls libjpeg
 		-DCMAKE_INSTALL_NAME_DIR=/usr \
 		-DCMAKE_OSX_SYSROOT="$(TARGET_SYSROOT)" \
 		-DCMAKE_FIND_ROOT_PATH=$(BUILD_BASE) \
-		-DCMAKE_INSTALL_RPATH=/usr \
-		-DBUILD_VIEWER=NO
+		-DCMAKE_INSTALL_RPATH=/usr
 	+$(MAKE) -C $(BUILD_WORK)/tigervnc
 	+$(MAKE) -C $(BUILD_WORK)/tigervnc install \
 		DESTDIR=$(BUILD_STAGE)/tigervnc
@@ -83,7 +82,7 @@ tigervnc-package: tigervnc-stage
 	
 # tigervnc.mk Prep tigervnc
 	rm -rf $(BUILD_STAGE)/tigervnc/usr/lib/xorg/protocol.txt
-	rm -rf $(BUILD_STAGE)/tigervnc/usr/share/man1/Xserver.1
+	rm -rf $(BUILD_STAGE)/tigervnc/usr/share/man/man1/Xserver.1
 	cp -a $(BUILD_STAGE)/tigervnc $(BUILD_DIST)
 
 # tigervnc.mk Sign

@@ -1,0 +1,25 @@
+From 9603af2e6a94f090c2cec1b7e29ca4d1c785be96 Mon Sep 17 00:00:00 2001
+From: Gymxo <55960119+Gymxo@users.noreply.github.com>
+Date: Thu, 15 Apr 2021 10:50:40 -0400
+Subject: [PATCH 4/7] we wan't pam on ios
+
+---
+ common/rfb/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/common/rfb/CMakeLists.txt b/common/rfb/CMakeLists.txt
+index fc5a37bf..43e7fc98 100644
+--- a/common/rfb/CMakeLists.txt
++++ b/common/rfb/CMakeLists.txt
+@@ -75,7 +75,7 @@ endif(WIN32)
+ 
+ set(RFB_LIBRARIES ${JPEG_LIBRARIES} ${PIXMAN_LIBRARY} os rdr)
+ 
+-if(UNIX AND NOT APPLE)
++if(APPLE)
+   set(RFB_SOURCES ${RFB_SOURCES} UnixPasswordValidator.cxx
+     UnixPasswordValidator.h pam.c pam.h)
+   set(RFB_LIBRARIES ${RFB_LIBRARIES} ${PAM_LIBS})
+-- 
+2.24.3 (Apple Git-128)
+

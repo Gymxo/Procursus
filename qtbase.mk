@@ -7,24 +7,25 @@ QTBASE_VERSION := 6.0.3
 DEB_QTBASE_V   ?= $(QTBASE_VERSION)
 
 qtbase-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://github.com/qt/qtbase/archive/refs/tags/v6.0.3.tar.gz
-	$(call EXTRACT_TAR,v$(QTBASE_VERSION).tar.gz,qtbase-$(QTBASE_VERSION),qtbase)
+	wget -q -nc -P $(BUILD_SOURCE) https://download.qt.io/official_releases/qt/6.0/6.0.3/single/qt-everywhere-src-6.0.3.tar.xz
+	$(call EXTRACT_TAR,qt-everywhere-src-$(QTBASE_VERSION).tar.xz,qt-everywhere-src-$(QTBASE_VERSION),qtbase)
 
 ifneq ($(wildcard $(BUILD_WORK)/qtbase/.build_complete),)
 qtbase:
 	@echo "Using previously built qtbase."
 else
-qtbase: qtbase-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/qtbase && cmake . \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_SYSTEM_NAME=Darwin \
-		-DCMAKE_CROSSCOMPILING=true \
-		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DCMAKE_INSTALL_NAME_DIR=/usr \
-		-DCMAKE_OSX_SYSROOT="$(TARGET_SYSROOT)" \
-		-DCMAKE_FIND_ROOT_PATH=$(BUILD_BASE) \
-		-DQT_HOST_PATH=/usr/local/Cellar/qt/6.0.3  \
-		-DCMAKE_INSTALL_RPATH=/usr
+qtbase: qtbase-setup
+	cd $(BUILD_WORK)/qtbase/qtbase && ./configure -h \
+		--host=$(GNU_HOST_TRIPLE) \
+		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
+		--localstatedir=$(MEMO_PREFIX)/var \
+		--sysconfdir=$(MEMO_PREFIX)/etc \
+		--bindir=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin \
+		--mandir=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/man
+		--gui=yes \
+		--widgets=yes \
+		--xcb=yes \
+		--qt-host-path=/usr/local/Cellar/qt/6.0.3
 	+$(MAKE) -C $(BUILD_WORK)/qtbase
 	+$(MAKE) -C $(BUILD_WORK)/qtbase install \
 		DESTDIR=$(BUILD_STAGE)/qtbase

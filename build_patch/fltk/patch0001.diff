@@ -1,0 +1,46 @@
+From 567815674b5f6498b2e1f21299943a69b4031e08 Mon Sep 17 00:00:00 2001
+From: Nathan <dugarnathan@gmail.com>
+Date: Fri, 16 Apr 2021 15:27:36 -0400
+Subject: [PATCH] make demos not build
+
+---
+ test/Makefile | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/test/Makefile b/test/Makefile
+index 3ee59ab7f..497fcda74 100644
+--- a/test/Makefile
++++ b/test/Makefile
+@@ -36,7 +36,6 @@ CPPFILES =\
+ 	CubeView.cxx \
+ 	cursor.cxx \
+ 	curve.cxx \
+-	demo.cxx \
+ 	device.cxx \
+ 	doublebuffer.cxx \
+ 	editor.cxx \
+@@ -120,7 +119,6 @@ ALL =	\
+ 	color_chooser$(EXEEXT) \
+ 	cursor$(EXEEXT) \
+ 	curve$(EXEEXT) \
+-	demo$(EXEEXT) \
+ 	device$(EXEEXT) \
+ 	doublebuffer$(EXEEXT) \
+ 	editor$(EXEEXT) \
+@@ -365,13 +363,6 @@ cursor$(EXEEXT): cursor.o
+ 
+ curve$(EXEEXT): curve.o
+ 
+-demo$(EXEEXT): demo.o
+-	echo Linking $@...
+-	$(CXX) $(ARCHFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@ demo.o $(LINKFLTK) $(LDLIBS)
+-	$(OSX_ONLY) ../fltk-config --post $@
+-	$(OSX_ONLY) mkdir -p demo.app/Contents/Resources
+-	$(OSX_ONLY) cp -f demo.menu demo.app/Contents/Resources/
+-
+ device$(EXEEXT): device.o $(IMGLIBNAME)
+ 	echo Linking $@...
+ 	$(CXX) $(ARCHFLAGS) $(CXXFLAGS) $(LDFLAGS) device.o -o $@ $(LINKFLTKIMG) $(LDLIBS)
+-- 
+2.27.0
+

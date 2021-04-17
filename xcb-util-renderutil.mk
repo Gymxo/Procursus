@@ -14,7 +14,7 @@ ifneq ($(wildcard $(BUILD_WORK)/xcb-util-renderutil/.build_complete),)
 xcb-util-renderutil:
 	@echo "Using previously built xcb-util-renderutil."
 else
-xcb-util-renderutil: xcb-util-renderutil-setup libxcb libXres
+xcb-util-renderutil: xcb-util-renderutil-setup libxcb libxres
 	cd $(BUILD_WORK)/xcb-util-renderutil && ./configure -C \
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
