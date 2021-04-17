@@ -10,18 +10,16 @@ xfe-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://pilotfiber.dl.sourceforge.net/project/xfe/xfe/1.44/xfe-1.44.tar.xz
 	$(call EXTRACT_TAR,xfe-$(XFE_VERSION).tar.xz,xfe-$(XFE_VERSION),xfe)
 
-ifneq ($(wildcard $(BUILD_WORK)/xfe/.build_complete1),)
+ifneq ($(wildcard $(BUILD_WORK)/xfe/.build_complete),)
 xfe:
 	@echo "Using previously built xfe."
 else
 xfe: xfe-setup 
-	cd $(BUILD_WORK)/xfe && ./configure -C \
+	cd $(BUILD_WORK)/xfe && export ac_cv_func_malloc_0_nonnull=yes && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--with-x \
 		--disable-sn \
-		--with-xrandr \
-		--enable-malloc0returnsnull=no \
-		--enable-ac_cv_func_realloc_0_nonnull=yes
+		--with-xrandr
 	+$(MAKE) -C $(BUILD_WORK)/xfe
 	+$(MAKE) -C $(BUILD_WORK)/xfe install \
 		DESTDIR=$(BUILD_STAGE)/xfe

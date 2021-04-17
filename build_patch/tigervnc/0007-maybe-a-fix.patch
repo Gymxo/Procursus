@@ -1,0 +1,33 @@
+From 25fe4e94cb2d663ac5a703ee974c1185c5cb4c93 Mon Sep 17 00:00:00 2001
+From: Gymxo <55960119+Gymxo@users.noreply.github.com>
+Date: Thu, 15 Apr 2021 16:17:30 -0400
+Subject: [PATCH 7/7] maybe a fix?
+
+---
+ common/rfb/CMakeLists.txt | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/common/rfb/CMakeLists.txt b/common/rfb/CMakeLists.txt
+index 43e7fc98..f273eb5e 100644
+--- a/common/rfb/CMakeLists.txt
++++ b/common/rfb/CMakeLists.txt
+@@ -75,11 +75,11 @@ endif(WIN32)
+ 
+ set(RFB_LIBRARIES ${JPEG_LIBRARIES} ${PIXMAN_LIBRARY} os rdr)
+ 
+-if(APPLE)
+-  set(RFB_SOURCES ${RFB_SOURCES} UnixPasswordValidator.cxx
+-    UnixPasswordValidator.h pam.c pam.h)
+-  set(RFB_LIBRARIES ${RFB_LIBRARIES} ${PAM_LIBS})
+-endif()
++
++set(RFB_SOURCES ${RFB_SOURCES} UnixPasswordValidator.cxx
++  UnixPasswordValidator.h pam.c pam.h)
++set(RFB_LIBRARIES ${RFB_LIBRARIES} ${PAM_LIBS})
++
+ 
+ if(GNUTLS_FOUND)
+   set(RFB_SOURCES
+-- 
+2.24.3 (Apple Git-128)
+

@@ -10,6 +10,10 @@ xz-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://tukaani.org/xz/xz-$(XZ_VERSION).tar.xz{,.sig}
 	$(call PGP_VERIFY,xz-$(XZ_VERSION).tar.xz)
 	$(call EXTRACT_TAR,xz-$(XZ_VERSION).tar.xz,xz-$(XZ_VERSION),xz)
+<<<<<<< HEAD:makefiles/xz.mk
+=======
+	mkdir -p $(BUILD_STAGE)/xz$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
+>>>>>>> 53a5466 (more stuff):xz.mk
 
 ifneq ($(wildcard $(BUILD_WORK)/xz/.build_complete),)
 xz:

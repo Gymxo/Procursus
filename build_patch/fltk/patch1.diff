@@ -1,0 +1,41 @@
+From a6fc44689ed2e65ff56c58c0896e205dd9fa23cb Mon Sep 17 00:00:00 2001
+From: Nathan <dugarnathan@gmail.com>
+Date: Fri, 16 Apr 2021 15:30:51 -0400
+Subject: [PATCH] remove image
+
+---
+ test/Makefile | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/test/Makefile b/test/Makefile
+index 497fcda74..7317ad331 100644
+--- a/test/Makefile
++++ b/test/Makefile
+@@ -53,7 +53,6 @@ CPPFILES =\
+ 	help_dialog.cxx \
+ 	icon.cxx \
+ 	iconize.cxx \
+-	image.cxx \
+ 	inactive.cxx \
+ 	input.cxx \
+ 	input_choice.cxx \
+@@ -131,7 +130,6 @@ ALL =	\
+ 	help_dialog$(EXEEXT) \
+ 	icon$(EXEEXT) \
+ 	iconize$(EXEEXT) \
+-	image$(EXEEXT) \
+ 	inactive$(EXEEXT) \
+ 	input$(EXEEXT) \
+ 	input_choice$(EXEEXT) \
+@@ -406,8 +404,6 @@ icon$(EXEEXT): icon.o
+ 
+ iconize$(EXEEXT): iconize.o
+ 
+-image$(EXEEXT): image.o
+-
+ inactive$(EXEEXT): inactive.o
+ inactive.cxx:	inactive.fl ../fluid/fluid$(EXEEXT)
+ 
+-- 
+2.27.0
+

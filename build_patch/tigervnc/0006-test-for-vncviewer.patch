@@ -1,0 +1,25 @@
+From 707bbe7176a535892ce1844a148e635a541c8f59 Mon Sep 17 00:00:00 2001
+From: Gymxo <55960119+Gymxo@users.noreply.github.com>
+Date: Thu, 15 Apr 2021 10:59:33 -0400
+Subject: [PATCH 6/7] test for vncviewer
+
+---
+ media/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/media/CMakeLists.txt b/media/CMakeLists.txt
+index 91ea6f54..f0a72409 100644
+--- a/media/CMakeLists.txt
++++ b/media/CMakeLists.txt
+@@ -10,7 +10,7 @@ find_program(CONVERT_EXECUTABLE convert)
+ if(CONVERT_EXECUTABLE)
+   add_custom_target(icons DEPENDS ${ICON_FILES})
+ 
+-  if(UNIX AND NOT APPLE)
++  if(APPLE)
+     foreach(SIZE 16 22 24 32 48)
+       install(FILES icons/tigervnc_${SIZE}.png
+         DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/icons/hicolor/${SIZE}x${SIZE}/apps
+-- 
+2.24.3 (Apple Git-128)
+

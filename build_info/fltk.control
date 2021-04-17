@@ -1,0 +1,16 @@
+Package: libfltk1.1
+Version: @DEB_FLTK_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends:
+Breaks: flwm (<= 1.02-2)
+Section: libs
+Priority: optional
+Multi-Arch: same
+Homepage: http://www.fltk.org/
+Description: Fast Light Toolkit - shared libraries
+ This package contains the files necessary for running programs
+ dynamically linked with FLTK.
+ .
+ The Fast Light Toolkit (FLTK) is a cross-platform graphical user interface
+ toolkit originally based on libForms.

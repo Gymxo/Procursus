@@ -1,0 +1,48 @@
+From 2870e37c9430861629af6816f994e4fa9acd8024 Mon Sep 17 00:00:00 2001
+From: Nathan <dugarnathan@gmail.com>
+Date: Fri, 16 Apr 2021 15:33:55 -0400
+Subject: [PATCH] remove pixmap from makefile
+
+---
+ test/Makefile | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/test/Makefile b/test/Makefile
+index 7317ad331..8578dff0f 100644
+--- a/test/Makefile
++++ b/test/Makefile
+@@ -70,8 +70,6 @@ CPPFILES =\
+ 	output.cxx \
+ 	overlay.cxx \
+ 	pack.cxx \
+-	pixmap_browser.cxx \
+-	pixmap.cxx \
+ 	preferences.cxx \
+ 	radio.cxx \
+ 	resize.cxx \
+@@ -147,8 +145,6 @@ ALL =	\
+ 	output$(EXEEXT) \
+ 	overlay$(EXEEXT) \
+ 	pack$(EXEEXT) \
+-	pixmap$(EXEEXT) \
+-	pixmap_browser$(EXEEXT) \
+ 	preferences$(EXEEXT) \
+ 	device$(EXEEXT) \
+ 	radio$(EXEEXT) \
+@@ -458,13 +454,6 @@ overlay$(EXEEXT): overlay.o
+ 
+ pack$(EXEEXT): pack.o
+ 
+-pixmap$(EXEEXT): pixmap.o
+-
+-pixmap_browser$(EXEEXT): pixmap_browser.o $(IMGLIBNAME)
+-	echo Linking $@...
+-	$(CXX) $(ARCHFLAGS) $(CXXFLAGS) $(LDFLAGS) pixmap_browser.o -o $@ $(LINKFLTKIMG) $(LDLIBS)
+-	$(OSX_ONLY) ../fltk-config --post $@
+-
+ preferences$(EXEEXT):	preferences.o
+ preferences.cxx:	preferences.fl ../fluid/fluid$(EXEEXT)
+ 
+-- 
+2.27.0
+

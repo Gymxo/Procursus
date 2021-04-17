@@ -1,10 +1,21 @@
 Package: xserver-common
 Version: @DEB_XORG-SERVER_V@
+<<<<<<< HEAD
 Architecture: all
 Maintainer: @DEB_MAINTAINER@
 Depends: xkbcomp,  xkeyboard-config
 Recommends: xauth
 Section: X11
 Priority: optional
+=======
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends:
+Recommends: xauth
+Section: x11
+Priority: optional
+Multi-Arch: foreign
+Homepage: https://www.x.org/
+>>>>>>> 53a5466 (more stuff)
 Description: common files used by various X servers
  This package provides files necessary for all X.Org based X servers.

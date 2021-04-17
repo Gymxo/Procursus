@@ -14,7 +14,7 @@ ifneq ($(wildcard $(BUILD_WORK)/dbus/.build_complete),)
 dbus:
 	@echo "Using previously built dbus."
 else
-dbus: dbus-setup libx11 libxau libxmu xorgproto xxhash
+dbus: dbus-setup libx11 libxau libxmu xorgproto
 	cd $(BUILD_WORK)/dbus && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
         --enable-user-session \

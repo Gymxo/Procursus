@@ -1,0 +1,41 @@
+From 747a8e281f7f908c69edd16596b276f26c39de1e Mon Sep 17 00:00:00 2001
+From: Nathan <dugarnathan@gmail.com>
+Date: Fri, 16 Apr 2021 15:36:02 -0400
+Subject: [PATCH] remove menubar
+
+---
+ test/Makefile | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/test/Makefile b/test/Makefile
+index 8578dff0f..6a4d28c25 100644
+--- a/test/Makefile
++++ b/test/Makefile
+@@ -61,7 +61,6 @@ CPPFILES =\
+ 	line_style.cxx \
+ 	list_visuals.cxx \
+ 	mandelbrot.cxx \
+-	menubar.cxx \
+ 	message.cxx \
+ 	minimum.cxx \
+ 	native-filechooser.cxx \
+@@ -136,7 +135,6 @@ ALL =	\
+ 	line_style$(EXEEXT) \
+ 	list_visuals$(EXEEXT) \
+ 	mandelbrot$(EXEEXT) \
+-	menubar$(EXEEXT) \
+ 	message$(EXEEXT) \
+ 	minimum$(EXEEXT) \
+ 	native-filechooser$(EXEEXT) \
+@@ -430,8 +428,6 @@ mandelbrot$(EXEEXT): mandelbrot_ui.o mandelbrot.o
+ mandelbrot_ui.o:	mandelbrot_ui.h
+ mandelbrot_ui.cxx:	mandelbrot_ui.fl ../fluid/fluid$(EXEEXT)
+ 
+-menubar$(EXEEXT): menubar.o
+-
+ message$(EXEEXT): message.o
+ 
+ minimum$(EXEEXT): minimum.o
+-- 
+2.27.0
+

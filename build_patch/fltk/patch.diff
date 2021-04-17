@@ -1,0 +1,261 @@
+From ba71d76a66625b5fe9171ad25a2af370d06c8a76 Mon Sep 17 00:00:00 2001
+From: Nathan <dugarnathan@gmail.com>
+Date: Fri, 16 Apr 2021 15:12:19 -0400
+Subject: [PATCH] first set of patches
+
+---
+ FL/platform.H       |  4 ----
+ FL/platform_types.h | 17 ----------------
+ configure.ac        | 47 +++++----------------------------------------
+ test/Makefile       | 25 ------------------------
+ 4 files changed, 5 insertions(+), 88 deletions(-)
+
+diff --git a/FL/platform.H b/FL/platform.H
+index 7271b1feb..d8bf39c01 100644
+--- a/FL/platform.H
++++ b/FL/platform.H
+@@ -35,10 +35,6 @@ class Fl_Window;
+ 
+ #  ifdef _WIN32
+ #    include "win32.H"
+-#  elif defined(__APPLE__)
+-#    include "mac.H"
+-#  elif defined(__ANDROID__)
+-#    include "android.H"
+ #  else // X11
+ #   include <FL/fl_types.h>
+ #   include <FL/Enumerations.H>
+diff --git a/FL/platform_types.h b/FL/platform_types.h
+index 9b3fa8431..3d8613cd0 100644
+--- a/FL/platform_types.h
++++ b/FL/platform_types.h
+@@ -83,12 +83,6 @@ typedef unsigned long fl_uintptr_t;
+ 
+ #endif /* _WIN64 */
+ 
+-
+-#ifdef __APPLE__
+-typedef struct CGContext* Fl_Offscreen;
+-typedef struct CGImage* Fl_Bitmask;
+-typedef struct flCocoaRegion* Fl_Region;
+-typedef int FL_SOCKET;
+ #ifdef __OBJC__
+   @class NSOpenGLContext;
+   typedef NSOpenGLContext* GLContext;
+@@ -128,21 +122,12 @@ typedef class Fl_Rect_Region *Fl_Region;
+ typedef struct Fl_Rect_Region *Fl_Region;
+ #endif
+ 
+-// TODO: the types below have not yet been ported
+-typedef unsigned long Fl_Offscreen;
+-typedef unsigned long Fl_Bitmask;
+-typedef int FL_SOCKET;
+-typedef struct __GLXcontextRec *GLContext;
+-#include <sys/types.h>
+-#include <dirent.h>
+-
+ #else /* X11 */
+ 
+ typedef unsigned long Fl_Offscreen;
+ typedef unsigned long Fl_Bitmask;
+ typedef struct _XRegion *Fl_Region;
+ typedef int FL_SOCKET;
+-typedef struct __GLXcontextRec *GLContext;
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ #include <dirent.h>
+@@ -156,5 +141,3 @@ typedef struct __GLXcontextRec *GLContext;
+ #endif
+ 
+ #endif /* FL_PLATFORM_TYPES_H */
+-
+-#endif // FL_DOXYGEN
+diff --git a/configure.ac b/configure.ac
+index 9e36e685b..7934f9ebd 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -164,7 +164,7 @@ AS_CASE([$host_os], [cygwin*], [
+             host_os_gui="X11$host_os"
+         ])
+     ])
+-], [darwin*], [
++], [nopen*], [
+     AS_IF([test x$enable_x11 = xyes], [
+         host_os_gui="X11"
+         OPTIM="-U__APPLE__ $OPTIM"
+@@ -321,7 +321,7 @@ AS_IF([test "x$enable_shared" = xyes], [
+         AS_IF([test "x$libdir" != "x/usr/lib" -a "x$libdir" != "x/usr/lib32"], [
+             DSOLINK="-Wl,-rpath,$libdir"
+         ])
+-    ], [linux*|*bsd*], [
++    ], [who*|*bsd*], [
+         DSONAME="libfltk.so.$FL_DSO_VERSION"
+         FLDSONAME="libfltk_forms.so.$FL_DSO_VERSION"
+         GLDSONAME="libfltk_gl.so.$FL_DSO_VERSION"
+@@ -648,7 +648,7 @@ AUDIOLIBS=""
+ AS_CASE([$host_os], [cygwin* | mingw*], [
+     dnl Cygwin environment...
+     AUDIOLIBS="-lwinmm"
+-], [darwin*], [
++], [who*], [
+     AUDIOLIBS="-framework CoreAudio"
+ ], [*], [
+     AC_CHECK_HEADER([alsa/asoundlib.h], [
+@@ -919,29 +919,6 @@ AS_CASE([$host_os_gui], [cygwin* | mingw*], [
+     AS_IF([test "x$with_links" != xyes], [
+         HLINKS="#"
+     ])
+-], [darwin*], [
+-    AC_DEFINE([__APPLE_QUARTZ__])
+-
+-    BUILD="OSX"
+-
+-    # MacOS X uses Cocoa for graphics.
+-    LIBS="$LIBS -framework Cocoa"
+-
+-    AS_IF([test x$have_pthread = xyes], [
+-        AC_DEFINE([HAVE_PTHREAD])
+-        THREADS="threads$EXEEXT"
+-    ])
+-
+-    AS_IF([test x$enable_gl != xno], [
+-        AC_DEFINE([HAVE_GL])
+-        AC_DEFINE([HAVE_GL_GLU_H])
+-        GLLIBS="-framework OpenGL"
+-    ], [
+-        LINKFLTKGL=""
+-        GLLIBNAME=""
+-        GLDSONAME=""
+-        GLDEMOS=""
+-    ])
+ 
+     # Don't make symlinks because HFS+ is not case sensitive...
+     AS_IF([test "x$with_links" != xyes], [
+@@ -1220,7 +1197,7 @@ AC_SUBST([UNINSTALL_DESKTOP])
+ AC_SUBST([BUILD])
+ 
+ dnl Figure out the appropriate formatted man page extension...
+-AS_CASE(["$host_os"], [*bsd* | darwin*], [
++AS_CASE(["$host_os"], [*bsd* | why*], [
+     # *BSD
+     CAT1EXT=0
+     CAT3EXT=0
+@@ -1284,13 +1261,6 @@ AS_IF([test -n "$GCC"], [
+     # The following additional warnings are useful for tracking down problems...
+     #OPTIM="-Wshadow -Wconversion $OPTIM"
+ 
+-    # We know that Carbon is deprecated on OS X 10.4. To avoid hundreds of warnings
+-    # we will temporarily disable 'deprecated' warnings on OS X.
+-    AS_CASE([$host_os], [darwin[1-7]], [
+-    ], [darwin*], [
+-        OPTIM="-Wno-deprecated-declarations $OPTIM"
+-    ])
+-
+     # Set the default compiler optimizations...
+     AS_IF([test -z "$DEBUGFLAG"], [
+         #
+@@ -1486,13 +1456,6 @@ AS_IF([test -n "$GCC"], [
+ 
+ OPTIM="$DEBUGFLAG $OPTIM"
+ 
+-dnl Take archflags away from CFLAGS (makefiles use ARCHFLAGS explicitly)
+-AS_CASE([$host_os], [darwin*], [
+-    AS_IF([test "x$with_archflags" != x], [
+-        CFLAGS="$(echo $CFLAGS | sed -e 's/$with_archflags//g')"
+-    ])
+-])
+-
+ dnl Define the FLTK documentation directory...
+ AS_CASE([$host_os], [mingw*], [
+     # Determine the path where MSys has /usr installed
+@@ -1523,7 +1486,7 @@ echo "-------------------------------------------------------------------------"
+ 
+ AS_CASE([$host_os_gui], [cygwin* | mingw*], [
+     graphics="GDI"
+-], [darwin*], [
++], [nope*], [
+     graphics="Quartz"
+ ], [*], [
+     graphics="X11"
+diff --git a/test/Makefile b/test/Makefile
+index b3f213119..3ee59ab7f 100644
+--- a/test/Makefile
++++ b/test/Makefile
+@@ -22,7 +22,6 @@ CPPFILES =\
+ 	arc.cxx \
+ 	ask.cxx \
+ 	bitmap.cxx \
+-	blocks.cxx \
+ 	boxtype.cxx \
+ 	browser.cxx \
+ 	button.cxx \
+@@ -90,7 +89,6 @@ CPPFILES =\
+ 	scroll.cxx \
+ 	shape.cxx \
+ 	subwindow.cxx \
+-	sudoku.cxx \
+ 	symbols.cxx \
+ 	table.cxx \
+ 	tabs.cxx \
+@@ -111,7 +109,6 @@ ALL =	\
+ 	arc$(EXEEXT) \
+ 	ask$(EXEEXT) \
+ 	bitmap$(EXEEXT) \
+-	blocks$(EXEEXT) \
+ 	boxtype$(EXEEXT) \
+ 	browser$(EXEEXT) \
+ 	button$(EXEEXT) \
+@@ -171,7 +168,6 @@ ALL =	\
+ 	rotated_text$(EXEEXT) \
+ 	scroll$(EXEEXT) \
+ 	subwindow$(EXEEXT) \
+-	sudoku$(EXEEXT) \
+ 	symbols$(EXEEXT) \
+ 	table$(EXEEXT) \
+ 	tabs$(EXEEXT) \
+@@ -250,9 +246,7 @@ clean:
+ 	$(RM) tabs.cxx tabs.h
+ 	$(RM) tree.cxx tree.h
+ 	$(RM) valuators.cxx valuators.h
+-	$(OSX_ONLY) $(RM) blocks.app/Contents/MacOS/blocks$(EXEEXT)
+	$(OSX_ONLY) $(RM) checkers.app/Contents/MacOS/checkers$(EXEEXT)
+-	$(OSX_ONLY) $(RM) sudoku.app/Contents/MacOS/sudoku$(EXEEXT)
+ 
+ install:	all
+ 	echo "Installing example programs to $(DESTDIR)$(docdir)/examples..."
+@@ -345,13 +339,6 @@ button$(EXEEXT): button.o
+ 
+ buttons$(EXEEXT): buttons.o
+ 
+-blocks$(EXEEXT): blocks.o
+-	echo Linking $@...
+-	$(CXX) $(ARCHFLAGS) $(CXXFLAGS) $(LDFLAGS) blocks.o -o $@ $(AUDIOLIBS) $(LINKFLTK) $(LDLIBS)
+-	$(OSX_ONLY) $(RM) -f -r blocks.app/Contents/MacOS
+-	$(OSX_ONLY) mkdir blocks.app/Contents/MacOS
+-	$(OSX_ONLY) $(INSTALL_BIN) blocks$(EXEEXT) blocks.app/Contents/MacOS
+-
+ checkers$(EXEEXT): checkers.o checkers_pieces.o
+ 	echo Linking $@...
+ 	$(CXX) $(ARCHFLAGS) $(CXXFLAGS) $(LDFLAGS) checkers.o checkers_pieces.o -o $@ $(LINKFLTKIMG) $(LDLIBS)
+@@ -545,18 +532,6 @@ scroll$(EXEEXT): scroll.o
+ 
+ subwindow$(EXEEXT): subwindow.o
+ 
+-sudoku: sudoku.o
+-	echo Linking $@...
+-	$(CXX) $(ARCHFLAGS) $(CXXFLAGS) $(LDFLAGS) sudoku.o -o $@ $(AUDIOLIBS) $(LINKFLTKIMG) $(LDLIBS)
+-	$(OSX_ONLY) $(RM) -r -f sudoku.app/Contents/MacOS
+-	$(OSX_ONLY) mkdir sudoku.app/Contents/MacOS
+-	$(OSX_ONLY) $(INSTALL_BIN) sudoku$(EXEEXT) sudoku.app/Contents/MacOS
+-
+-sudoku.exe: sudoku.o sudoku.rc
+-	echo Linking $@...
+-	$(RC) sudoku.rc sudokures.o
+-	$(CXX) $(ARCHFLAGS) $(CXXFLAGS) $(LDFLAGS) sudoku.o sudokures.o -o $@ $(AUDIOLIBS) $(LINKFLTKIMG) $(LDLIBS)
+-
+ symbols$(EXEEXT): symbols.o
+ 
+ table$(EXEEXT): table.o
+-- 
+2.27.0
+
