@@ -16,7 +16,7 @@ ifneq ($(wildcard $(BUILD_WORK)/fltk/.build_complete`),)
 fltk:
 	@echo "Using previously built fltk."
 else
-fltk: fltk-setup libx11 libxau libxmu xorgproto xxhash
+fltk: fltk-setup libx11 libxau libxmu xorgproto
 	cd $(BUILD_WORK)/fltk && ./autogen.sh -C \
 	$(DEFAULT_CONFIGURE_FLAGS) \
 	--with-x \
