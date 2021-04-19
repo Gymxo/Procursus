@@ -1,0 +1,11 @@
+Package: emacs
+Version: @DEB_EMACS_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends:
+Section: editors
+Priority: optional
+Description: GNU Emacs editor (metapackage)
+ GNU Emacs is the extensible self-documenting text editor.
+ This is a metapackage that will always depend on the latest
+ recommended Emacs variant (currently emacs-gtk).

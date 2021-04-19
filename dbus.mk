@@ -24,9 +24,9 @@ dbus: dbus-setup libx11 libxau libxmu xorgproto
         --with-systemduserunitdir=no \
         --with-systemdsystemunitdir=no \
         --docdir=/usr/share/doc/dbus-1.12.20 \
-        --with-console-auth-dir=/run/console \
-        --with-system-pid-file=/run/dbus/pid \
-        --with-system-socket=/run/dbus/system_bus_socket
+        --with-console-auth-dir=/var/run/console \
+        --with-system-pid-file=/var/run/dbus/pid \
+        --with-system-socket=/var/run/dbus/system_bus_socket
 	+$(MAKE) -C $(BUILD_WORK)/dbus
 	+$(MAKE) -C $(BUILD_WORK)/dbus install \
 		DESTDIR=$(BUILD_STAGE)/dbus
