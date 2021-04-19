@@ -1,0 +1,7 @@
+Package: uwm
+Name: Ultrix Window Manager
+Version: @DEB_UWM_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends:
+Description: The Ultrix Window Manager (uwm) is a historic standard window manager software for the X Window System

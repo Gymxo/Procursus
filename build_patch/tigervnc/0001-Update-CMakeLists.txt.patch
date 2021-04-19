@@ -54,7 +54,7 @@ index 9f1505e0..a8a24f70 100644
  endif()
  
 -option(BUILD_VIEWER "Build TigerVNC viewer" ON)
-+option(BUILD_VIEWER "Build TigerVNC viewer" ON)
++option(BUILD_VIEWER "Build TigerVNC viewer" OFF)
  if(BUILD_VIEWER)
    add_subdirectory(vncviewer)
    add_subdirectory(media)
