@@ -45,7 +45,12 @@ mesa: mesa-setup libx11 libxext libxcb libxdamage libxxf86vm gettext expat zstd 
 		-Ddtrace=false \
 		-Db_ndebug=true \
 		-Dplatforms=x11 \
-		-Dgles1=disabled 
+		-Dglx=gallium-xlib \
+		-Dgallium-drivers=swrast \
+		-Dosmesa=true \
+		-Dgles1=disabled \
+		..
+#		-Dglx=dri
 	cd $(BUILD_WORK)/mesa/build; \
 		DESTDIR="$(BUILD_STAGE)/mesa" meson install; \
 		DESTDIR="$(BUILD_BASE)" meson install
@@ -114,6 +119,6 @@ mesa-package: mesa-stage
 	
 	# mesa.mk Build cleanup
 	rm -rf $(BUILD_DIST)/libgl1-mesa-{glx,dri,dev} $(BUILD_DIST)/libgles2-mesa{,-dev} \
-		$(BUILD_DIST)/libglapi-mesa  $(BUILD_DIST)/mesa-common-dev $(BUILD_DIST)/mesa-demos
+		$(BUILD_DIST)/libglapi-mesa $(BUILD_DIST)/mesa-common-dev
 
 .PHONY: mesa mesa-package

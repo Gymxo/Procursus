@@ -2,7 +2,11 @@ ifneq ($(PROCURSUS),1)
 $(error Use the main Makefile)
 endif
 
+<<<<<<< HEAD
 SUBPROJECTS   += xwallpaper
+=======
+SUBPROJECTS        += xwallpaper
+>>>>>>> 31cb052 (update to latest)
 XWALLPAPER_VERSION := 0.6.6
 DEB_XWALLPAPER_V   ?= $(XWALLPAPER_VERSION)
 
@@ -15,9 +19,17 @@ ifneq ($(wildcard $(BUILD_WORK)/xwallpaper/.build_complete),)
 xwallpaper:
 	@echo "Using previously built xwallpaper."
 else
+<<<<<<< HEAD
 xwallpaper: xwallpaper-setup libx11 libxau libxmu xorgproto libice
 	cd $(BUILD_WORK)/xwallpaper && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS)
+=======
+xwallpaper: xwallpaper-setup xorgproto libjpeg-turbo libpixman libpng16 libx11 xcb-util-image xcb-util libxcb libxpm
+	cd $(BUILD_WORK)/xwallpaper && ./configure -C \
+		$(DEFAULT_CONFIGURE_FLAGS) \
+		--without-seccomp \
+		PKG_CONFIG="pkg-config --define-prefix"
+>>>>>>> 31cb052 (update to latest)
 	+$(MAKE) -C $(BUILD_WORK)/xwallpaper
 	+$(MAKE) -C $(BUILD_WORK)/xwallpaper install \
 		DESTDIR=$(BUILD_STAGE)/xwallpaper
