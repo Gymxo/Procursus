@@ -4,7 +4,11 @@ endif
 
 SUBPROJECTS         += xorg-server
 XORG-SERVER_VERSION := 1.20.10
+<<<<<<< HEAD
 DEB_XORG-SERVER_V   ?= $(XORG-SERVER_VERSION)
+=======
+DEB_XORG-SERVER_V   ?= $(XORG-SERVER_VERSION)-1
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 
 xorg-server-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://www.x.org/archive//individual/xserver/xorg-server-$(XORG-SERVER_VERSION).tar.gz{,.sig}
@@ -19,7 +23,11 @@ ifneq ($(wildcard $(BUILD_WORK)/xorg-server/.build_complete),)
 xorg-server:
 	@echo "Using previously built xorg-server."
 else
+<<<<<<< HEAD
 xorg-server: xorg-server-setup libx11 libxau libxmu xorgproto font-util libpixman libpng16 mesa libxfont2 libxkbfile libxdamage libxt libxpm libxaw libxres libxext xcb-util xcb-util-renderutil xcb-util-image xcb-util-wm xcb-util-keysyms libdmx
+=======
+xorg-server: xorg-server-setup libmd libx11 libxau libxmu xorgproto font-util libpixman libpng16 mesa libxfont2 libxkbfile libxdamage libxt libxpm libxaw libxres libxext xcb-util xcb-util-renderutil xcb-util-image xcb-util-wm xcb-util-keysyms libdmx libxdmcp libxfixes libxi libxrender libxtst
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 	cd $(BUILD_WORK)/xorg-server && ./autogen.sh -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--enable-xorg \
@@ -29,6 +37,10 @@ xorg-server: xorg-server-setup libx11 libxau libxmu xorgproto font-util libpixma
 		--enable-kdrive \
 		--disable-glamor \
 		--disable-xquartz \
+<<<<<<< HEAD
+=======
+		--with-sha1=libmd \
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 		PKG_CONFIG="pkg-config --define-prefix"
 	$(SED) -i 's|panoramiX.\$$(OBJEXT)||' $(BUILD_WORK)/xorg-server/hw/dmx/Makefile
 #   ^^ Wtf
@@ -45,13 +57,21 @@ xorg-server-package: xorg-server-stage
 	rm -rf $(BUILD_DIST)/xserver-xorg-{core,dev} $(BUILD_DIST)/xvfb \
 		$(BUILD_DIST)/xnest $(BUILD_DIST)/xdmx{-tools} $(BUILD_DIST)/xserver-{common,xephyr}
 
+<<<<<<< HEAD
 	mkdir -p $(BUILD_DIST)/xserver-xorg-core/usr/lib \
+=======
+	mkdir -p $(BUILD_DIST)/xserver-xorg-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 		$(BUILD_DIST)/xdmx/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{bin,share/man/man1} \
 		$(BUILD_DIST)/xdmx-tools/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{bin,share/man/man1} \
 		$(BUILD_DIST)/xserver-xephyr/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{bin,share/man/man1} \
 		$(BUILD_DIST)/xserver-common/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{lib/xorg,share/{man/man1,X11/xkb/compiled}} \
 		$(BUILD_DIST)/xserver-xorg-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{bin,lib/xorg/modules/extensions,share/man/{man5,man1}} \
+<<<<<<< HEAD
 		$(BUILD_DIST)/xserver-xorg-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{include,lib/pkgconfig,share/aclocal} \
+=======
+		$(BUILD_DIST)/xserver-xorg-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{lib/pkgconfig,share/aclocal} \
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 		$(BUILD_DIST)/xvfb/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{bin,share/man/man1} \
 		$(BUILD_DIST)/xnest/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{bin,share/man/man1}
 	
@@ -129,4 +149,8 @@ xorg-server-package: xorg-server-stage
 	rm -rf $(BUILD_DIST)/xserver-xorg-{core,dev} $(BUILD_DIST)/xvfb \
 		$(BUILD_DIST)/xnest $(BUILD_DIST)/xdmx $(BUILD_DIST)/xdmx-tools $(BUILD_DIST)/xserver-{common,xephyr}
 
+<<<<<<< HEAD
 .PHONY: xorg-server xorg-server-package
+=======
+.PHONY: xorg-server xorg-server-package
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4

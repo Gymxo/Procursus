@@ -26,7 +26,11 @@ xcb-util-wm: xcb-util-wm-setup libxcb xcb-util
 endif
 
 xcb-util-wm-package: xcb-util-wm-stage
+<<<<<<< HEAD
 	rm -rf $(BUILD_DIST)/libxcb-ewmh{2,-dev} $(BUILD_DIST)/libxcb-icccm4{-dev}
+=======
+	rm -rf $(BUILD_DIST)/libxcb-ewmh{2,-dev} $(BUILD_DIST)/libxcb-icccm4{,-dev}
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 	mkdir -p $(BUILD_DIST)/libxcb-ewmh2/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 	mkdir -p $(BUILD_DIST)/libxcb-ewmh-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{lib/pkgconfig,include/xcb}
 	mkdir -p $(BUILD_DIST)/libxcb-icccm4/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
@@ -34,17 +38,29 @@ xcb-util-wm-package: xcb-util-wm-stage
 
 	# xcb-util-wm.mk Prep libxcb-ewmh2
 	cp -a $(BUILD_STAGE)/xcb-util-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxcb-ewmh.2.dylib $(BUILD_DIST)/libxcb-ewmh2/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+<<<<<<< HEAD
 	cp -a $(BUILD_STAGE)/xcb-util-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxcb-ewmh.a $(BUILD_DIST)/libxcb-ewmh2/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 
 	# libxcb-wm.mk Prep libxcb-ewmh-dev
+=======
+
+	# libxcb-wm.mk Prep libxcb-ewmh-dev
+	cp -a $(BUILD_STAGE)/xcb-util-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxcb-ewmh.{a,dylib} $(BUILD_DIST)/libxcb-ewmh-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 	cp -a $(BUILD_STAGE)/xcb-util-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig/xcb-ewmh.pc $(BUILD_DIST)/libxcb-ewmh-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig
 	cp -a $(BUILD_STAGE)/xcb-util-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/xcb/xcb_ewmh.h $(BUILD_DIST)/libxcb-ewmh-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/xcb
 
 	# xcb-util-wm.mk Prep libxcb-icccm4
 	cp -a $(BUILD_STAGE)/xcb-util-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxcb-icccm.4.dylib $(BUILD_DIST)/libxcb-icccm4/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+<<<<<<< HEAD
 	cp -a $(BUILD_STAGE)/xcb-util-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxcb-icccm.a $(BUILD_DIST)/libxcb-icccm4/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 
 	# libxcb-wm.mk Prep libxcb-icccm4-dev
+=======
+
+	# libxcb-wm.mk Prep libxcb-icccm4-dev
+	cp -a $(BUILD_STAGE)/xcb-util-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxcb-icccm.{a,dylib} $(BUILD_DIST)/libxcb-icccm4-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 	cp -a $(BUILD_STAGE)/xcb-util-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig/xcb-icccm.pc $(BUILD_DIST)/libxcb-icccm4-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig
 	cp -a $(BUILD_STAGE)/xcb-util-wm/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/xcb/xcb_icccm.h $(BUILD_DIST)/libxcb-icccm4-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/xcb
 
@@ -59,6 +75,10 @@ xcb-util-wm-package: xcb-util-wm-stage
 	$(call PACK,libxcb-icccm4-dev,DEB_XCB-UTIL-WM_V)
 
 	# libxcb-wm.mk Build cleanup
+<<<<<<< HEAD
 	rm -rf $(BUILD_DIST)/libxcb-ewmh{2,-dev} $(BUILD_DIST)/libxcb-icccm4{-dev}
+=======
+	rm -rf $(BUILD_DIST)/libxcb-ewmh{2,-dev} $(BUILD_DIST)/libxcb-icccm4{,-dev}
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 
 .PHONY: xcb-util-wm xcb-util-wm-package

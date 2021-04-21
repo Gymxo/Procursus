@@ -2,7 +2,11 @@ Package: libxcb-xrm0
 Version: @DEB_XCB-UTIL-XRM_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
+<<<<<<< HEAD
 Depends: libxcb-util0 (>= 0.3.8), libxcb1
+=======
+Depends: libxcb-util1, libxcb1
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 Section: Libraries
 Priority: optional
 Description: utility functions for the X resource manager

@@ -2,7 +2,11 @@ Package: libxcb-cursor-dev
 Version: @DEB_XCB-UTIL-CURSOR_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
+<<<<<<< HEAD
 Depends: libxcb-cursor0 (= 0.1.1-4), libxcb-render-util0-dev, libxcb-image0-dev, libxcb-render0-dev, libxcb1-dev
+=======
+Depends: libxcb-cursor0 (= @DEB_XCB-UTIL-CURSOR_V@), libxcb-render-util0-dev, libxcb-image0-dev, libxcb-render0-dev, libxcb1-dev
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 Section: Development
 Description: utility libraries for X C Binding -- cursor, development files
  This package contains the header and library files needed to build software

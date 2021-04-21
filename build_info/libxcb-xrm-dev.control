@@ -2,7 +2,11 @@ Package: libxcb-xrm-dev
 Version: @DEB_XCB-UTIL-XRM_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
+<<<<<<< HEAD
 Depends: libxcb-xrm0 (= 1.0-3), libxcb1-dev, libxcb-util0-dev
+=======
+Depends: libxcb-xrm0 (= @DEB_XCB-UTIL-XRM_V@), libxcb1-dev, libxcb-util-dev
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 Section: Development
 Priority: optional
 Description: utility functions for the X resource manager, development files

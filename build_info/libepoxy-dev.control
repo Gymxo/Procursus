@@ -2,7 +2,11 @@ Package: libepoxy-dev
 Version: @DEB_LIBEPOXY_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
+<<<<<<< HEAD
 Depends: libepoxy0 (= 1.2-1)
+=======
+Depends: libepoxy0
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 Section: Development
 Priority: optional
 Description: OpenGL function pointer management library- development
@@ -12,4 +16,8 @@ Description: OpenGL function pointer management library- development
  code using undecorated function names like glCompileShader().
  .
  This package contains the development headers for the library found in
+<<<<<<< HEAD
  libepoxy0. Non-developers likely have little use for this package.
+=======
+ libepoxy0. Non-developers likely have little use for this package.
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4

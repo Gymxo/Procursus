@@ -21,8 +21,6 @@ fltk: fltk-setup libx11 libxau libxmu xorgproto
 	$(DEFAULT_CONFIGURE_FLAGS) \
 	--with-x \
 	--disable-threads \
-	--enable-shared \
-	--disable-gl \
 	--disable-xdbe \
 	--x-libraries=$(BUILD_BASE)/usr/lib \
 	--x-includes=$(BUILD_BASE)/usr/include

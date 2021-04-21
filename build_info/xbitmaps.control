@@ -1,7 +1,18 @@
 Package: xbitmaps
+<<<<<<< HEAD
 Version: 1.1.0
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
 Depends: 
 Section: X11
 Description:
+=======
+Version: @DEB_XBITMAPS_V@
+Architecture: all
+Maintainer: @DEB_MAINTAINER@
+Section: X11
+Priority: optional
+Description: Base X bitmaps
+ This package contains the base X bitmaps, which are used in many legacy X
+ clients.
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4

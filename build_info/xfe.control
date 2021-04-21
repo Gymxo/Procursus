@@ -2,10 +2,16 @@ Package: xfe
 Version: @DEB_XFE_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
+<<<<<<< HEAD
 Depends: libfontconfig1 (>= 2.11), libfox-1.6-0, libfreetype6 (>= 2.2.1), libpng16-16 (>= 1.6.2-1), libx11-6, libxft2 (>> 2.1.1)
 Section: x11
 Priority: optional
 Homepage: http://roland65.free.fr/xfe/
+=======
+Depends: libintl8, libfontconfig1, libfox-1.6-0, libfreetype6, libpng16-16, libx11-6, libxft2, libxrandr2
+Section: X11
+Priority: optional
+>>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 Description: lightweight file manager for X11
  Xfe is based on the popular but discontinued X Win Commander. It is
  desktop independent and is written using the C++ Fox Toolkit. Its

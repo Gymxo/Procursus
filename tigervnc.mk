@@ -19,14 +19,21 @@ tigervnc:
 else
 tigervnc: tigervnc-setup libx11 libxau libxmu xorgproto libpixman gnutls libjpeg-turbo openpam libxdamage libxfixes libxtst libxrandr libxfont2 mesa libgeneral libxkbfile
 	cd $(BUILD_WORK)/tigervnc && cmake . \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_SYSTEM_NAME=Darwin \
-		-DCMAKE_CROSSCOMPILING=true \
-		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DCMAKE_INSTALL_NAME_DIR=/usr \
-		-DCMAKE_OSX_SYSROOT="$(TARGET_SYSROOT)" \
-		-DCMAKE_FIND_ROOT_PATH=$(BUILD_BASE) \
-		-DCMAKE_INSTALL_RPATH=/usr
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_CROSSCOMPILING=true \
+	-DCMAKE_SYSTEM_NAME=Darwin \
+	-DCMAKE_SYSTEM_PROCESSOR=$(shell echo $(GNU_HOST_TRIPLE) | cut -f1 -d-) \
+	-DCMAKE_C_FLAGS="$(CFLAGS)" \
+	-DCMAKE_CXX_FLAGS="$(CXXFLAGS)" \
+	-DCMAKE_FIND_ROOT_PATH=$(BUILD_BASE) \
+	-DCMAKE_INSTALL_NAME_TOOL=$(I_N_T) \
+	-DCMAKE_INSTALL_PREFIX=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
+	-DCMAKE_INSTALL_NAME_DIR=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
+	-DCMAKE_INSTALL_RPATH=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
+	-DCMAKE_INSTALL_SYSCONFDIR=$(MEMO_PREFIX)/etc \
+	-DCMAKE_OSX_SYSROOT="$(TARGET_SYSROOT)" \
+	-DCMAKE_OSX_ARCHITECTURES="$(MEMO_ARCH)" \
+	-DBUILD_JAVA=true
 	+$(MAKE) -C $(BUILD_WORK)/tigervnc
 	+$(MAKE) -C $(BUILD_WORK)/tigervnc install \
 		DESTDIR=$(BUILD_STAGE)/tigervnc

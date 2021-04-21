@@ -3,21 +3,21 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS   += xwallpaper
-XWALLPAPER_VERSION := 0.6.6
+XWALLPAPER_VERSION := 0.6.5-1
 DEB_XWALLPAPER_V   ?= $(XWALLPAPER_VERSION)
 
 xwallpaper-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://github.com/stoeckmann/xwallpaper/releases/download/v0.6.6/xwallpaper-0.6.6.tar.xz{,.sig}
-	$(call PGP_VERIFY,xwallpaper-$(XWALLPAPER_VERSION).tar.xz)
-	$(call EXTRACT_TAR,xwallpaper-$(XWALLPAPER_VERSION).tar.xz,xwallpaper-$(XWALLPAPER_VERSION),xwallpaper)
+	wget -q -nc -P $(BUILD_SOURCE) https://salsa.debian.org/debian/xwallpaper/-/archive/master/xwallpaper-master.tar.gz
+	$(call EXTRACT_TAR,xwallpaper-master.tar.gz,xwallpaper-master,xwallpaper)
 
 ifneq ($(wildcard $(BUILD_WORK)/xwallpaper/.build_complete),)
 xwallpaper:
 	@echo "Using previously built xwallpaper."
 else
 xwallpaper: xwallpaper-setup libx11 libxau libxmu xorgproto libice
-	cd $(BUILD_WORK)/xwallpaper && ./configure -C \
-		$(DEFAULT_CONFIGURE_FLAGS)
+	cd $(BUILD_WORK)/xwallpaper && ./configre -C \
+		$(DEFAULT_CONFIGURE_FLAGS) \
+		--without-seccomp
 	+$(MAKE) -C $(BUILD_WORK)/xwallpaper
 	+$(MAKE) -C $(BUILD_WORK)/xwallpaper install \
 		DESTDIR=$(BUILD_STAGE)/xwallpaper

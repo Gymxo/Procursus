@@ -100,8 +100,7 @@ openjdk: openjdk-setup libx11 libxext libxi libxrender libxrandr libxtst freetyp
 		--with-harfbuzz=system \
 		CPP="$(CPP) -arch arm64" \
 		CXXCPP="$(CXX) -E -arch arm64"
-	make -C $(BUILD_WORK)/openjdk images \
-		JOBS=$(shell $(GET_LOGICAL_CORES))
+	+$(MAKE) -C $(BUILD_WORK)/openjdk images
 	cp -a $(BUILD_WORK)/openjdk/build/*/images/jdk $(BUILD_STAGE)/openjdk/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/jvm/java-$(OPENJDK_MAJOR_V)-openjdk
 	for dylib in $(BUILD_STAGE)/openjdk/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/jvm/java-$(OPENJDK_MAJOR_V)-openjdk/lib/{,*/}*.dylib; do \
 		ln -sf $$(echo $$dylib | rev | cut -d/ -f1 | rev) $$(echo $$dylib | $(SED) s/.dylib//).so; \
