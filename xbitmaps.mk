@@ -2,7 +2,11 @@ ifneq ($(PROCURSUS),1)
 $(error Use the main Makefile)
 endif
 
+<<<<<<< HEAD
 SUBPROJECTS    += xbitmaps
+=======
+SUBPROJECTS      += xbitmaps
+>>>>>>> 7dfd23f (uhh)
 XBITMAPS_VERSION := 1.1.0
 DEB_XBITMAPS_V   ?= $(XBITMAPS_VERSION)
 
@@ -14,12 +18,18 @@ ifneq ($(wildcard $(BUILD_WORK)/xbitmaps/.build_complete),)
 xbitmaps:
 	@echo "Using previously built xbitmaps."
 else
+<<<<<<< HEAD
 xbitmaps: xbitmaps-setup libx11 libxau libxmu xorgproto xxhash
 	cd $(BUILD_WORK)/xbitmaps && autoreconf -fiv && ./configure -C \
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
 		--sysconfdir=$(MEMO_PREFIX)/etc \
 		--localstatedir=$(MEMO_PREFIX)/var
+=======
+xbitmaps: xbitmaps-setup xorgproto
+	cd $(BUILD_WORK)/xbitmaps && autoreconf -fiv && ./configure -C \
+		$(DEFAULT_CONFIGURE_FLAGS)
+>>>>>>> 7dfd23f (uhh)
 	+$(MAKE) -C $(BUILD_WORK)/xbitmaps
 	+$(MAKE) -C $(BUILD_WORK)/xbitmaps install \
 		DESTDIR=$(BUILD_STAGE)/xbitmaps
@@ -35,13 +45,20 @@ xbitmaps-package: xbitmaps-stage
 # xbitmaps.mk Prep xbitmaps
 	cp -a $(BUILD_STAGE)/xbitmaps $(BUILD_DIST)
 	
+<<<<<<< HEAD
 # xbitmaps.mk Sign
 	$(call SIGN,xbitmaps,general.xml)
 	
+=======
+>>>>>>> 7dfd23f (uhh)
 # xbitmaps.mk Make .debs
 	$(call PACK,xbitmaps,DEB_XBITMAPS_V)
 	
 # xbitmaps.mk Build cleanup
 	rm -rf $(BUILD_DIST)/xbitmaps
 
+<<<<<<< HEAD
 .PHONY: xbitmaps xbitmaps-package
+=======
+.PHONY: xbitmaps xbitmaps-package
+>>>>>>> 7dfd23f (uhh)

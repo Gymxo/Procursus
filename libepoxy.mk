@@ -46,10 +46,16 @@ libepoxy-package: libepoxy-stage
 
 	#libepoxy.mk Prep libepxoy0
 	cp -a $(BUILD_STAGE)/libepoxy/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libepoxy.0.dylib $(BUILD_DIST)/libepoxy0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+<<<<<<< HEAD
 	cp -a $(BUILD_STAGE)/libepoxy/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libepoxy.dylib $(BUILD_DIST)/libepoxy0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 
 	# libepoxy.mk Prep libepoxy-dev
 	cp -a $(BUILD_STAGE)/libepoxy/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig $(BUILD_DIST)/libepoxy-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+=======
+
+	# libepoxy.mk Prep libepoxy-dev
+	cp -a $(BUILD_STAGE)/libepoxy/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libepoxy.0.dylib) $(BUILD_DIST)/libepoxy-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+>>>>>>> 7dfd23f (uhh)
 	cp -a $(BUILD_STAGE)/libepoxy/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libepoxy-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
 
 	# libepoxy.mk Sign
@@ -62,4 +68,8 @@ libepoxy-package: libepoxy-stage
 	# libepoxy.mk Build cleanup
 	rm -rf $(BUILD_DIST)/libepoxy{0,-dev}
 
+<<<<<<< HEAD
 .PHONY: libepoxy libepoxy-package
+=======
+.PHONY: libepoxy libepoxy-package
+>>>>>>> 7dfd23f (uhh)
