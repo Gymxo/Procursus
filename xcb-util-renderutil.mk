@@ -2,11 +2,7 @@ ifneq ($(PROCURSUS),1)
 $(error Use the main Makefile)
 endif
 
-<<<<<<< HEAD
-SUBPROJECTS    += xcb-util-renderutil
-=======
 SUBPROJECTS                 += xcb-util-renderutil
->>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 XCB-UTIL-RENDERUTIL_VERSION := 0.3.9
 DEB_XCB-UTIL-RENDERUTIL_V   ?= $(XCB-UTIL-RENDERUTIL_VERSION)
 
@@ -18,18 +14,9 @@ ifneq ($(wildcard $(BUILD_WORK)/xcb-util-renderutil/.build_complete),)
 xcb-util-renderutil:
 	@echo "Using previously built xcb-util-renderutil."
 else
-<<<<<<< HEAD
-xcb-util-renderutil: xcb-util-renderutil-setup libxcb libxres
-	cd $(BUILD_WORK)/xcb-util-renderutil && ./configure -C \
-		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=/usr \
-		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var
-=======
 xcb-util-renderutil: xcb-util-renderutil-setup libxcb xcb-util
 	cd $(BUILD_WORK)/xcb-util-renderutil && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS)
->>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 	+$(MAKE) -C $(BUILD_WORK)/xcb-util-renderutil
 	+$(MAKE) -C $(BUILD_WORK)/xcb-util-renderutil install \
 		DESTDIR=$(BUILD_STAGE)/xcb-util-renderutil
@@ -39,29 +26,6 @@ xcb-util-renderutil: xcb-util-renderutil-setup libxcb xcb-util
 endif
 
 xcb-util-renderutil-package: xcb-util-renderutil-stage
-<<<<<<< HEAD
-	rm -rf $(BUILD_DIST)/libxcb-render-util{1,-dev}
-	mkdir -p $(BUILD_DIST)/libxcb-render-util{1,-dev}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
-
-	# xcb-util-renderutil.mk Prep libutil-xrm1
-	cp -a $(BUILD_STAGE)/libxcb-renderutil/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxcb-render-util.1.dylib $(BUILD_DIST)/libxcb-render-util1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
-
-	# libxcb-render-util.mk Prep libxcb-render-util-dev
-	cp -a $(BUILD_STAGE)/libxcb-renderutil/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libxcb-render-util.1.dylib) $(BUILD_DIST)/libxcb-render-util-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
-	cp -a $(BUILD_STAGE)/libxcb-renderutil/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libxcb-render-util-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
-
-	# libxcb.mk Sign
-	$(call SIGN,libxcb-render-util1,general.xml)
-
-	# libxcb-renderutil.mk Make .debs
-	$(call PACK,libxcb-renderutil1,DEB_xcb-renderutil_V)
-	$(call PACK,libxcb-renderutil-dev,DEB_xcb-renderutil_V)
-
-	# libxcb-renderutil.mk Build cleanup
-	rm -rf $(BUILD_DIST)/libxcb-renderutil{1,-dev}
-
-.PHONY: xcb-util-renderutil xcb-util-renderutil-package
-=======
 	rm -rf $(BUILD_DIST)/libxcb-render-util0{,-dev}
 	mkdir -p $(BUILD_DIST)/libxcb-render-util0{,-dev}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 
@@ -83,4 +47,3 @@ xcb-util-renderutil-package: xcb-util-renderutil-stage
 	rm -rf $(BUILD_DIST)/libxcb-render-util0{,-dev}
 
 .PHONY: xcb-util-renderutil xcb-util-renderutil-package
->>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
