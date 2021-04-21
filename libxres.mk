@@ -4,7 +4,7 @@ endif
 
 SUBPROJECTS     += libxres
 LIBXRES_VERSION := 1.2.1
-DEB_LIBXRES_V   ?= $(LIBXRES_VERSION)
+DEB_LIBXRES_V   ?= $(XRES_VERSION)
 
 libxres-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://www.x.org/archive/individual/lib/libXres-$(LIBXRES_VERSION).tar.gz{,.sig}
@@ -34,10 +34,10 @@ libxres-package: libxres-stage
 		$(BUILD_DIST)/libxres-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 
 	# libxres.mk Prep libxres1
-	cp -a $(BUILD_STAGE)/libxres/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libXRes.1*.dylib $(BUILD_DIST)/libxres1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/libxres/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxres.1*.dylib $(BUILD_DIST)/libxres1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 
 	# libxres.mk Prep libxres-dev
-	cp -a $(BUILD_STAGE)/libxres/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libXRes.1*.dylib) $(BUILD_DIST)/libxres-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/libxres/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libxres.1*.dylib) $(BUILD_DIST)/libxres-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 	cp -a $(BUILD_STAGE)/libxres/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{include,share} $(BUILD_DIST)/libxres-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/
 
 	# libxres.mk Sign
