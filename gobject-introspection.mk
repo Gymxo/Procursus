@@ -18,7 +18,7 @@ gobject-introspection-setup: setup bison glib2.0
 	[properties]\n \
 	root = '$(BUILD_BASE)'\n \
 	[paths]\n \
-	prefix ='/usr'\n \
+	prefix ='$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)'\n \
 	sysconfdir='$(MEMO_PREFIX)/etc'\n \
 	localstatedir='$(MEMO_PREFIX)/var'\n \
 	[binaries]\n \
@@ -30,9 +30,9 @@ gobject-introspection:
 	@echo "Using previously built gobject-introspection."
 else
 gobject-introspection: gobject-introspection-setup libx11 mesa
-	cd $(BUILD_WORK)/gobject-introspection/build && PKG_CONFIG="pkg-config" meson configure \
+	cd $(BUILD_WORK)/gobject-introspection/build && PKG_CONFIG="pkg-config" meson \
 		--cross-file cross.txt \
-		-Dbuild_introspection_data=false \
+		-Dbuild_introspection_data=true \
 		-Dgi_cross_use_prebuilt_gi=true \
 		..
 	+ninja -C $(BUILD_WORK)/gobject-introspection/build

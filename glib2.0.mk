@@ -20,7 +20,7 @@ glib2.0-setup: setup
 	[properties]\n \
 	root = '$(BUILD_BASE)'\n \
 	[paths]\n \
-	prefix ='$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)'\n \
+	prefix ='/opt/procursus'\n \
 	[binaries]\n \
 	c = '$(CC)'\n \
 	objc = '$(CC)'\n \

@@ -20,6 +20,8 @@ fltk: fltk-setup libx11 libxau libxmu xorgproto
 	cd $(BUILD_WORK)/fltk && ./autogen.sh -C \
 	$(DEFAULT_CONFIGURE_FLAGS) \
 	--with-x \
+	--disable-gl \
+	--enable-x11 \
 	--disable-threads \
 	--enable-shared \
 	--disable-gl \
