@@ -33,7 +33,7 @@ tigervnc: tigervnc-setup libx11 libxau libxmu xorgproto libpixman gnutls libjpeg
 	-DCMAKE_INSTALL_SYSCONFDIR=$(MEMO_PREFIX)/etc \
 	-DCMAKE_OSX_SYSROOT="$(TARGET_SYSROOT)" \
 	-DCMAKE_OSX_ARCHITECTURES="$(MEMO_ARCH)" \
-	-DUSE_JAVA=TRUE
+	-DBUILD_JAVA=TRUE
 	+$(MAKE) -C $(BUILD_WORK)/tigervnc
 	+$(MAKE) -C $(BUILD_WORK)/tigervnc install \
 		DESTDIR=$(BUILD_STAGE)/tigervnc
