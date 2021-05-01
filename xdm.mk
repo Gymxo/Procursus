@@ -16,11 +16,16 @@ xdm:
 	@echo "Using previously built xdm."
 else
 xdm: xdm-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/xdm && ./configure -C \
-		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=/usr \
-		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var
+	cd $(BUILD_WORK)/xdm && export ac_cv_file__dev_urandom=yes && ac_cv_file__dev_random=yes && ./configure -h -C \
+		$(DEFAULT_CONFIGURE_FLAGS) \
+		--with-pam \
+		--with-xft \
+		--without-utmp-file \
+		--enable-xdmshell \
+		--disable-dependency-tracking \
+		--enable-tcp-transport \
+		--without-systemd-daemon \
+		--with-xdmlibdir=/etc/X11/xdm
 	+$(MAKE) -C $(BUILD_WORK)/xdm
 	+$(MAKE) -C $(BUILD_WORK)/xdm install \
 		DESTDIR=$(BUILD_STAGE)/xdm

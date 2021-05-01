@@ -14,7 +14,7 @@ ifneq ($(wildcard $(BUILD_WORK)/xterm/.build_complete),)
 xterm:
 	@echo "Using previously built xterm."
 else
-xterm: xterm-setup libx11 libxau libxmu xorgproto xbitmaps gettext ncurses libxaw libxt libxext libxinerama libice libxpm xbitmaps fontconfig freetype pcre2 libsixel
+xterm: xterm-setup libx11 libxau libxmu xorgproto xbitmaps gettext ncurses libxaw libxt libxext libXinerama libice libxpm xbitmaps fontconfig freetype pcre2 libsixel
 	cd $(BUILD_WORK)/xterm && \
 	TERMINFO=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/terminfo \
 	./configure -C \

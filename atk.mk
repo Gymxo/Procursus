@@ -18,7 +18,7 @@ atk-setup: setup
 	[properties]\n \
 	root = '$(BUILD_BASE)'\n \
 	[paths]\n \
-	prefix ='/opt/procursus'\n \
+	prefix ='/usr'\n \
 	sysconfdir='$(MEMO_PREFIX)/etc'\n \
 	localstatedir='$(MEMO_PREFIX)/var'\n \
 	[binaries]\n \
@@ -32,6 +32,9 @@ else
 atk: atk-setup libx11 libxau libxmu xorgproto xxhash
 	cd $(BUILD_WORK)/atk/build && PKG_CONFIG="pkg-config" meson \
 		--cross-file cross.txt \
+		-Dintrospection=true \
+		-Ddocs=false \
+		-Dman=false \
 		..
 	+ninja -C $(BUILD_WORK)/atk/build
 	+DESTDIR="$(BUILD_STAGE)/atk" ninja -C $(BUILD_WORK)/atk/build install

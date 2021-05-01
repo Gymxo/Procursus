@@ -28,7 +28,7 @@ xorg-server: xorg-server-setup libmd libx11 libxau libxmu xorgproto font-util li
 		--enable-xephyr \
 		--enable-kdrive \
 		--disable-glamor \
-		--disable-xquartz \
+		--enable-xquartz \
 		--with-sha1=libmd \
 		CFLAGS="$(CFLAGS) -I$(BUILD_BASE)/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/pixman-1"
 	$(SED) -i 's|panoramiX.\$$(OBJEXT)||' $(BUILD_WORK)/xorg-server/hw/dmx/Makefile

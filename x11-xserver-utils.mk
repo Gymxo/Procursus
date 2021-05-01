@@ -25,6 +25,7 @@ x11-xserver-utils: x11-xserver-utils-setup libsm libx11 libxaw libxcursor libxex
 				DESTDIR=$(BUILD_STAGE)/x11-xserver-utils; \
 		fi; \
 	done
+	rm -rf $(BUILD_STAGE)/x11-xserver-utils/Users
 	touch $(BUILD_WORK)/x11-xserver-utils/.build_complete
 endif
 

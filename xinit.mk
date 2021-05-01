@@ -17,10 +17,9 @@ xinit:
 else
 xinit: xinit-setup libx11 libxau libxmu xorgproto xxhash
 	cd $(BUILD_WORK)/xinit && ./configure -C \
-		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=/usr \
-		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var
+		$(DEFAULT_CONFIGURE_FLAGS) \
+		--with-launchd \
+		--with-xinitdir=/usr/lib/X11
 	+$(MAKE) -C $(BUILD_WORK)/xinit
 	+$(MAKE) -C $(BUILD_WORK)/xinit install \
 		DESTDIR=$(BUILD_STAGE)/xinit
