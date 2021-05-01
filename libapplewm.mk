@@ -15,11 +15,12 @@ libAppleWM:
 	@echo "Using previously built libAppleWM."
 else
 libAppleWM: libAppleWM-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/libAppleWM && ./configure -C \
+	cd $(BUILD_WORK)/libAppleWM && autoreconf -fiv && ./configure -C \
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=/usr \
 		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var
+		--localstatedir=$(MEMO_PREFIX)/var \
+		--enable-malloc0returnsnull=no
 	+$(MAKE) -C $(BUILD_WORK)/libAppleWM
 	+$(MAKE) -C $(BUILD_WORK)/libAppleWM install \
 		DESTDIR=$(BUILD_STAGE)/libAppleWM

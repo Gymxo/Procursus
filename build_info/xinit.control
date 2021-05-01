@@ -1,5 +1,11 @@
 Package: xinit
-Version: 1.4.1
+Version: @DEB_XINIT_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
-Description:
+Depends: libx11-6, xserver-common, xauth
+Recommends: xserver-xorg
+Section: x11
+Priority: optional
+Description: X server initialisation tool
+ xinit and startx are programs which facilitate starting an X server, and
+ loading a base X session.

@@ -1,0 +1,10 @@
+Package: xinput
+Version: @DEB_XINPUT_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER
+Depends: libx11-6, libxext6, libxi6, libxinerama1, libxrandr2
+Section: x11
+Priority: optional
+Description: Runtime configuration and test of XInput devices
+ Xinput is an utility for configuring and testing XInput
+ devices.

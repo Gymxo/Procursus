@@ -15,8 +15,9 @@ net-tools:
 	@echo "Using previously built net-tools."
 else
 net-tools: net-tools-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/net-tools 
-	+$(MAKE) -C $(BUILD_WORK)/net-tools hostname
+	+$(MAKE) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" -C $(BUILD_WORK)/net-tools hostname
+	+$(MAKE) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" -C $(BUILD_WORK)/net-tools install \
+	DESTDIR=$(BUILD_STAGE)/net-tools
 	touch $(BUILD_WORK)/net-tools/.build_complete
 endif
 
