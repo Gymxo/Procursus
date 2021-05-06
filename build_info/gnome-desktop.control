@@ -1,0 +1,5 @@
+Package: gnome-desktop
+Version: @DEB_GNOME-DESKTOP_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description: hmm

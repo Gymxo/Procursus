@@ -1,0 +1,5 @@
+Package: gsettings-desktop-schemas
+Version: @DEB_GSETTINGS-DESKTOP-SCHEMAS_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description: hmm

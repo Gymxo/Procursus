@@ -19,7 +19,8 @@ xinit: xinit-setup libx11 libxau libxmu xorgproto xxhash
 	cd $(BUILD_WORK)/xinit && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--with-launchd \
-		--with-xinitdir=/usr/lib/X11
+		--with-xinitdir=/usr/lib/X11 \
+		--with-xserver=/usr/bin/Xvnc
 	+$(MAKE) -C $(BUILD_WORK)/xinit
 	+$(MAKE) -C $(BUILD_WORK)/xinit install \
 		DESTDIR=$(BUILD_STAGE)/xinit

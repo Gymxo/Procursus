@@ -1,0 +1,5 @@
+Package: at-spi2-core
+Version: @DEB_AT-SPI2-CORE_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description:

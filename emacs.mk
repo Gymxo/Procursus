@@ -35,6 +35,8 @@ emacs: emacs-setup libx11 libxau libxmu xorgproto xxhash
 		--x-libraries=$(BUILD_BASE)/usr/lib \
 		--x-includes=$(BUILD_BASE)/usr/include \
 		--without-ns \
+		--with-x-toolkit=gtk3 \
+		--with-xwidgets \
 		--with-pdumper=yes \
 		--with-unexec=no \
 		--with-dumping=none \

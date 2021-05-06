@@ -26,6 +26,7 @@ gobject-introspection-setup: setup bison glib2.0
 	objc = '$(CC)'\n \
 	cpp = '$(CXX)'\n" > $(BUILD_WORK)/gobject-introspection/build/cross.txt
 
+
 ifneq ($(wildcard $(BUILD_WORK)/gobject-introspection/.build_complete),)
 gobject-introspection:
 	@echo "Using previously built gobject-introspection."
@@ -34,34 +35,37 @@ gobject-introspection: gobject-introspection-setup libx11 mesa
 	cd $(BUILD_WORK)/gobject-introspection && \
 	mkdir -p build-host && \
 	pushd "build-host" && \
-	unset CFLAGS CPPFLAGS LDFLAGS && \
+	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS && \
 	export LDFLAGS=-Wl,-dead_strip_dylibs && \
 	PKG_CONFIG="pkg-config" meson \
 	--buildtype=release \
-	--prefix="/opt/procursus" \
+	--prefix="/usr/local" \
 	--backend=ninja \
 	-Dlibdir=lib \
 	-Dpython="/opt/procursus/bin/python3" \
 	..
 	cd $(BUILD_WORK)/gobject-introspection/build-host && \
 	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR ACLOCAL_PATH && \
+	export GI_CROSS_LAUNCHER=/opt/procursus/libexec/gi-cross-launcher-save.sh && \
 	ninja -C $(BUILD_WORK)/gobject-introspection/build-host
 	+sudo ninja -C $(BUILD_WORK)/gobject-introspection/build-host install
 	+DESTDIR="$(BUILD_BASE)"
 	cd $(BUILD_WORK)/gobject-introspection/build-host && sudo ninja -k 0 install
 	cd $(BUILD_WORK)/gobject-introspection/build && \
+	export GI_CROSS_LAUNCHER=/opt/procursus/libexec/gi-cross-launcher-load.sh && \
 	PKG_CONFIG="pkg-config" meson \
 		--cross-file cross.txt \
 		-Dgi_cross_use_prebuilt_gi=True \
-		-Dbuild_introspection_data=false \
+		-Dbuild_introspection_data=true \
 		--buildtype=release \
 		--prefix="/usr" \
 		--backend=ninja \
 		-Dpython="/opt/procursus/bin/python3" \
-		-Dgi_cross_pkgconfig_sysroot_path=$(BUILD_BASE) \
 		..
-	ninja -k 0 -C $(BUILD_WORK)/gobject-introspection/build
-	+DESTDIR="$(BUILD_STAGE)/gobject-introspection" ninja -k 0 -C $(BUILD_WORK)/gobject-introspection/build install
+	cd $(BUILD_WORK)/gobject-introspection/build && sed -i 's/--cflags-begin/--cflags-begin -arch arm64/g' build.ninja && \
+	export GI_CROSS_LAUNCHER=/opt/procursus/libexec/gi-cross-launcher-load.sh && \
+	ninja -C $(BUILD_WORK)/gobject-introspection/build
+	+DESTDIR="$(BUILD_STAGE)/gobject-introspection" ninja -C $(BUILD_WORK)/gobject-introspection/build install
 	+DESTDIR="$(BUILD_BASE)" ninja -k 0 -C $(BUILD_WORK)/gobject-introspection/build install
 	touch $(BUILD_WORK)/gobject-introspection/.build_complete
 endif

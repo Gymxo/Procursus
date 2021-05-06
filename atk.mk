@@ -30,31 +30,50 @@ atk:
 	@echo "Using previously built atk."
 else
 atk: atk-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/atk/build && PKG_CONFIG="pkg-config" meson \
+	cd $(BUILD_WORK)/atk && \
+	mkdir -p build-host && \
+	pushd "build-host" && \
+	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR && \
+	export LDFLAGS=-Wl,-dead_strip_dylibs && \
+	PKG_CONFIG="pkg-config" meson \
+	-Denable_docs=false \
+	--libdir=/usr/local/lib \
+	--prefix="/usr/local" \
+	--wrap-mode=nofallback \
+	..
+	cd $(BUILD_WORK)/atk/build-host && \
+	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR ACLOCAL_PATH && \
+	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-save.sh && \
+	ninja && sudo ninja install
+	cd $(BUILD_WORK)/atk/build && \
+	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-load.sh && \
+	PKG_CONFIG="pkg-config" meson \
 		--cross-file cross.txt \
-		-Dintrospection=true \
-		-Ddocs=false \
-		-Dman=false \
+		-Denable_docs=false \
+		--wrap-mode=nofallback \
 		..
-	+ninja -C $(BUILD_WORK)/atk/build
+	cd $(BUILD_WORK)/atk/build && sed -i 's/--cflags-begin/--cflags-begin -arch arm64/g' build.ninja && \
+	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-load.sh && \
+	ninja -C $(BUILD_WORK)/atk/build
 	+DESTDIR="$(BUILD_STAGE)/atk" ninja -C $(BUILD_WORK)/atk/build install
-	+DESTDIR="$(BUILD_BASE)" ninja -C $(BUILD_WORK)/atk/build install
+	+DESTDIR="$(BUILD_BASE)" ninja -k 0 -C $(BUILD_WORK)/atk/build install
 	touch $(BUILD_WORK)/atk/.build_complete
 endif
 
 atk-package: atk-stage
 	# atk.mk Package Structure
 	rm -rf $(BUILD_DIST)/atk
-
+	mkdir -p $(BUILD_DIST)/atk
+	
 	# atk.mk Prep atk
 	cp -a $(BUILD_STAGE)/atk $(BUILD_DIST)
-
+	
 	# atk.mk Sign
 	$(call SIGN,atk,general.xml)
-
+	
 	# atk.mk Make .debs
 	$(call PACK,atk,DEB_ATK_V)
-
+	
 	# atk.mk Build cleanup
 	rm -rf $(BUILD_DIST)/atk
 

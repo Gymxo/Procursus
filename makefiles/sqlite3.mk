@@ -26,6 +26,7 @@ sqlite3: sqlite3-setup ncurses readline
 		--enable-json1 \
 		--enable-fts4 \
 		--enable-fts5 \
+		--disable-tcl \
 		--with-readline-inc="-I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/readline" \
 		ac_cv_search_tgetent=-lncursesw \
 		CPPFLAGS="$(CPPFLAGS) -DSQLITE_ENABLE_COLUMN_METADATA=1 -DSQLITE_MAX_VARIABLE_NUMBER=250000 -DSQLITE_ENABLE_RTREE=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_JSON1=1"

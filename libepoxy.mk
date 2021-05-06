@@ -29,14 +29,16 @@ ifneq ($(wildcard $(BUILD_WORK)/libepoxy/.build_complete),)
 libepoxy:
 	@echo "Using previously built libepoxy."
 else
-libepoxy: libepoxy-setup libx11 mesa
+libepoxy: libepoxy-setup
 	cd $(BUILD_WORK)/libepoxy/build && PKG_CONFIG="pkg-config" meson \
 		--cross-file cross.txt \
 		-Dtests=false \
+		-Dx11=true \
+		-Dglx=yes \
 		..
-	+ninja -C $(BUILD_WORK)/libepoxy/build
+	ninja -C $(BUILD_WORK)/libepoxy/build
 	+DESTDIR="$(BUILD_STAGE)/libepoxy" ninja -C $(BUILD_WORK)/libepoxy/build install
-	+DESTDIR="$(BUILD_BASE)" ninja -C $(BUILD_WORK)/libepoxy/build install
+	+DESTDIR="$(BUILD_BASE)" ninja -k 0 -C $(BUILD_WORK)/libepoxy/build install
 	touch $(BUILD_WORK)/libepoxy/.build_complete
 endif
 

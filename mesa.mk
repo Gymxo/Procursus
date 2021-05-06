@@ -13,8 +13,6 @@ mesa-setup: setup
 	$(SED) -i -e "s/with_dri_platform = 'apple'/with_dri_platform = 'none'/" \
 		-e "/dep_xcb_shm = dependency('xcb-shm')/a dep_xxf86vm = dependency('xxf86vm')" $(BUILD_WORK)/mesa/meson.build
 	$(SED) -i "s|OpenGL/gl.h|GL/gl.h|" $(BUILD_WORK)/mesa/src/mesa/main/texcompress_s3tc_tmp.h
-	wget -q -nc -P $(BUILD_WORK)/mesa http://www.linuxfromscratch.org/patches/blfs/svn/mesa-20.3.4-add_xdemos-1.patch
-	cd $(BUILD_WORK)/mesa && patch -Np1 -i mesa-20.3.4-add_xdemos-1.patch
 	mkdir -p $(BUILD_WORK)/mesa/build
 
 	echo -e "[host_machine]\n \
@@ -49,6 +47,7 @@ mesa: mesa-setup libx11 libxext libxcb libxdamage libxxf86vm gettext expat zstd 
 		-Dgallium-drivers=swrast \
 		-Dosmesa=true \
 		-Dgles1=disabled \
+		-Dc_std=c11 \
 		..
 #		-Dglx=dri
 	cd $(BUILD_WORK)/mesa/build; \

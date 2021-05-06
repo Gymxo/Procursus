@@ -3,8 +3,8 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS     += glib2.0
-GLIB2.0_MAJOR_V := 2.67
-GLIB2.0_VERSION := $(GLIB2.0_MAJOR_V).6
+GLIB2.0_MAJOR_V := 2.68
+GLIB2.0_VERSION := $(GLIB2.0_MAJOR_V).1
 DEB_GLIB2.0_V   ?= $(GLIB2.0_VERSION)
 
 glib2.0-setup: setup
@@ -33,9 +33,11 @@ else
 glib2.0: glib2.0-setup gettext pcre libffi
 	cd $(BUILD_WORK)/glib2.0/build && PKG_CONFIG="pkg-config" meson \
 		--cross-file cross.txt \
-		-Diconv=auto \
-		-Dbsymbolic_functions=false \
 		-Ddtrace=false \
+		-Diconv=external \
+		-Dlibmount=disabled \
+		-Dselinux=disabled \
+		-Dxattr=false \
 		..
 	sed -i '/HAVE_LIBELF/d' $(BUILD_WORK)/glib2.0/build/config.h
 	cd $(BUILD_WORK)/glib2.0/build; \

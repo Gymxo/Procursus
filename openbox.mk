@@ -16,11 +16,11 @@ openbox:
 else
 openbox: openbox-setup libx11 libxau libxmu xorgproto xxhash
 	cd $(BUILD_WORK)/openbox && autoreconf -fi && ./configure -C \
-		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=/usr \
-		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var \
-		--with-x 
+		$(DEFAULT_CONFIGURE_FLAGS) \
+		--x-libraries=$(BUILD_BASE)/usr/lib \
+		--x-includes=$(BUILD_BASE)/usr/include \
+		--with-x \
+		--disable-xinerama
 	+$(MAKE) -C $(BUILD_WORK)/openbox
 	+$(MAKE) -C $(BUILD_WORK)/openbox install \
 		DESTDIR=$(BUILD_STAGE)/openbox
