@@ -23,7 +23,7 @@ libxkbcommon-setup: setup
 	objcpp_args = ['-arch', 'arm64']\n \
 	objcpp_link_args = ['-arch', 'arm64']\n \
 	[paths]\n \
-	prefix ='/usr'\n \
+	prefix ='/opt/procursus'\n \
 	[binaries]\n \
 	c = '$(CC)'\n \
 	cpp = '$(CXX)'\n" > $(BUILD_WORK)/libxkbcommon/build/cross.txt

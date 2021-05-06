@@ -1,0 +1,5 @@
+Package: atk
+Version: @DEB_ATK_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description:

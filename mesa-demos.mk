@@ -17,7 +17,11 @@ mesa-demos:
 else
 mesa-demos: mesa-demos-setup mesa libglu glew libx11 libxext freetype
 	cd $(BUILD_WORK)/mesa-demos && ./configure -C \
-		$(DEFAULT_CONFIGURE_FLAGS)
+		$(DEFAULT_CONFIGURE_FLAGS) \
+		--enable-x11 \
+		--enable-gles2 \
+		--enable-gles1 \
+		--enable-osmesa
 	+$(MAKE) -C $(BUILD_WORK)/mesa-demos
 	+$(MAKE) -C $(BUILD_WORK)/mesa-demos install \
 		DESTDIR=$(BUILD_STAGE)/mesa-demos

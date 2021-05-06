@@ -3,12 +3,12 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS    += gdk-pixbuf
-GDK-PIXBUF_VERSION := 2.42.4
+GDK-PIXBUF_VERSION := 2.42.6
 DEB_GDK-PIXBUF_V   ?= $(GDK-PIXBUF_VERSION)
 
 gdk-pixbuf-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/archive/2.42.4/gdk-pixbuf-2.42.4.tar.gz
-	$(call EXTRACT_TAR,gdk-pixbuf-$(GDK-PIXBUF_VERSION).tar.gz,gdk-pixbuf-$(GDK-PIXBUF_VERSION),gdk-pixbuf)
+	wget -q -nc -P $(BUILD_SOURCE) https://mirror.umd.edu/gnome/sources/gdk-pixbuf/2.42/gdk-pixbuf-2.42.6.tar.xz
+	$(call EXTRACT_TAR,gdk-pixbuf-$(GDK-PIXBUF_VERSION).tar.xz,gdk-pixbuf-$(GDK-PIXBUF_VERSION),gdk-pixbuf)
 	mkdir -p $(BUILD_WORK)/gdk-pixbuf/build
 
 	echo -e "[host_machine]\n \
@@ -33,11 +33,44 @@ gdk-pixbuf:
 	@echo "Using previously built gdk-pixbuf."
 else
 gdk-pixbuf: gdk-pixbuf-setup libx11 libxau libxmu xorgproto libfribidi
-	cd $(BUILD_WORK)/gdk-pixbuf/build && PKG_CONFIG="pkg-config" meson \
-		--cross-file cross.txt
-	cd $(BUILD_WORK)/gdk-pixbuf/build; \
-		DESTDIR="$(BUILD_STAGE)/gdk-pixbuf" meson install; \
-		DESTDIR="$(BUILD_BASE)" meson install
+	cd $(BUILD_WORK)/gdk-pixbuf && \
+	mkdir -p build-host && \
+	pushd "build-host" && \
+	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR && \
+	export LDFLAGS=-Wl,-dead_strip_dylibs && \
+	PKG_CONFIG="pkg-config" meson \
+	--libdir=/usr/local/lib \
+	--prefix="/usr/local" \
+	--wrap-mode=nofallback \
+	-Dx11=true \
+    -Ddocs=false \
+    -Dgir=true \
+    -Drelocatable=true \
+    -Dintrospection=enabled \
+	-Dbuiltin_loaders=all \
+	..
+	cd $(BUILD_WORK)/gdk-pixbuf/build-host && \
+	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR ACLOCAL_PATH && \
+	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-save.sh && \
+	ninja && sudo ninja install
+	cd $(BUILD_WORK)/gdk-pixbuf/build && \
+	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-load.sh && \
+	PKG_CONFIG="pkg-config" meson \
+		--cross-file cross.txt \
+		--wrap-mode=nofallback \
+		-Dx11=true \
+    	-Ddocs=false \
+    	-Dgir=true \
+    	-Dgir=true \
+   		-Drelocatable=true \
+    	-Dintrospection=enabled \
+		-Dbuiltin_loaders=all \
+		..
+	cd $(BUILD_WORK)/gdk-pixbuf/build && sed -i 's/--cflags-begin/--cflags-begin -arch arm64/g' build.ninja && \
+	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-load.sh && \
+	ninja -C $(BUILD_WORK)/gdk-pixbuf/build
+	+DESTDIR="$(BUILD_STAGE)/gdk-pixbuf" ninja -C $(BUILD_WORK)/gdk-pixbuf/build install
+	+DESTDIR="$(BUILD_BASE)" ninja -k 0 -C $(BUILD_WORK)/gdk-pixbuf/build install
 	touch $(BUILD_WORK)/gdk-pixbuf/.build_complete
 endif
 

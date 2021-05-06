@@ -1,0 +1,5 @@
+Package: gdk-pixbuf
+Version: @DEB_GDK-PIXBUF_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description:

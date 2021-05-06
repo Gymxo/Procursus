@@ -1,0 +1,5 @@
+Package: gtk+2
+Version: @DEB_GTK+2_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description:
