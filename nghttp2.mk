@@ -24,10 +24,10 @@ nghttp2: nghttp2-setup openssl libc-ares libev jansson libjemalloc libevent
 		--enable-python-bindings=no \
 		LIBXML2_CFLAGS=-I$(TARGET_SYSROOT)/usr/include/libxml2 \
 		LIBXML2_LIBS=-lxml2
-	+$(MAKE) -C $(BUILD_WORK)/nghttp2
-	+$(MAKE) -C $(BUILD_WORK)/nghttp2 install \
+	+$(MAKE) -i -C $(BUILD_WORK)/nghttp2
+	+$(MAKE) -i -C $(BUILD_WORK)/nghttp2 install \
 		DESTDIR="$(BUILD_STAGE)/nghttp2"
-	+$(MAKE) -C $(BUILD_WORK)/nghttp2 install \
+	+$(MAKE) -i -C $(BUILD_WORK)/nghttp2 install \
 		DESTDIR="$(BUILD_BASE)"
 	touch $(BUILD_WORK)/nghttp2/.build_complete
 endif

@@ -15,14 +15,15 @@ transmission:
 	@echo "Using previously built transmission."
 else
 transmission: transmission-setup curl libevent
-	cd $(BUILD_WORK)/transmission && ./configure \
+	cd $(BUILD_WORK)/transmission && ./configure -h \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--disable-debug \
 		--enable-cli \
 		--enable-daemon \
 		--disable-mac \
-		--disable-nls
-	+$(MAKE) -C $(BUILD_WORK)/transmission
+		--enable-nls \
+		--with-gtk
+	+$(MAKE) -i -C $(BUILD_WORK)/transmission
 	+$(MAKE) -C $(BUILD_WORK)/transmission install \
 		DESTDIR=$(BUILD_STAGE)/transmission
 	touch $(BUILD_WORK)/transmission/.build_complete
