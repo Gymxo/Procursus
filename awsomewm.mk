@@ -15,15 +15,10 @@ awesome:
 	@echo "Using previously built awesome."
 else
 awesome: awesome-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/awesome && cd build && cmake .. \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_SYSTEM_NAME=Darwin \
-		-DCMAKE_CROSSCOMPILING=true \
-		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DCMAKE_INSTALL_NAME_DIR=/usr \
-		-DCMAKE_OSX_SYSROOT="$(TARGET_SYSROOT)" \
-		-DCMAKE_FIND_ROOT_PATH=$(BUILD_BASE) \
-		-DCMAKE_INSTALL_RPATH=/usr 
+	mkdir -p $(BUILD_WORK)/awesome/build
+	cd $(BUILD_WORK)/awesome/build && cmake .. \
+		$(DEFAULT_CMAKE_FLAGS) \
+		..
 	+$(MAKE) -C $(BUILD_WORK)/awesome/build
 	+$(MAKE) -C $(BUILD_WORK)/awesome/build install \
 		DESTDIR=$(BUILD_STAGE)/awesome
