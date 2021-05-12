@@ -20,7 +20,7 @@ gobject-introspection-setup: setup bison glib2.0
 	[properties]\n \
 	root = '$(BUILD_BASE)'\n \
 	[paths]\n \
-	prefix ='/usr'\n \
+	prefix ='$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)'\n \
 	[binaries]\n \
 	c = '$(CC)'\n \
 	objc = '$(CC)'\n \
@@ -32,42 +32,54 @@ gobject-introspection:
 	@echo "Using previously built gobject-introspection."
 else
 gobject-introspection: gobject-introspection-setup libx11 mesa
+ifeq ($(MEMO_TARGET),iphoneos-arm64)
 	cd $(BUILD_WORK)/gobject-introspection && \
 	mkdir -p build-host && \
 	pushd "build-host" && \
-	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS && \
+	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR && \
 	export LDFLAGS=-Wl,-dead_strip_dylibs && \
 	PKG_CONFIG="pkg-config" meson \
 	--buildtype=release \
-	--prefix="/usr/local" \
+	--prefix="/opt/procursus" \
 	--backend=ninja \
-	-Dlibdir=lib \
+	--libdir="/opt/procursus/lib" \
 	-Dpython="/opt/procursus/bin/python3" \
 	..
 	cd $(BUILD_WORK)/gobject-introspection/build-host && \
 	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR ACLOCAL_PATH && \
-	export GI_CROSS_LAUNCHER=/opt/procursus/libexec/gi-cross-launcher-save.sh && \
+	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-save.sh && \
 	ninja -C $(BUILD_WORK)/gobject-introspection/build-host
-	+sudo ninja -C $(BUILD_WORK)/gobject-introspection/build-host install
-	+DESTDIR="$(BUILD_BASE)"
-	cd $(BUILD_WORK)/gobject-introspection/build-host && sudo ninja -k 0 install
 	cd $(BUILD_WORK)/gobject-introspection/build && \
-	export GI_CROSS_LAUNCHER=/opt/procursus/libexec/gi-cross-launcher-load.sh && \
 	PKG_CONFIG="pkg-config" meson \
 		--cross-file cross.txt \
 		-Dgi_cross_use_prebuilt_gi=True \
 		-Dbuild_introspection_data=true \
 		--buildtype=release \
-		--prefix="/usr" \
+		--backend=ninja \
+		-Dpython="/opt/procursus/bin/python3" \
+		-Dgi_cross_pkgconfig_sysroot_path=$(BUILD_BASE) \
+		..
+	cd $(BUILD_WORK)/gobject-introspection/build && sed -i 's/--cflags-begin/--cflags-begin -arch $(MEMO_ARCH)/g' build.ninja && \
+	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-load.sh && \
+	ninja -v -C $(BUILD_WORK)/gobject-introspection/build
+	+DESTDIR="$(BUILD_STAGE)/gobject-introspection" ninja -C $(BUILD_WORK)/gobject-introspection/build install
+	+DESTDIR="$(BUILD_BASE)" ninja -k 0 -C $(BUILD_WORK)/gobject-introspection/build install
+	touch $(BUILD_WORK)/gobject-introspection/.build_complete
+else 
+	cd $(BUILD_WORK)/gobject-introspection/build && \
+	PKG_CONFIG="pkg-config" meson \
+		--cross-file cross.txt \
+		-Dbuild_introspection_data=true \
+		-Dgi_cross_use_prebuilt_gi=false \
+		--buildtype=release \
 		--backend=ninja \
 		-Dpython="/opt/procursus/bin/python3" \
 		..
-	cd $(BUILD_WORK)/gobject-introspection/build && sed -i 's/--cflags-begin/--cflags-begin -arch arm64/g' build.ninja && \
-	export GI_CROSS_LAUNCHER=/opt/procursus/libexec/gi-cross-launcher-load.sh && \
 	ninja -C $(BUILD_WORK)/gobject-introspection/build
 	+DESTDIR="$(BUILD_STAGE)/gobject-introspection" ninja -C $(BUILD_WORK)/gobject-introspection/build install
 	+DESTDIR="$(BUILD_BASE)" ninja -k 0 -C $(BUILD_WORK)/gobject-introspection/build install
 	touch $(BUILD_WORK)/gobject-introspection/.build_complete
+endif
 endif
 
 gobject-introspection-package: gobject-introspection-stage
