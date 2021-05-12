@@ -52,7 +52,6 @@ mesa: mesa-setup libx11 libxext libxcb libxdamage libxxf86vm gettext expat zstd
 		-Dgallium-drivers=swrast \
 		-Dosmesa=true \
 		-Dgles1=disabled \
-		-Degl=enabled \
 		..
 #		-Dglx=dri
 	cd $(BUILD_WORK)/mesa/build; \

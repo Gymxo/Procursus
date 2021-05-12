@@ -42,24 +42,19 @@ json-glib: json-glib-setup
 endif
 
 json-glib-package: json-glib-stage
-	rm -rf $(BUILD_DIST)/json-glib{0,-dev}
-	mkdir -p $(BUILD_DIST)/json-glib{0,-dev}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	# gtk+.mk Package Structure
+	rm -rf $(BUILD_DIST)/json-glib
 
-	#json-glib.mk Prep libepxoy0
-	cp -a $(BUILD_STAGE)/json-glib/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/json-glib.0.dylib $(BUILD_DIST)/JSON-GLIB0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	# gtk+.mk Prep json-glib
+	cp -a $(BUILD_STAGE)/json-glib $(BUILD_DIST)
 
-	# json-glib.mk Prep json-glib-dev
-	cp -a $(BUILD_STAGE)/json-glib/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(json-glib.0.dylib) $(BUILD_DIST)/json-glib-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
-	cp -a $(BUILD_STAGE)/json-glib/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/json-glib-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+	# gtk+.mk Sign
+	$(call SIGN,json-glib,general.xml)
 
-	# json-glib.mk Sign
-	$(call SIGN,JSON-GLIB0,general.xml)
+	# gtk+.mk Make .debs
+	$(call PACK,json-glib,DEB_JSON-GLIB_V)
 
-	# json-glib.mk Make .debs
-	$(call PACK,JSON-GLIB0,DEB_JSON-GLIB_V)
-	$(call PACK,json-glib-dev,DEB_JSON-GLIB_V)
-
-	# json-glib.mk Build cleanup
-	rm -rf $(BUILD_DIST)/json-glib{0,-dev}
+	# gtk+.mk Build cleanup
+	rm -rf $(BUILD_DIST)/json-glib
 
 .PHONY: json-glib json-glib-package

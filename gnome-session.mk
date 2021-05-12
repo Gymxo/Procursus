@@ -48,24 +48,19 @@ gnome-session: gnome-session-setup
 endif
 
 gnome-session-package: gnome-session-stage
-	rm -rf $(BUILD_DIST)/gnome-session{0,-dev}
-	mkdir -p $(BUILD_DIST)/gnome-session{0,-dev}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	# gtk+.mk Package Structure
+	rm -rf $(BUILD_DIST)/gnome-session
 
-	#gnome-session.mk Prep libepxoy0
-	cp -a $(BUILD_STAGE)/gnome-session/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/gnome-session.0.dylib $(BUILD_DIST)/GNOME-SESSION0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	# gtk+.mk Prep gnome-session
+	cp -a $(BUILD_STAGE)/gnome-session $(BUILD_DIST)
 
-	# gnome-session.mk Prep gnome-session-dev
-	cp -a $(BUILD_STAGE)/gnome-session/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(gnome-session.0.dylib) $(BUILD_DIST)/gnome-session-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
-	cp -a $(BUILD_STAGE)/gnome-session/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/gnome-session-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+	# gtk+.mk Sign
+	$(call SIGN,gnome-session,general.xml)
 
-	# gnome-session.mk Sign
-	$(call SIGN,GNOME-SESSION0,general.xml)
+	# gtk+.mk Make .debs
+	$(call PACK,gnome-session,DEB_GNOME-SESSION_V)
 
-	# gnome-session.mk Make .debs
-	$(call PACK,GNOME-SESSION0,DEB_GNOME-SESSION_V)
-	$(call PACK,gnome-session-dev,DEB_GNOME-SESSION_V)
-
-	# gnome-session.mk Build cleanup
-	rm -rf $(BUILD_DIST)/gnome-session{0,-dev}
+	# gtk+.mk Build cleanup
+	rm -rf $(BUILD_DIST)/gnome-session
 
 .PHONY: gnome-session gnome-session-package

@@ -1,0 +1,27 @@
+diff --git a/gio/meson.build b/gio/meson.build
+index 49a37a7bdd928509823128e02a0618169930b3a5..0cfdf6337b70aa173cdfc13a82f89239ee554895 100644
+--- a/gio/meson.build
++++ b/gio/meson.build
+@@ -402,19 +402,9 @@ if host_system != 'windows'
+     'gunixsocketaddress.h',
+   )
+ 
+-  if glib_have_cocoa
+-    settings_sources += files('gnextstepsettingsbackend.m')
+-    contenttype_sources += files('gosxcontenttype.m')
+-    appinfo_sources += files('gosxappinfo.m')
+-    if glib_have_os_x_9_or_later
+-      unix_sources += files('gcocoanotificationbackend.m')
+-    endif
+-    application_headers += files('gosxappinfo.h')
+-  else
+-    contenttype_sources += files('gcontenttype.c')
+-    appinfo_sources += files('gdesktopappinfo.c')
+-    gio_unix_include_headers += files('gdesktopappinfo.h')
+-  endif
++  contenttype_sources += files('gcontenttype.c')
++  appinfo_sources += files('gdesktopappinfo.c')
++  gio_unix_include_headers += files('gdesktopappinfo.h')
+ 
+   subdir('xdgmime')
+   internal_deps += [xdgmime_lib]

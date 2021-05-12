@@ -1,0 +1,5 @@
+Package: gnome-session
+Version: @DEB_GNOME-SESSION_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description: hmm

@@ -1,0 +1,5 @@
+Package: json-glib
+Version: @DEB_JSON-GLIB_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Description: hmm
