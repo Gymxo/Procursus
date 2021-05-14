@@ -13,6 +13,8 @@ libxcomposite-setup: setup
 
 ifneq ($(wildcard $(BUILD_WORK)/libxcomposite/.build_complete),)
 libxcomposite:
+	find $(BUILD_STAGE)/libxcomposite -type f -exec codesign --remove {} \; &> /dev/null; \
+	find $(BUILD_STAGE)/libxcomposite -type f -exec codesign --sign $(CODESIGN_IDENTITY) --force --preserve-metadata=entitlements,requirements,flags,runtime {} \; &> /dev/null
 	@echo "Using previously built libxcomposite."
 else
 libxcomposite: libxcomposite-setup libx11 libxau libxmu xorgproto xxhash

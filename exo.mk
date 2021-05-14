@@ -12,6 +12,8 @@ exo-setup: setup
 
 ifneq ($(wildcard $(BUILD_WORK)/exo/.build_complete),)
 exo:
+	find $(BUILD_STAGE)/exo -type f -exec codesign --remove {} \; &> /dev/null; \
+	find $(BUILD_STAGE)/exo -type f -exec codesign --sign $(CODESIGN_IDENTITY) --force --preserve-metadata=entitlements,requirements,flags,runtime {} \; &> /dev/null
 	@echo "Using previously built exo."
 else
 exo: exo-setup libx11 libxau libxmu xorgproto xxhash
@@ -19,6 +21,7 @@ exo: exo-setup libx11 libxau libxmu xorgproto xxhash
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--with-x \
 		--x-libraries=$(BUILD_BASE)/usr/lib \
+		--disable-visibility \
 		--x-includes=$(BUILD_BASE)/usr/include
 	+$(MAKE) -C $(BUILD_WORK)/exo
 	+$(MAKE) -C $(BUILD_WORK)/exo install \
