@@ -12,6 +12,8 @@ libxklavier-setup: setup
 
 ifneq ($(wildcard $(BUILD_WORK)/libxklavier/.build_complete),)
 libxklavier:
+	find $(BUILD_STAGE)/libxklavier -type f -exec codesign --remove {} \; &> /dev/null; \
+	find $(BUILD_STAGE)/libxklavier -type f -exec codesign --sign $(CODESIGN_IDENTITY) --force --preserve-metadata=entitlements,requirements,flags,runtime {} \; &> /dev/null
 	@echo "Using previously built libxklavier."
 else
 libxklavier: libxklavier-setup libx11 libxau libxmu xorgproto xorg-server
