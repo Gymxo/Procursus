@@ -15,7 +15,7 @@ polkit:
 	@echo "Using previously built polkit."
 else
 polkit: polkit-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/polkit && ./configure -C \
+	cd $(BUILD_WORK)/polkit && ./configure -h -C \
 		$(DEFAULT_CONFIGURE_FLAGS)
 	+$(MAKE) -C $(BUILD_WORK)/polkit
 	+$(MAKE) -C $(BUILD_WORK)/polkit install \

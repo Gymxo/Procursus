@@ -23,7 +23,6 @@ cairo: cairo-setup freetype fontconfig glib2.0 libpng16 liblzo2 libpixman
 		--enable-tee \
 		--enable-pref-utils \
 		--enable-svg \
-		--disable-xcb \
 		--enable-gobject \
 		--with-x \
 		--enable-xlib=yes \

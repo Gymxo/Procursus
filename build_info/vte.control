@@ -1,0 +1,17 @@
+Package: vte 
+Version: @DEB_VTE_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: libcairo2 ,libglib2.0-0 ,libgnutls30
+Section: Libraries
+Priority: optional
+Multi-Arch: same
+Homepage: https://wiki.gnome.org/Apps/Terminal/VTE
+Description: Terminal emulator widget for GTK+ 3.0 - runtime files
+ The VTE library provides a terminal emulator widget VteTerminal for
+ applications using the GTK+ toolkit. It also provides the VtePTY object
+ containing functions for starting a new process on a new
+ pseudo-terminal and for manipulating pseudo-terminals.
+ .
+ This package contains the runtime library, needed by programs using the
+ VTE widget with GTK+ 3.0.

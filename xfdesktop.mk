@@ -17,14 +17,13 @@ xfdesktop:
 	@echo "Using previously built xfdesktop."
 else
 xfdesktop: xfdesktop-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/xfdesktop && ./configure  -C \
+	cd $(BUILD_WORK)/xfdesktop && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--with-x \
 		--x-libraries=$(BUILD_BASE)/usr/lib \
 		--x-includes=$(BUILD_BASE)/usr/include \
 		--disable-notifications \
-		--enable-thunarx  \
-		--with-file-manager-fallback=/usr/bin/thunar
+		--enable-thunarx
 	+$(MAKE) -C $(BUILD_WORK)/xfdesktop
 	+$(MAKE) -C $(BUILD_WORK)/xfdesktop install \
 		DESTDIR=$(BUILD_STAGE)/xfdesktop

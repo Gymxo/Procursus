@@ -1,0 +1,7751 @@
+From 20b1196512d3f2e032dbc4381a939581a162f316 Mon Sep 17 00:00:00 2001
+From: Nathan
+Date: Tue, 18 May 2021 13:36:25 -0400
+Subject: [PATCH] hopefully this works
+
+---
+ Makefile.am         |    2 +-
+ all.proto           |   22 -
+ bigfont.proto       |  104 ---
+ bigrequest.proto    |   34 -
+ composite.proto     |   77 ---
+ damage.proto        |   96 ---
+ dga.proto           |  384 ----------
+ dpms.proto          |   84 ---
+ dri2.proto          |  264 -------
+ dri3.proto          |   74 --
+ fixes.proto         |  319 ---------
+ genericevents.proto |   46 --
+ glx.proto           | 1617 -------------------------------------------
+ mitshm.proto        |    1 -
+ present.proto       |  174 -----
+ randr.proto         |  674 ------------------
+ render.proto        |  613 ----------------
+ saver.proto         |  119 ----
+ shape.proto         |  186 -----
+ sync.proto          |  214 ------
+ vidmode.proto       |  339 ---------
+ xinerama.proto      |   75 --
+ xinput.proto        | 1398 -------------------------------------
+ xkb.proto           |  215 ------
+ xvideo.proto        |  398 -----------
+ 25 files changed, 1 insertion(+), 7528 deletions(-)
+ delete mode 100644 bigfont.proto
+ delete mode 100644 bigrequest.proto
+ delete mode 100644 composite.proto
+ delete mode 100644 damage.proto
+ delete mode 100644 dga.proto
+ delete mode 100644 dpms.proto
+ delete mode 100644 dri2.proto
+ delete mode 100644 dri3.proto
+ delete mode 100644 fixes.proto
+ delete mode 100644 genericevents.proto
+ delete mode 100644 glx.proto
+ delete mode 100644 present.proto
+ delete mode 100644 randr.proto
+ delete mode 100644 render.proto
+ delete mode 100644 saver.proto
+ delete mode 100644 shape.proto
+ delete mode 100644 sync.proto
+ delete mode 100644 vidmode.proto
+ delete mode 100644 xinerama.proto
+ delete mode 100644 xinput.proto
+ delete mode 100644 xkb.proto
+ delete mode 100644 xvideo.proto
+
+diff --git a/Makefile.am b/Makefile.am
+index 5c88d3c..e7cea1a 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -10,7 +10,7 @@ dist_man_MANS = xtrace.1
+ 
+ MAINTAINERCLEANFILES = $(srcdir)/Makefile.in $(srcdir)/configure $(srcdir)/stamp-h.in $(srcdir)/aclocal.m4 $(srcdir)/config.h.in
+ 
+-dist_pkgdata_DATA = all.proto bigfont.proto bigrequest.proto damage.proto dpms.proto dri2.proto errors.proto events.proto fixes.proto genericevents.proto glx.proto mitshm.proto randr.proto render.proto requests.proto saver.proto setup.proto shape.proto sync.proto vidmode.proto xinerama.proto xinput.proto xkb.proto xvideo.proto composite.proto dga.proto dri3.proto present.proto
++dist_pkgdata_DATA = all.proto errors.proto events.proto mitshm.proto requests.proto setup.proto
+ 
+ distclean-local:
+ 	-rm -rf $(srcdir)/autom4te.cache
+diff --git a/all.proto b/all.proto
+index 12e743f..a1d161c 100644
+--- a/all.proto
++++ b/all.proto
+@@ -3,27 +3,5 @@ NEEDS "events.proto"
+ NEEDS "errors.proto"
+ NEEDS "setup.proto"
+ 
+-NEEDS "bigfont.proto"
+-NEEDS "bigrequest.proto"
+-NEEDS "damage.proto"
+-NEEDS "dpms.proto"
+-NEEDS "dri2.proto"
+-NEEDS "fixes.proto"
+-NEEDS "genericevents.proto"
+-NEEDS "glx.proto"
+ NEEDS "mitshm.proto"
+-NEEDS "randr.proto"
+-NEEDS "render.proto"
+-NEEDS "saver.proto"
+-NEEDS "shape.proto"
+-NEEDS "sync.proto"
+-NEEDS "vidmode.proto"
+-NEEDS "xinerama.proto"
+-NEEDS "xinput.proto"
+-NEEDS "xkb.proto"
+-NEEDS "xvideo.proto"
+-NEEDS "composite.proto"
+-NEEDS "dga.proto"
+-NEEDS "dri3.proto"
+-NEEDS "present.proto"
+ EOF
+diff --git a/bigfont.proto b/bigfont.proto
+deleted file mode 100644
+index 931a026..0000000
+--- a/bigfont.proto
++++ /dev/null
+@@ -1,104 +0,0 @@
+-# This file is part of "xtrace"
+-# Copyright (C) 2007 Bernhard R. Link
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License version 2 as
+-# published by the Free Software Foundation.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-#
+-# This file is based on /usr/include/X11/extensions/xf86bigf{ont,str}.h, which is:
+-## Copyright (c) 1999-2000  Bruno Haible
+-## Copyright (c) 1999-2000  The XFree86 Project, Inc.
+-##
+-## Permission is hereby granted, free of charge, to any person obtaining a copy
+-## of this software and associated documentation files (the "Software"), to deal
+-## in the Software without restriction, including without limitation the rights
+-## to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-## copies of the Software, and to permit persons to whom the Software is
+-## furnished to do so, subject to the following conditions:
+-##
+-## The above copyright notice and this permission notice shall be included in all
+-## copies or substantial portions of the Software.
+-##
+-## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-## IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-## FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-## XFREE86 PROJECT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+-## IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+-## CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-##
+-## Except as contained in this notice, the name of the XFree86 Project shall not
+-## be used in advertising or otherwise to promote the sale, use or other dealings
+-## in this Software without prior written authorization from the XFree86 Project.
+-
+-EXTENSION "XFree86-Bigfont" bigfont
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-QueryFont RESPONDS
+-END
+-
+-EVENTS
+-END
+-
+-ERRORS
+-END
+-
+-BITMASK xf86bigfont_capabilities
+-1	LocalShm
+-END
+-TYPE xf86bigfont_capabilities	BITMASK32	xf86bigfont_capabilities
+-
+-BITMASK xf86bigfont_flags
+-1	Shm
+-END
+-TYPE xf86bigfont_flags	BITMASK32	xf86bigfont_flags
+-
+-REQUEST QueryVersion
+-END
+-RESPONSE QueryVersion
+- 8	major-version	UINT16
+-10	minor-version	UINT16
+- 1	capabilities	xf86bigfont_capabilities
+-12	uid	UINT32
+-16	gid	UINT32
+-20	signature	UINT32
+-END
+-
+-REQUEST QueryFont
+- 4	id	UINT32
+- 8	flags	xf86bigfont_flags
+-END
+-
+-RESPONSE QueryFont
+- 8	min-bounds	CHARINFO
+-24	max-bounds	CHARINFO
+-40	min-char-or-byte2	CARD16
+-42	max-char-or-byte2	CARD16
+-44	default-char	CARD16
+-48	draw-direction	ENUM8 direction
+-49	min-byte1	CARD8
+-50	max-byte1	CARD8
+-51	all-chars-exists	BOOL
+-52	font-ascent	INT16
+-54	font-descent	INT16
+-64	shmid	COUNT32
+-68	shmsegoffset	COUNT32
+-
+-46	nFontProps	COUNT16
+-72	properties	LISTofFONTPROP
+-60	nUniqCharInfos	COUNT32
+-LATER	uniq-char-infos	LISTofCHARINFO
+-56	nCharInfos	COUNT32
+-LATER	char-info-offsets	LISTofCARD16
+-END
+-
+-EOF
+diff --git a/bigrequest.proto b/bigrequest.proto
+deleted file mode 100644
+index 0d1b041..0000000
+--- a/bigrequest.proto
++++ /dev/null
+@@ -1,34 +0,0 @@
+-# This file is part of "xtrace"
+-# Copyright (C) 2009 Bernhard R. Link
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License version 2 as
+-# published by the Free Software Foundation.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-
+-EXTENSION "BIG-REQUESTS" BigRequest
+-USE core
+-
+-REQUESTS
+-Enable RESPONDS
+-END
+-
+-EVENTS
+-END
+-
+-ERRORS
+-END
+-
+-REQUEST Enable ALIASES Empty
+-RESPONSE Enable
+- 8	maximum-request-length	UINT32
+-END
+-
+-EOF
+diff --git a/composite.proto b/composite.proto
+deleted file mode 100644
+index d7811f9..0000000
+--- a/composite.proto
++++ /dev/null
+@@ -1,77 +0,0 @@
+-NEEDS "requests.proto"
+-NEEDS "fixes.proto"
+-
+-EXTENSION "Composite" Composite
+-USE core
+-
+-REQUESTS
+-QueryVersion			RESPONDS
+-RedirectWindow
+-RedirectSubwindows
+-UnredirectWindow
+-UnredirectSubwindows
+-CreateRegionFromBorderClip
+-NameWindowPixmap
+-GetOverlayWindow		RESPONDS
+-ReleaseOverlayWindow	/*8*/
+-END
+-
+-CONSTANTS updateType
+-0	Automatic
+-1	Manual
+-END
+-TYPE UpdateType ENUM8 updateType
+-
+-REQUEST QueryVersion
+-4	majorVersion	UINT32
+-8	minorVersion	UINT32
+-END
+-RESPONSE QueryVersion
+- 8	majorVersion	UINT32
+-12	minorVersion	UINT32
+-END
+-
+-REQUEST RedirectWindow
+-4	window		WINDOW
+-8	update		UpdateType
+-END
+-
+-REQUEST RedirectSubwindows
+-4	window		WINDOW
+-8	update		UpdateType
+-END
+-
+-# UpdateType doesn't make sense, but it's transmitted through the wire
+-REQUEST UnredirectWindow
+-4	window		WINDOW
+-8	update		UpdateType
+-END
+-
+-# Likewise
+-REQUEST UnredirectSubwindows
+-4	window		WINDOW
+-8	update		UpdateType
+-END
+-
+-REQUEST CreateRegionFromBorderClip
+-4	region		Fixes::REGION
+-8	window		WINDOW
+-END
+-
+-REQUEST NameWindowPixmap
+-4	window		WINDOW
+-8	pixmap		PIXMAP
+-END
+-
+-REQUEST GetOverlayWindow
+-4	window		WINDOW
+-END
+-RESPONSE GetOverlayWindow
+-4	overlayWin	WINDOW
+-END
+-
+-REQUEST ReleaseOverlayWindow
+-4	window		WINDOW
+-END
+-
+-EOF
+diff --git a/damage.proto b/damage.proto
+deleted file mode 100644
+index 329a0dd..0000000
+--- a/damage.proto
++++ /dev/null
+@@ -1,96 +0,0 @@
+-#  This file is part of "xtrace"
+-#  Copyright (C) 2008 Bernhard R. Link
+-#  This program is free software; you can redistribute it and/or modify
+-#  it under the terms of the GNU General Public License version 2 as
+-#  published by the Free Software Foundation.
+-#
+-#  This program is distributed in the hope that it will be useful,
+-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-#  GNU General Public License for more details.
+-#
+-#  You should have received a copy of the GNU General Public License
+-#  along with this program; if not, write to the Free Software
+-#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-
+-EXTENSION "DAMAGE" Damage
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-Create
+-Destroy
+-Subtract
+-END
+-
+-EVENTS
+-Notify
+-END
+-
+-ERRORS
+-BadDamage
+-END
+-
+-CONSTANTS damage_level
+-0	"report raw rectangles"
+-1	"report delta rectangles"
+-2	"report bounding box"
+-3	"report non-empty"
+-END
+-TYPE DAMAGE_LEVEL	ENUM8	damage_level
+-
+-CONSTANTS damage_state
+-0	off
+-1	on
+-2	cycle
+-3	disable
+-END
+-TYPE DAMAGE_STATE	ENUM8	damage_state
+-CONSTANTS damage_kind
+-0	blanked
+-1	internal
+-2	external
+-END
+-TYPE DAMAGE_KIND	ENUM8	damage_kind
+-
+-BITMASK damage_mask
+-0x00000001	notify
+-0x00000002	cycle
+-END
+-TYPE DAMAGE_MASK	BITMASK32	damage_mask
+-
+-REQUEST QueryVersion
+-4	"major version"	UINT32
+-8	"minor version"	UINT32
+-END
+-RESPONSE QueryVersion
+-8	"major version"	UINT32
+-12	"minor version"	UINT32
+-END
+-
+-REQUEST Create
+- 4	damage	CARD32
+- 8	drawable	DRAWABLE
+-12	level	DAMAGE_LEVEL
+-END
+-
+-REQUEST Destroy
+- 4	damage	CARD32
+-END
+-
+-REQUEST Subtract
+- 4	damage	CARD32
+- 8	repair-region	CARD32
+-12	parts-region	CARD32
+-END
+-
+-EVENT Notify
+- 1	level	DAMAGE_LEVEL
+- 4	drawable	DRAWABLE
+- 8	damage	CARD32
+-12	timestamp	TIMESTAMP
+-16	area	RECTANGLE
+-24	geometry	RECTANGLE
+-END
+-
+-EOF
+diff --git a/dga.proto b/dga.proto
+deleted file mode 100644
+index 5a01ec0..0000000
+--- a/dga.proto
++++ /dev/null
+@@ -1,384 +0,0 @@
+-# This file is part of "xtrace"
+-# Copyright (C) 2011 Ville Syrjala
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License version 2 as
+-# published by the Free Software Foundation.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-#
+-# This file is based on /usr/include/X11/extensions/xf86dga1const.h,
+-# /usr/include/X11/extensions/xf86dga1proto.h and
+-# /usr/include/X11/extensions/xf86dgaproto.h which state:
+-#
+-# Copyright (c) 1995  Jon Tombs
+-# Copyright (c) 1995  XFree86 Inc
+-#
+-# This file is based on /usr/include/X11/extensions/xf86dgaconst.h which states:
+-#
+-# Copyright (c) 1999  XFree86 Inc
+-#
+-# and those files it is based on are available under:
+-#
+-# Permission is hereby granted, free of charge, to any person obtaining a copy
+-# of this software and associated documentation files (the "Software"), to deal
+-# in the Software without restriction, including without limitation the rights
+-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-# copies of the Software, and to permit persons to whom the Software is
+-# furnished to do so, subject to the following conditions:
+-#
+-# The above copyright notice and this permission notice shall be included in all
+-# copies or substantial portions of the Software.
+-#
+-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-# XFREE86 PROJECT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+-# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-#
+-# Except as contained in this notice, the name of the XFree86 Project shall not
+-# be used in advertising or otherwise to promote the sale, use or other dealings
+-# in this Software without prior written authorization from the XFree86 Project.
+-
+-EXTENSION "XFree86-DGA" DGA
+-USE core
+-
+-REQUESTS
+-DGAQueryVersion RESPONDS
+-DGA1GetVideoLL RESPONDS
+-DGA1DirectVideo
+-DGA1GetViewPortSize RESPONDS
+-DGA1SetViewPort
+-DGA1GetVidPage RESPONDS
+-DGA1SetVidPage
+-DGA1InstallColormap
+-DGA1QueryDirectVideo RESPONDS
+-DGA1ViewPortChanged RESPONDS
+-UNKNOWN
+-UNKNOWN
+-DGA2QueryModes RESPONDS
+-DGA2SetMode RESPONDS
+-DGA2SetViewport
+-DGA2InstallColormap
+-DGA2SelectInput
+-DGA2FillRectangle
+-DGA2CopyArea
+-DGA2CopyTransparentArea
+-DGA2GetViewportStatus RESPONDS
+-DGA2Sync RESPONDS
+-DGA2OpenFrameBuffer RESPONDS
+-DGA2CloseFrameBuffer
+-DGA2SetClientVersion
+-DGA2ChangePixmapMode RESPONDS
+-DGA2CreateColormap
+-END
+-
+-EVENTS
+-UNKNOWN
+-UNKNOWN
+-KeyPress
+-KeyRelease
+-ButtonPress
+-ButtonRelease
+-MotionNotify
+-END
+-
+-ERRORS
+-ClientNotLocal
+-NoDirectVideoMode
+-ScreenNotActive
+-DirectNotActivated
+-OperationNotSupported
+-END
+-
+-BITMASK directvideoflags
+-0x0001 DirectPresent
+-0x0002 DirectGraphics
+-0x0004 DirectMouse
+-0x0008 DirectKeyb
+-0x0100 HasColormap
+-0x0200 DirectColormap
+-END
+-TYPE DIRECTVIDEOFLAGS16 BITMASK16 directvideoflags
+-TYPE DIRECTVIDEOFLAGS32 BITMASK32 directvideoflags
+-
+-BITMASK viewportflags
+-0x00000001	FlipImmediate
+-0x00000002	FlipRetrace
+-END
+-TYPE VIEWPORTFLAGS BITMASK32 viewportflags
+-
+-BITMASK modeflags
+-0x00000001	ConcurrentAccess
+-0x00000002	SolidFillRect
+-0x00000004	BlitRect
+-0x00000008	BlitTransRect
+-0x00000010	Pixmap
+-0x00010000	Interlaced
+-0x00020000	Doublescan
+-END
+-TYPE MODEFLAGS BITMASK32 modeflags
+-
+-CONSTANTS pixmapmodeflags
+-0	PixmapModeLarge
+-1	PixmapModeSmall
+-END
+-TYPE PIXMAPMODEFLAGS CARD32 constants pixmapmodeflags
+-
+-BITMASK fbextraflags
+-0x00000001	NeedRoot
+-END
+-TYPE FBEXTRAFLAGS BITMASK32 fbextraflags
+-
+-REQUEST DGAQueryVersion
+-END
+-RESPONSE DGAQueryVersion
+- 8	major-version	UINT16
+-10	minor-version	UINT16
+-END
+-
+-REQUEST DGA1GetVideoLL
+- 4	screen	UINT16
+-END
+-RESPONSE DGA1GetVideoLL
+- 8	offset		UINT32
+-12	width		UINT32
+-16	bank-size	UINT32
+-20	ram-size	UINT32
+-END
+-
+-REQUEST DGA1InstallColormap
+- 4	screen		UINT16
+- 8	id		COLORMAP
+-END
+-
+-REQUEST DGA1DirectVideo
+- 4	screen		UINT16
+- 6	enable		DIRECTVIDEOFLAGS16
+-END
+-
+-REQUEST DGA1GetViewPortSize
+- 4	screen		UINT16
+-END
+-RESPONSE DGA1GetViewPortSize
+- 8	width		UINT32
+-12	height		UINT32
+-END
+-
+-REQUEST DGA1SetViewPort
+- 4	screen		UINT16
+- 8	x		UINT32
+-12	y		UINT32
+-END
+-
+-REQUEST DGA1GetVidPage
+- 4	screen		UINT16
+-END
+-RESPONSE DGA1GetVidPage
+- 8	vpage		UINT32
+-END
+-
+-REQUEST DGA1SetVidPage
+- 4	screen		UINT16
+- 6	vpage		UINT16
+-END
+-
+-REQUEST DGA1QueryDirectVideo
+- 4	screen		UINT16
+-END
+-RESPONSE DGA1QueryDirectVideo
+- 8	flags		DIRECTVIDEOFLAGS32
+-END
+-
+-REQUEST DGA1ViewPortChanged
+- 4	screen		UINT16
+- 6	num_pages	UINT16
+-END
+-RESPONSE DGA1ViewPortChanged
+- 8	result		UINT32
+-END
+-
+-LIST MODEINFO variable min-length 72
+- 0	byte-order	UINT8
+- 1	depth		UINT8
+- 2	num		UINT16
+- 4	bpp		UINT16
+- 6	name-size	COUNT16
+- 8	vsync		UFRACTION32_32
+-16	flags		MODEFLAGS
+-20	image-width	UINT16
+-22	image-height	UINT16
+-24	pixmap-width	UINT16
+-26	pixmap-height	UINT16
+-28	bytes-per-scanline	UINT32
+-32	red-mask	CARD32
+-36	green-mask	CARD32
+-40	blue-mask	CARD32
+-44	visual-class	UINT16
+-48	viewport-width	UINT16
+-50	viewport-height	UINT16
+-52	viewport-xstep	UINT16
+-54	viewport-ystep	UINT16
+-56	viewport-xmax	UINT16
+-58	viewport-ymax	UINT16
+-60	viewport-flags	VIEWPORTFLAGS
+-64	reserved1	UINT32
+-68	reserved2	UINT32
+-72	name		STRING8
+-ROUND
+-END
+-
+-REQUEST DGA2QueryModes
+- 4	screen		UINT32
+-END
+-RESPONSE DGA2QueryModes
+- 8	number		COUNT32
+-32	modes		LISTofMODEINFO
+-END
+-
+-REQUEST DGA2SetMode
+- 4	screen		UINT32
+- 8	mode		UINT32
+-12	pid		PIXMAP
+-END
+-RESPONSE DGA2SetMode
+- 8	flags		MODEFLAGS
+-32	mode		LISTofMODEINFO
+-END
+-
+-REQUEST DGA2OpenFrameBuffer
+- 4	screen		UINT32
+-END
+-RESPONSE DGA2OpenFrameBuffer
+- 8	mem1		CARD32
+-12	mem2		CARD32
+-16	size		CARD32
+-20	offset		UINT32
+-24	extra		FBEXTRAFLAGS
+-32	device-name	STRING8
+-END
+-
+-REQUEST DGA2CloseFrameBuffer
+- 4	screen		UINT32
+-END
+-
+-REQUEST DGA2SetViewport
+- 4	screen		UINT32
+- 8	x		UINT16
+-10	y		UINT16
+-12	flags		VIEWPORTFLAGS
+-END
+-
+-REQUEST DGA2InstallColormap
+- 4	screen		UINT32
+- 8	cmap		COLORMAP
+-END
+-
+-REQUEST DGA2SelectInput
+- 4	screen		UINT32
+- 8	mask		SETofDEVICEEVENT
+-END
+-
+-REQUEST DGA2FillRectangle
+- 4	screen		UINT32
+- 8	x		UINT16
+-10	y		UINT16
+-12	width		UINT16
+-14	height		UINT16
+-16	color		CARD32
+-END
+-
+-REQUEST DGA2CopyArea
+- 4	screen		UINT32
+- 8	src-x		UINT16
+-10	src-y		UINT16
+-12	width		UINT16
+-14	height		UINT16
+-16	dst-x		UINT16
+-18	dst-y		UINT16
+-END
+-
+-REQUEST DGA2CopyTransparentArea
+- 4	screen		UINT32
+- 8	src-x		UINT16
+-10	src-y		UINT16
+-12	width		UINT16
+-14	height		UINT16
+-16	dst-x		UINT16
+-18	dst-y		UINT16
+-20	key		UINT32
+-END
+-
+-REQUEST DGA2GetViewportStatus
+- 4	screen		UINT32
+-END
+-RESPONSE DGA2GetViewportStatus
+- 8	status		CARD32
+-END
+-
+-REQUEST DGA2Sync
+- 4	screen		UINT32
+-END
+-RESPONSE DGA2Sync
+-END
+-
+-REQUEST DGA2SetClientVersion
+- 4	major		UINT16
+- 6	minor		UINT16
+-END
+-
+-REQUEST DGA2ChangePixmapMode
+- 4	screen		UINT32
+- 8	x		UINT16
+-10	y		UINT16
+-12	flags		PIXMAPMODEFLAGS
+-END
+-RESPONSE DGA2ChangePixmapMode
+- 8	screen		UINT32
+-12	x		UINT16
+-14	y		UINT16
+-END
+-
+-REQUEST DGA2CreateColormap
+- 4	screen		UINT32
+- 8	id		COLORMAP
+-12	mode		UINT32
+-16	alloc		ENUM8 alloc
+-END
+-
+-templateEVENT Key
+- 1	keycode	KEYCODE
+- 8	time	TIMESTAMP
+-16	screen	INT16
+-18	state	SETofKEYBUTMASK
+-END
+-
+-EVENT KeyPress ALIASES Key
+-EVENT KeyRelease ALIASES Key
+-
+-templateEVENT Button
+- 1	button	BUTTON
+- 8	time	TIMESTAMP
+-16	screen	INT16
+-18	state	SETofKEYBUTMASK
+-END
+-
+-EVENT ButtonPress ALIASES Button
+-EVENT ButtonRelease ALIASES Button
+-
+-EVENT MotionNotify
+- 8	time	TIMESTAMP
+-12	dx	INT16
+-14	dy	INT16
+-16	screen	INT16
+-18	state	SETofKEYBUTMASK
+-END
+-
+-EOF
+diff --git a/dpms.proto b/dpms.proto
+deleted file mode 100644
+index eefd5a6..0000000
+--- a/dpms.proto
++++ /dev/null
+@@ -1,84 +0,0 @@
+-# This file is part of "xtrace"
+-# Copyright (C) 2008 Bernhard R. Link
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License version 2 as
+-# published by the Free Software Foundation.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-
+-EXTENSION "DPMS" Dpms
+-USE core
+-
+-REQUESTS
+-GetVersion RESPONDS
+-Capable RESPONDS
+-GetTimeouts RESPONDS
+-SetTimeouts
+-Enable
+-Disable
+-ForceLevel
+-Info RESPONDS
+-END
+-
+-EVENTS
+-END
+-ERRORS
+-END
+-
+-CONSTANTS dpms_level
+-0	on
+-1	standby
+-2	suspend
+-3	off
+-END
+-TYPE DPMS_LEVEL	ENUM16	dpms_level
+-
+-REQUEST GetVersion
+-4	"major version"	UINT16
+-6	"minor version"	UINT16
+-END
+-RESPONSE GetVersion
+-8	"major version"	UINT16
+-10	"minor version"	UINT16
+-END
+-
+-REQUEST Capable ALIASES Empty
+-RESPONSE Capable
+- 8	capable	BOOL
+-END
+-
+-REQUEST GetTimeouts ALIASES Empty
+-RESPONSE GetTimeouts
+- 8	standby	UINT16
+-10	suspend	UINT16
+-12	off	UINT16
+-END
+-
+-REQUEST SetTimeouts
+- 4	standby	UINT16
+- 6	suspend	UINT16
+- 8	off	UINT16
+-END
+-
+-REQUEST Enable ALIASES Empty
+-
+-REQUEST Disable ALIASES Empty
+-
+-REQUEST ForceLevel
+- 4	level	DPMS_LEVEL
+-END
+-
+-REQUEST Info ALIASES Empty
+-RESPONSE Info
+- 8	power_level	DPMS_LEVEL
+-10	state	BOOL
+-END
+-
+-EOF
+diff --git a/dri2.proto b/dri2.proto
+deleted file mode 100644
+index 00a558e..0000000
+--- a/dri2.proto
++++ /dev/null
+@@ -1,264 +0,0 @@
+-# This file is part of "xtrace"
+-# Copyright (C) 2010 Julien Cristau
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License version 2 as
+-# published by the Free Software Foundation.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-#
+-# This file is based on /usr/include/X11/extensions/dri2proto.h which states:
+-#
+-# Copyright � 2008 Red Hat, Inc.
+-#
+-# Permission is hereby granted, free of charge, to any person obtaining a
+-# copy of this software and associated documentation files (the "Soft-
+-# ware"), to deal in the Software without restriction, including without
+-# limitation the rights to use, copy, modify, merge, publish, distribute,
+-# and/or sell copies of the Software, and to permit persons to whom the
+-# Software is furnished to do so, provided that the above copyright
+-# notice(s) and this permission notice appear in all copies of the Soft-
+-# ware and that both the above copyright notice(s) and this permission
+-# notice appear in supporting documentation.
+-#
+-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+-# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-
+-# ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY
+-# RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN
+-# THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSE-
+-# QUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+-# DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+-# TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFOR-
+-# MANCE OF THIS SOFTWARE.
+-#
+-# Except as contained in this notice, the name of a copyright holder shall
+-# not be used in advertising or otherwise to promote the sale, use or
+-# other dealings in this Software without prior written authorization of
+-# the copyright holder.
+-#
+-# Authors:
+-#   Kristian H�gsberg (krh@redhat.com)
+-#
+-
+-NEEDS "fixes.proto"
+-
+-EXTENSION "DRI2" DRI2
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-Connect RESPONDS
+-Authenticate RESPONDS
+-CreateDrawable
+-DestroyDrawable
+-GetBuffers RESPONDS
+-CopyRegion RESPONDS
+-GetBuffersWithFormat RESPONDS
+-SwapBuffers RESPONDS
+-GetMSC RESPONDS
+-WaitMSC RESPONDS
+-WaitSBC RESPONDS
+-SwapInterval
+-END
+-
+-EVENTS
+-BufferSwapComplete
+-InvalidateBuffers
+-END
+-
+-ERRORS
+-END
+-
+-REQUEST QueryVersion
+- 4	major-version	UINT32
+- 8	minor-version	UINT32
+-END
+-RESPONSE QueryVersion
+- 8	major-version	UINT32
+-12	minor-version	UINT32
+-END
+-
+-CONSTANTS driver_type
+-0	DRI
+-1	VDPAU
+-END
+-
+-REQUEST Connect
+- 4	window	WINDOW
+- 8	driver-type	ENUM32 driver_type
+-END
+-RESPONSE Connect
+- 8	driver-name-len	COUNT32
+-32	driver-name	STRING8
+-12	device-name-len	COUNT32
+-ROUND
+-LATER	device-name	STRING8
+-END
+-
+-REQUEST Authenticate
+- 4	window	WINDOW
+- 8	token	CARD32
+-END
+-RESPONSE Authenticate
+- 8	authenticated	ENUM32 bool
+-END
+-
+-REQUEST CreateDrawable
+- 4	drawable	DRAWABLE
+-END
+-
+-REQUEST DestroyDrawable
+- 4	drawable	DRAWABLE
+-END
+-
+-CONSTANTS attachment
+- 0x0	FrontLeft
+- 0x1	BackLeft
+- 0x2	FrontRight
+- 0x3	BackRight
+- 0x4	Depth
+- 0x5	Stencil
+- 0x6	Accum
+- 0x7	FakeFrontLeft
+- 0x8	FakeFrontRight
+- 0x9	DepthStencil
+-END
+-
+-TYPE DRI2ATTACHMENT ENUM32 attachment
+-
+-LIST DRI2ATTACHMENT length 4
+- 0	attachment	DRI2ATTACHMENT
+-END
+-
+-LIST DRI2BUFFER length 20
+- 0	attachment	DRI2ATTACHMENT
+- 4	name	CARD32
+- 8	pitch	UINT32
+-12	cpp	UINT32
+-16	flags	CARD32
+-END
+-
+-REQUEST GetBuffers
+- 4	drawable	DRAWABLE
+- 8	count	COUNT32
+-12	attachments	LISTofDRI2ATTACHMENT
+-END
+-RESPONSE GetBuffers
+- 8	width	UINT32
+-12	height	UINT32
+-16	count	COUNT32
+-32	buffers	LISTofDRI2BUFFER
+-END
+-
+-
+-
+-REQUEST CopyRegion
+- 4	drawable	DRAWABLE
+- 8	region	Fixes::REGION
+-12	dest	DRI2ATTACHMENT
+-16	src	DRI2ATTACHMENT
+-END
+-RESPONSE CopyRegion
+-END
+-
+-LIST DRI2ATTACH_FORMAT length 8
+- 0	attachment	DRI2ATTACHMENT
+- 4	format	CARD32
+-END
+-
+-REQUEST GetBuffersWithFormat
+- 4	drawable	DRAWABLE
+- 8	count	COUNT32
+-12	attachments	LISTofDRI2ATTACH_FORMAT
+-END
+-RESPONSE GetBuffersWithFormat
+- 8	width	UINT32
+-12	height	UINT32
+-16	count	COUNT32
+-32	buffers	LISTofDRI2BUFFER
+-END
+-
+-REQUEST SwapBuffers
+- 4	drawable	DRAWABLE
+- 8	target_msc_hi	UINT32
+-12	target_msc_lo	UINT32
+-16	divisor_hi	UINT32
+-20	divisor_lo	UINT32
+-24	remainder_hi	UINT32
+-28	remainder_lo	UINT32
+-END
+-RESPONSE SwapBuffers
+- 8	swap_hi	UINT32
+-12	swap_lo	UINT32
+-END
+-
+-REQUEST GetMSC
+- 4	drawable	DRAWABLE
+-END
+-RESPONSE GetMSC
+- 8	ust_hi	UINT32
+-12	ust_lo	UINT32
+-16	msc_hi	UINT32
+-20	msc_lo	UINT32
+-24	sbc_hi	UINT32
+-28	sbc_lo	UINT32
+-END
+-
+-REQUEST WaitMSC
+- 4	drawable	DRAWABLE
+- 8	target_msc_hi	UINT32
+-12	target_msc_lo	UINT32
+-16	divisor_hi	UINT32
+-20	divisor_lo	UINT32
+-24	remainder_hi	UINT32
+-28	remainder_lo	UINT32
+-END
+-RESPONSE WaitMSC
+- 8	ust_hi	UINT32
+-12	ust_lo	UINT32
+-16	msc_hi	UINT32
+-20	msc_lo	UINT32
+-24	sbc_hi	UINT32
+-28	sbc_lo	UINT32
+-END
+-
+-REQUEST WaitSBC
+- 4	drawable	DRAWABLE
+- 8	target_sbc_hi	UINT32
+-12	target_sbc_lo	UINT32
+-END
+-RESPONSE WaitSBC
+- 8	ust_hi	UINT32
+-12	ust_lo	UINT32
+-16	msc_hi	UINT32
+-20	msc_lo	UINT32
+-24	sbc_hi	UINT32
+-28	sbc_lo	UINT32
+-END
+-
+-REQUEST SwapInterval
+- 4	drawable	DRAWABLE
+- 8	interval	UINT32
+-END
+-
+-EVENT BufferSwapComplete
+- 4	drawable	DRAWABLE
+- 8	ust_hi	UINT32
+-12	ust_lo	UINT32
+-16	msc_hi	UINT32
+-20	msc_lo	UINT32
+-24	sbc_hi	UINT32
+-28	sbc_lo	UINT32
+-END
+-
+-EVENT InvalidateBuffers
+- 4	drawable	DRAWABLE
+-END
+-
+-EOF
+diff --git a/dri3.proto b/dri3.proto
+deleted file mode 100644
+index 0211290..0000000
+--- a/dri3.proto
++++ /dev/null
+@@ -1,74 +0,0 @@
+-EXTENSION "DRI3" DRI3
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-Open RESPONDS
+-PixmapFromBuffer
+-BufferFromPixmap RESPONDS
+-FenceFromFD
+-FDFromFence RESPONDS
+-END
+-
+-EVENTS
+-END
+-
+-ERRORS
+-END
+-
+-REQUEST QueryVersion
+- 4	major_version	UINT32
+- 8	minor_version	UINT32
+-END
+-RESPONSE QueryVersion
+- 8	major-version	UINT32
+-12	minor-version	UINT32
+-END
+-
+-REQUEST Open
+- 4	drawable	DRAWABLE
+- 8	provider	UINT32
+-END
+-RESPONSE Open
+- 1	nfd	UINT8
+-END
+-
+-REQUEST PixmapFromBuffer
+- 4	pixmap		PIXMAP
+- 8	drawable	DRAWABLE
+- 12	size		UINT32
+- 16	width		UINT16
+- 18	height		UINT16
+- 20	stride		UINT16
+- 22	depth		UINT8
+- 23	bpp		UINT8
+-END
+-
+-REQUEST BufferFromPixmap
+- 4	pixmap		PIXMAP
+-END
+-RESPONSE BufferFromPixmap
+- 1	nfd		UINT8
+- 8	size		UINT32
+- 12	width		UINT16
+- 14	height		UINT16
+- 16	stride		UINT16
+- 18	depth		UINT8
+- 19	bpp		UINT8
+-END
+-
+-REQUEST FenceFromFD
+- 4	drawable	DRAWABLE
+- 8	fence		UINT32
+- 9	initially_triggered	BOOL
+-END
+-
+-REQUEST FDFromFence
+- 4	drawable	DRAWABLE
+- 8	fence		UINT32
+-END
+-RESPONSE FDFromFence
+- 1	nfd		UINT8
+-END
+-
+-EOF
+diff --git a/fixes.proto b/fixes.proto
+deleted file mode 100644
+index cbee40b..0000000
+--- a/fixes.proto
++++ /dev/null
+@@ -1,319 +0,0 @@
+-# This file is part of "xtrace"
+-# Copyright (C) 2008 Bernhard R. Link
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License version 2 as
+-# published by the Free Software Foundation.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-
+-NEEDS "render.proto"
+-NEEDS "shape.proto"
+-
+-EXTENSION "XFIXES" Fixes
+-USE core
+-
+-TYPE PICTURE Render::PICTURE
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-ChangeSaveSet
+-SelectSelectionInput
+-SelectCursorInput
+-GetCursorImage RESPONDS
+-CreateRegion
+-CreateRegionFromBitmap
+-CreateRegionFromWindow
+-CreateRegionFromGC
+-CreateRegionFromPicture
+-DestroyRegion
+-SetRegion
+-CopyRegion
+-UnionRegion
+-IntersectRegion
+-SubtractRegion
+-InvertRegion
+-TranslateRegion
+-RegionExtents
+-FetchRegion RESPONDS
+-SetGCClipRegion
+-SetWindowShapeRegion
+-SetPictureClipRegion
+-SetCursorName
+-GetCursorName RESPONDS
+-GetCursorImageAndName RESPONDS
+-ChangeCursor
+-ChangeCursorByName
+-ExpandRegion
+-HideCursor
+-ShowCursor
+-END
+-
+-EVENTS
+-SelectionNotify
+-CursorNotify
+-END
+-
+-ERRORS
+-BadRegion
+-END
+-
+-CONSTANTS fixes_mode
+-0	insert
+-1	delete
+-END
+-TYPE FIXES_MODE	ENUM8	fixes_mode
+-CONSTANTS fixes_target
+-0	nearest
+-1	root
+-END
+-TYPE FIXES_TARGET	ENUM8	fixes_target
+-CONSTANTS fixes_map
+-0	set
+-1	unset
+-END
+-TYPE FIXES_MAP	ENUM8	fixes_map
+-CONSTANTS fixes_region_kind
+-0	bounding
+-1	clip
+-END
+-TYPE FIXES_REGION_KIND	ENUM8	fixes_region_kind
+-TYPE REGION	CARD32
+-
+-BITMASK fixes_mask
+-0x00000001	"owner notify"
+-0x00000002	"destroy notify"
+-0x00000004	"client close notify"
+-END
+-TYPE FIXES_MASK	BITMASK32	fixes_mask
+-
+-CONSTANTS fixes_subtype
+-0	"set owner"
+-1	destroy
+-2	"client close"
+-END
+-TYPE FIXES_SUBTYPE	ENUM8	fixes_subtype
+-
+-BITMASK fixes_cursor_mask
+-0x00000001	"display cursor notify"
+-END
+-TYPE FIXES_CURSOR_MASK	BITMASK32	fixes_cursor_mask
+-
+-CONSTANTS fixes_cursor_subtype
+-0	"display cursor"
+-END
+-TYPE FIXES_CURSOR_SUBTYPE	ENUM8	fixes_cursor_subtype
+-
+-REQUEST QueryVersion
+-4	"major version"	UINT32
+-8	"minor version"	UINT32
+-END
+-RESPONSE QueryVersion
+-8	"major version"	UINT32
+-12	"minor version"	UINT32
+-END
+-
+-REQUEST ChangeSaveSet
+-4	mode	FIXES_MODE
+-5	target	FIXES_TARGET
+-6	map	FIXES_MAP
+-8	window	WINDOW
+-END
+-
+-REQUEST SelectSelectionInput
+-4	window	WINDOW
+-8	selection	ATOM
+-12	eventMask	FIXES_MASK
+-END
+-
+-REQUEST SelectCursorInput
+-4	window	WINDOW
+-8	eventMask	FIXES_CURSOR_MASK
+-END
+-
+-REQUEST GetCursorImage ALIASES Empty
+-RESPONSE GetCursorImage
+-8	x	INT16
+-10	y	INT16
+-12	width	UINT16
+-14	height	UINT16
+-16	xhot	UINT16
+-18	yhot	UINT16
+-20	"cursor serial"	CARD32
+-END
+-
+-REQUEST CreateRegion
+-4	region	REGION
+-8	rectangles	LISTofRECTANGLE
+-END
+-
+-REQUEST CreateRegionFromBitmap
+-4	region	REGION
+-8	bitmap	PIXMAP
+-END
+-
+-REQUEST CreateRegionFromWindow
+-4	region	REGION
+-8	window	WINDOW
+-12	kind	FIXES_REGION_KIND
+-END
+-
+-REQUEST CreateRegionFromGC
+-4	region	REGION
+-8	gc	GCONTEXT
+-END
+-
+-REQUEST CreateRegionFromPicture
+-4	region	REGION
+-8	picture	PICTURE
+-END
+-
+-templateREQUEST Region
+-4	region	REGION
+-END
+-
+-REQUEST DestroyRegion ALIASES Region
+-
+-REQUEST SetRegion ALIASES Region
+-
+-REQUEST CopyRegion
+-4	src-region	REGION
+-8	dst-region	REGION
+-END
+-
+-templateREQUEST CombineRegion
+-4	region1	REGION
+-8	region2	REGION
+-12	dst-region	REGION
+-END
+-REQUEST UnionRegion ALIASES CombineRegion
+-REQUEST IntersectRegion ALIASES CombineRegion
+-REQUEST SubtractRegion ALIASES CombineRegion
+-
+-REQUEST InvertRegion
+-4	src-region	REGION
+-8	x	INT16
+-10	y	INT16
+-12	width	UINT16
+-14	height	UINT16
+-16	dst-region	REGION
+-END
+-
+-REQUEST TranslateRegion
+-4	region	REGION
+-8	delta-x	INT16
+-10	delta-y	INT16
+-END
+-
+-REQUEST RegionExtents ALIASES CopyRegion
+-REQUEST FetchRegion ALIASES Region
+-
+-RESPONSE FetchRegion
+-8	x	INT16
+-10	y	INT16
+-12	width	UINT16
+-14	height	UINT16
+-32	rects	LISTofRECTANGLE
+-END
+-
+-REQUEST SetGCClipRegion
+-4	gc	GCONTEXT
+-8	region	REGION
+-12	"x origin"	INT16
+-14	"y origin"	INT16
+-END
+-
+-REQUEST SetWindowShapeRegion
+-4	window	WINDOW
+-8	kind	Shape::SHAPE_KIND
+-12	"x offset"	INT16
+-14	"y offset"	INT16
+-16	region	REGION
+-END
+-
+-REQUEST SetPictureClipRegion
+-4	picture	PICTURE
+-8	region	REGION
+-12	"x origin"	INT16
+-14	"y origin"	INT16
+-END
+-
+-REQUEST SetCursorName
+-4	cursor	CARD32
+-8	""	COUNT16
+-12	name	STRING8
+-END
+-
+-REQUEST GetCursorName
+-4	cursor	CARD32
+-END
+-
+-RESPONSE GetCursorName
+-8	atom	ATOM
+-12	""	COUNT16
+-32	name	STRING8
+-END
+-
+-REQUEST GetCursorImageAndName ALIASES Empty
+-RESPONSE GetCursorImageAndName
+- 8	x	INT16
+-10	y	INT16
+-12	width	UINT16
+-14	height	UINT16
+-16	xhot	UINT16
+-18	yhot	UINT16
+-20	"cursor serial"	CARD32
+-24	"cursor name"	ATOM
+-28	""	COUNT16
+-32	name	STRING8
+-# cursor image??
+-END
+-
+-REQUEST ChangeCursor
+-4	src-cursor	CARD32
+-8	dst-cursor	CARD32
+-END
+-
+-REQUEST ChangeCursorByName
+- 4	src-cursor	CARD32
+- 8	""	COUNT16
+-12	name	STRING8
+-END
+-
+-REQUEST ExpandRegion
+- 4	src-region	REGION
+- 8	dst-region	REGION
+-12	left	UINT16
+-14	right	UINT16
+-16	top	UINT16
+-18	bottom	UINT16
+-END
+-
+-REQUEST HideCursor ALIASES WINDOW
+-
+-REQUEST ShowCursor ALIASES WINDOW
+-
+-EVENT SelectionNotify
+- 1	subtype	FIXES_SUBTYPE
+- 4	window	WINDOW
+- 8	owner	WINDOW
+-12	selection	ATOM
+-16	timestamp	TIMESTAMP
+-20	selectionTimestamp	TIMESTAMP
+-END
+-
+-EVENT CursorNotify
+- 1	subtype	FIXES_CURSOR_SUBTYPE
+- 4	window	WINDOW
+- 8	"cursor serial"	CARD32
+-12	timestamp	TIMESTAMP
+-16	name	ATOM
+-END
+-
+-EOF
+diff --git a/genericevents.proto b/genericevents.proto
+deleted file mode 100644
+index ad470db..0000000
+--- a/genericevents.proto
++++ /dev/null
+@@ -1,46 +0,0 @@
+-# This file is part of "xtrace"
+-# Copyright (C) 2008 Bernhard R. Link
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License version 2 as
+-# published by the Free Software Foundation.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-
+-EXTENSION "Generic Event Extension" ge
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-END
+-
+-EVENTS
+-Generic SPECIAL
+-END
+-
+-ERRORS
+-END
+-
+-REQUEST QueryVersion
+-4	"major version"	UINT16
+-6	"minor version"	UINT16
+-END
+-RESPONSE QueryVersion
+-8	"major version"	UINT16
+-10	"minor version"	UINT16
+-END
+-
+-EVENT Generic
+-1	extension	CARD8
+-4	length		UINT32
+-8	evtype		CARD16
+-10	data		LISTofCARD8
+-END
+-
+-EOF
+diff --git a/glx.proto b/glx.proto
+deleted file mode 100644
+index f027577..0000000
+--- a/glx.proto
++++ /dev/null
+@@ -1,1617 +0,0 @@
+-# This file is part of "xtrace"
+-# Copyright (C) 2008,2009 RALOVICH, Kristóf
+-# modifications/reformating Copyright (C) 2009 Bernhard R. Link
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License version 2 as
+-# published by the Free Software Foundation.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-
+-EXTENSION "GLX" glx
+-USE core
+-
+-REQUESTS
+-UNKNOWN
+-glXRender
+-glXRenderLarge
+-glXCreateContext
+-glXDestroyContext
+-glXMakeCurrent RESPONDS
+-glXIsDirect RESPONDS
+-glXQueryVersion RESPONDS
+-glXWaitGL
+-glXWaitX
+-glXCopyContext /* 10 */
+-glXSwapBuffers
+-glXUseXFont
+-glXCreateGLXPixmap
+-glXGetVisualConfigs RESPONDS
+-glXDestroyGLXPixmap
+-glXVendorPrivate
+-glXVendorPrivateWithReply RESPONDS
+-glXQueryExtensionsString RESPONDS UNSUPPORTED
+-glXQueryServerString RESPONDS
+-glXClientInfo /* 20 */
+-glXGetFBConfigs RESPONDS UNSUPPORTED
+-glXCreatePixmap
+-glXDestroyPixmap
+-glXCreateNewContext
+-glXQueryContext RESPONDS UNSUPPORTED
+-glXMakeContextCurrent RESPONDS
+-glXCreatePbuffer
+-glXDestroyPbuffer
+-glXGetDrawableAttributes RESPONDS UNSUPPORTED
+-glXChangeDrawableAttributes UNSUPPORTED /* 30 */
+-glXCreateWindow
+-glXDestroyWindow
+-glXSetClientInfoARB UNSUPPORTED
+-glXCreateContextAttribsARB UNSUPPORTED
+-glXSetClientInfo2ARB UNSUPPORTED
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN /* 40 */
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN /* 50 */
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN /* 60 */
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN /* 70 */
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN /* 80 */
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN /* 90 */
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN /* 100 */
+-glNewList
+-glEndList
+-glDeleteLists
+-glGenLists RESPONDS
+-glFeedbackBuffer UNSUPPORTED
+-glSelectBuffer UNSUPPORTED
+-glRenderMode RESPONDS UNSUPPORTED
+-glFinish RESPONDS UNSUPPORTED
+-glPixelStoref UNSUPPORTED
+-glPixelStorei UNSUPPORTED /* 110 */
+-glReadPixels RESPONDS UNSUPPORTED
+-glGetBooleanv RESPONDS UNSUPPORTED
+-glGetClipPlane RESPONDS UNSUPPORTED
+-glGetDoublev RESPONDS UNSUPPORTED
+-glGetError RESPONDS
+-glXGetFloatv RESPONDS UNSUPPORTED
+-glGetIntegerv RESPONDS
+-glGetLightfv RESPONDS UNSUPPORTED
+-glGetLightiv RESPONDS UNSUPPORTED
+-glGetMapdv RESPONDS UNSUPPORTED /* 120 */
+-glGetMapfv RESPONDS UNSUPPORTED
+-glGetMapiv RESPONDS UNSUPPORTED
+-glGetMaterialfv RESPONDS UNSUPPORTED
+-glGetMaterialiv RESPONDS UNSUPPORTED
+-glGetPixelMapfv RESPONDS UNSUPPORTED
+-glGetPixelMapuiv RESPONDS UNSUPPORTED
+-glGetPixelMapusv RESPONDS UNSUPPORTED
+-glGetPolygonStipple RESPONDS UNSUPPORTED
+-glGetString RESPONDS
+-glGetTexEnvfv RESPONDS UNSUPPORTED /* 130 */
+-glGetTexEnviv RESPONDS UNSUPPORTED
+-glGetTexGendv RESPONDS UNSUPPORTED
+-glGetTexGenfv RESPONDS UNSUPPORTED
+-glGetTexGeniv RESPONDS UNSUPPORTED
+-glGetTexImage RESPONDS UNSUPPORTED
+-glGetTexParameterfv RESPONDS UNSUPPORTED
+-glGetTexParameteriv RESPONDS UNSUPPORTED
+-glGetTexLevelParameterfv RESPONDS UNSUPPORTED
+-glGetTexLevelParameteriv RESPONDS UNSUPPORTED
+-glIsEnabled RESPONDS UNSUPPORTED /* 140 */
+-glIsList RESPONDS UNSUPPORTED
+-glFlush
+-glAreTexturesResident RESPONDS UNSUPPORTED
+-glDeleteTextures UNSUPPORTED
+-glGenTextures RESPONDS UNSUPPORTED
+-glIsTexture RESPONDS UNSUPPORTED
+-glGetColorTable RESPONDS UNSUPPORTED
+-glGetColorTableParameterfv RESPONDS UNSUPPORTED
+-glGetColorTableParameteriv RESPONDS UNSUPPORTED
+-glGetConvolutionFilter RESPONDS UNSUPPORTED /* 150 */
+-glGetConvolutionParameterfv RESPONDS UNSUPPORTED
+-glGetConvolutionParameteriv RESPONDS UNSUPPORTED
+-glGetSeparableFilter RESPONDS UNSUPPORTED
+-glGetHistogram RESPONDS UNSUPPORTED
+-glGetHistogramParameterfv RESPONDS UNSUPPORTED
+-glGetHistogramParameteriv RESPONDS UNSUPPORTED
+-glGetMinmax RESPONDS UNSUPPORTED
+-glGetMinmaxParameterfv RESPONDS UNSUPPORTED
+-glGetMinmaxParameteriv RESPONDS UNSUPPORTED
+-glGetCompressedTexImage RESPONDS UNSUPPORTED /* 160 */
+-glDeleteQueries UNSUPPORTED
+-glGenQueries RESPONDS UNSUPPORTED
+-glIsQuery RESPONDS UNSUPPORTED
+-glGetQueryiv RESPONDS UNSUPPORTED
+-glGetQueryObjectiv RESPONDS UNSUPPORTED
+-glGetQueryObjectuiv RESPONDS UNSUPPORTED
+-END
+-
+-EVENTS
+-PbufferClobber
+-END
+-
+-ERRORS
+-GLXBadContext
+-GLXBadContextState
+-GLXBadDrawable
+-GLXBadPixmap
+-GLXBadContextTag
+-GLXBadCurrentWindow
+-GLXBadRenderRequest
+-GLXBadLargeRequest
+-GLXUnsupportedPrivateRequest
+-GLXBadFBConfig
+-GLXBadPbuffer
+-GLXBadCurrentDrawable
+-GLXBadWindow
+-END
+-
+-CONSTANTS gl_command
+-1	CallList
+-2	CallLists
+-3	ListBase
+-4	Begin
+-5	Bitmap
+-6	Color3bv
+-7	Color3dv
+-8	Color3fv
+-9	Color3iv
+-10	Color3sv
+-11	Color3ubv
+-12	Color3uiv
+-13	Color3usv
+-14	Color4bv
+-15	Color4dv
+-16	Color4fv
+-17	Color4iv
+-18	Color4sv
+-19	Color4ubv
+-20	Color4uiv
+-21	Color4usv
+-22	EdgeFlagv
+-23	End
+-24	Indexdv
+-25	Indexfv
+-26	Indexiv
+-27	Indexsv
+-28	Normal3bv
+-29	Normal3dv
+-30	Normal3fv
+-31	Normal3iv
+-32	Normal3sv
+-33	RasterPos2dv
+-34	RasterPos2fv
+-35	RasterPos2iv
+-36	RasterPos2sv
+-37	RasterPos3dv
+-38	RasterPos3fv
+-39	RasterPos3iv
+-40	RasterPos3sv
+-41	RasterPos4dv
+-42	RasterPos4fv
+-43	RasterPos4iv
+-44	RasterPos4sv
+-45	Rectdv
+-46	Rectfv
+-47	Rectiv
+-48	Rectsv
+-49	TexCoord1dv
+-50	TexCoord1fv
+-51	TexCoord1iv
+-52	TexCoord1sv
+-53	TexCoord2dv
+-54	TexCoord2fv
+-55	TexCoord2iv
+-56	TexCoord2sv
+-57	TexCoord3dv
+-58	TexCoord3fv
+-59	TexCoord3iv
+-60	TexCoord3sv
+-61	TexCoord4dv
+-62	TexCoord4fv
+-63	TexCoord4iv
+-64	TexCoord4sv
+-65	Vertex2dv
+-66	Vertex2fv
+-67	Vertex2iv
+-68	Vertex2sv
+-69	Vertex3dv
+-70	Vertex3fv
+-71	Vertex3iv
+-72	Vertex3sv
+-73	Vertex4dv
+-74	Vertex4fv
+-75	Vertex4iv
+-76	Vertex4sv
+-77	ClipPlane
+-78	ColorMaterial
+-79	CullFace
+-80	Fogf
+-81	Fogfv
+-82	Fogi
+-83	Fogiv
+-84	FrontFace
+-85	Hint
+-86	Lightf
+-87	Lightfv
+-88	Lighti
+-89	Lightiv
+-90	LightModelf
+-91	LightModelfv
+-92	LightModeli
+-93	LightModeliv
+-94	LineStipple
+-95	LineWidth
+-96	Materialf
+-97	Materialfv
+-98	Materiali
+-99	Materialiv
+-100	PointSize
+-101	PolygonMode
+-102	PolygonStipple
+-103	Scissor
+-104	ShadeModel
+-105	TexParameterf
+-106	TexParameterfv
+-107	TexParameteri
+-108	TexParameteriv
+-109	TexImage1D
+-110	TexImage2D
+-111	TexEnvf
+-112	TexEnvfv
+-113	TexEnvi
+-114	TexEnviv
+-115	TexGend
+-116	TexGendv
+-117	TexGenf
+-118	TexGenfv
+-119	TexGeni
+-120	TexGeniv
+-121	InitNames
+-122	LoadName
+-123	PassThrough
+-124	PopName
+-125	PushName
+-126	DrawBuffer
+-127	Clear
+-128	ClearAccum
+-129	ClearIndex
+-130	ClearColor
+-131	ClearStencil
+-132	ClearDepth
+-133	StencilMask
+-134	ColorMask
+-135	DepthMask
+-136	IndexMask
+-137	Accum
+-141	PopAttrib
+-142	PushAttrib
+-147	MapGrid1d
+-148	MapGrid1f
+-149	MapGrid2d
+-150	MapGrid2f
+-151	EvalCoord1dv
+-152	EvalCoord1fv
+-153	EvalCoord2dv
+-154	EvalCoord2fv
+-155	EvalMesh1
+-156	EvalPoint1
+-157	EvalMesh2
+-158	EvalPoint2
+-159	AlphaFunc
+-160	BlendFunc
+-161	LogicOp
+-162	StencilFunc
+-163	StencilOp
+-164	DepthFunc
+-165	PixelZoom
+-166	PixelTransferf
+-167	PixelTransferi
+-168	PixelMapfv
+-169	PixelMapuiv
+-170	PixelMapusv
+-171	ReadBuffer
+-172	CopyPixels
+-173	DrawPixels
+-174	DepthRange
+-175	Frustum
+-176	LoadIdentity
+-177	LoadMatrixf
+-178	LoadMatrixd
+-179	MatrixMode
+-180	MultMatrixf
+-181	MultMatrixd
+-182	Ortho
+-183	PopMatrix
+-184	PushMatrix
+-185	Rotated
+-186	Rotatef
+-187	Scaled
+-188	Scalef
+-189	Translated
+-190	Translatef
+-191	Viewport
+-192	PolygonOffset
+-194	Indexubv
+-195	ColorSubTable
+-196	CopyColorSubTable
+-197	ActiveTextureARB
+-198	MultiTexCoord1dvARB
+-199	MultiTexCoord1fvARB
+-200	MultiTexCoord1ivARB
+-201	MultiTexCoord1svARB
+-202	MultiTexCoord2dvARB
+-203	MultiTexCoord2fvARB
+-204	MultiTexCoord2ivARB
+-205	MultiTexCoord2svARB
+-206	MultiTexCoord3dvARB
+-207	MultiTexCoord3fvARB
+-208	MultiTexCoord3ivARB
+-209	MultiTexCoord3svARB
+-210	MultiTexCoord4dvARB
+-211	MultiTexCoord4fvARB
+-212	MultiTexCoord4ivARB
+-213	MultiTexCoord4svARB
+-229	SampleCoverageARB
+-230	WindowPos3fvMESA
+-231	BeginQueryARB
+-232	EndQueryARB
+-233	DrawBuffersARB
+-2048	SampleMaskSGIS
+-2049	SamplePatternSGIS
+-2053	ColorTable
+-2054	ColorTableParameterfv
+-2055	ColorTableParameteriv
+-2056	CopyColorTable
+-2065	PointParameterfEXT
+-2066	PointParameterfvEXT
+-4096	BlendColor
+-4097	BlendEquation
+-4099	TexSubImage1D
+-4100	TexSubImage2D
+-4101	ConvolutionFilter1D
+-4102	ConvolutionFilter2D
+-4103	ConvolutionParameterf
+-4104	ConvolutionParameterfv
+-4105	ConvolutionParameteri
+-4106	ConvolutionParameteriv
+-4107	CopyConvolutionFilter1D
+-4108	CopyConvolutionFilter2D
+-4110	Histogram
+-4111	Minmax
+-4112	ResetHistogram
+-4113	ResetMinmax
+-4114	TexImage3D
+-4115	TexSubImage3D
+-4117	BindTexture
+-4118	PrioritizeTextures
+-4119	CopyTexImage1D
+-4120	CopyTexImage2D
+-4121	CopyTexSubImage1D
+-4122	CopyTexSubImage2D
+-4123	CopyTexSubImage3D
+-4124	FogCoordfvEXT
+-4125	FogCoorddvEXT
+-4126	SecondaryColor3bvEXT
+-4127	SecondaryColor3svEXT
+-4128	SecondaryColor3ivEXT
+-4129	SecondaryColor3fvEXT
+-4130	SecondaryColor3dvEXT
+-4131	SecondaryColor3ubvEXT
+-4132	SecondaryColor3usvEXT
+-4133	SecondaryColor3uivEXT
+-4134	BlendFuncSeparateEXT
+-4180	BindProgramNV
+-4181	ExecuteProgramNV
+-4182	RequestResidentProgramsNV
+-4183	LoadProgramNV
+-4184	ProgramEnvParameter4fvARB
+-4185	ProgramEnvParameter4dvARB
+-4186	ProgramParameters4fvNV
+-4187	ProgramParameters4dvNV
+-4188	TrackMatrixNV
+-4189	VertexAttrib1svARB
+-4190	VertexAttrib2svARB
+-4191	VertexAttrib3svARB
+-4192	VertexAttrib4svARB
+-4193	VertexAttrib1fvARB
+-4194	VertexAttrib2fvARB
+-4195	VertexAttrib3fvARB
+-4196	VertexAttrib4fvARB
+-4197	VertexAttrib1dvARB
+-4198	VertexAttrib2dvARB
+-4199	VertexAttrib3dvARB
+-4200	VertexAttrib4dvARB
+-4201	VertexAttrib4NubvARB
+-4202	VertexAttribs1svNV
+-4203	VertexAttribs2svNV
+-4204	VertexAttribs3svNV
+-4205	VertexAttribs4svNV
+-4206	VertexAttribs1fvNV
+-4207	VertexAttribs2fvNV
+-4208	VertexAttribs3fvNV
+-4209	VertexAttribs4fvNV
+-4210	VertexAttribs1dvNV
+-4211	VertexAttribs2dvNV
+-4212	VertexAttribs3dvNV
+-4213	VertexAttribs4dvNV
+-4214	VertexAttribs4ubvNV
+-4215	ProgramLocalParameter4fvARB
+-4216	ProgramLocalParameter4dvARB
+-4217	ProgramStringARB
+-4218	ProgramNamedParameter4fvNV
+-4219	ProgramNamedParameter4dvNV
+-4220	ActiveStencilFaceEXT
+-4221	PointParameteriNV
+-4222	PointParameterivNV
+-4228	BlendEquationSeparateEXT
+-4230	VertexAttrib4bvARB
+-4231	VertexAttrib4ivARB
+-4232	VertexAttrib4ubvARB
+-4233	VertexAttrib4usvARB
+-4234	VertexAttrib4uivARB
+-4235	VertexAttrib4NbvARB
+-4236	VertexAttrib4NsvARB
+-4237	VertexAttrib4NivARB
+-4238	VertexAttrib4NusvARB
+-4239	VertexAttrib4NuivARB
+-4265	VertexAttrib1svNV
+-4266	VertexAttrib2svNV
+-4267	VertexAttrib3svNV
+-4268	VertexAttrib4svNV
+-4269	VertexAttrib1fvNV
+-4270	VertexAttrib2fvNV
+-4271	VertexAttrib3fvNV
+-4272	VertexAttrib4fvNV
+-4273	VertexAttrib1dvNV
+-4274	VertexAttrib2dvNV
+-4275	VertexAttrib3dvNV
+-4276	VertexAttrib4dvNV
+-4277	VertexAttrib4ubvNV
+-4316	BindRenderbufferEXT
+-4317	DeleteRenderbuffersEXT
+-4318	RenderbufferStorageEXT
+-4319	BindFramebufferEXT
+-4320	DeleteFramebuffersEXT
+-4321	FramebufferTexture1DEXT
+-4322	FramebufferTexture2DEXT
+-4323	FramebufferTexture3DEXT
+-4324	FramebufferRenderbufferEXT
+-4325	GenerateMipmapEXT
+-END
+-
+-TYPE LISTID CARD32
+-
+-CONSTANTS glENUM
+-0x0000	POINTS
+-0x0001	LINES
+-0x0002	LINE_LOOP
+-0x0003	LINE_STRIP
+-0x0004	TRIANGLES
+-0x0005	TRIANGLE_STRIP
+-0x0006	TRIANGLE_FAN
+-0x0007	QUADS
+-0x0008	QUAD_STRIP
+-0x0009	POLYGON
+-0x0100	ACCUM
+-0x0101	LOAD
+-0x0102	RETURN
+-0x0103	MULT
+-0x0104	ADD
+-0x0200	NEVER
+-0x0201	LESS
+-0x0202	EQUAL
+-0x0203	LEQUAL
+-0x0204	GREATER
+-0x0205	NOTEQUAL
+-0x0206	GEQUAL
+-0x0207	ALWAYS
+-0x0300	SRC_COLOR
+-0x0301	ONE_MINUS_SRC_COLOR
+-0x0302	SRC_ALPHA
+-0x0303	ONE_MINUS_SRC_ALPHA
+-0x0304	DST_ALPHA
+-0x0305	ONE_MINUS_DST_ALPHA
+-0x0306	DST_COLOR
+-0x0307	ONE_MINUS_DST_COLOR
+-0x0308	SRC_ALPHA_SATURATE
+-0x0400	FRONT_LEFT
+-0x0401	FRONT_RIGHT
+-0x0402	BACK_LEFT
+-0x0403	BACK_RIGHT
+-0x0404	FRONT
+-0x0405	BACK
+-0x0406	LEFT
+-0x0407	RIGHT
+-0x0408	FRONT_AND_BACK
+-0x0409	AUX0
+-0x040A	AUX1
+-0x040B	AUX2
+-0x040C	AUX3
+-0x0600	2D
+-0x0601	3D
+-0x0602	3D_COLOR
+-0x0603	3D_COLOR_TEXTURE
+-0x0604	4D_COLOR_TEXTURE
+-0x0700	PASS_THROUGH_TOKEN
+-0x0701	POINT_TOKEN
+-0x0702	LINE_TOKEN
+-0x0703	POLYGON_TOKEN
+-0x0704	BITMAP_TOKEN
+-0x0705	DRAW_PIXEL_TOKEN
+-0x0706	COPY_PIXEL_TOKEN
+-0x0707	LINE_RESET_TOKEN
+-0x0800	EXP
+-0x0801	EXP2
+-0x0900	CW
+-0x0901	CCW
+-0x0A00	COEFF
+-0x0A01	ORDER
+-0x0A02	DOMAIN
+-0x0B00	CURRENT_COLOR
+-0x0B01	CURRENT_INDEX
+-0x0B02	CURRENT_NORMAL
+-0x0B03	CURRENT_TEXTURE_COORDS
+-0x0B04	CURRENT_RASTER_COLOR
+-0x0B05	CURRENT_RASTER_INDEX
+-0x0B06	CURRENT_RASTER_TEXTURE_COORDS
+-0x0B07	CURRENT_RASTER_POSITION
+-0x0B08	CURRENT_RASTER_POSITION_VALID
+-0x0B09	CURRENT_RASTER_DISTANCE
+-0x0B10	POINT_SMOOTH
+-0x0B11	POINT_SIZE
+-0x0B12	POINT_SIZE_RANGE
+-0x0B13	POINT_SIZE_GRANULARITY
+-0x0B20	LINE_SMOOTH
+-0x0B21	LINE_WIDTH
+-0x0B22	LINE_WIDTH_RANGE
+-0x0B23	LINE_WIDTH_GRANULARITY
+-0x0B24	LINE_STIPPLE
+-0x0B25	LINE_STIPPLE_PATTERN
+-0x0B26	LINE_STIPPLE_REPEAT
+-0x0B30	LIST_MODE
+-0x0B31	MAX_LIST_NESTING
+-0x0B32	LIST_BASE
+-0x0B33	LIST_INDEX
+-0x0B40	POLYGON_MODE
+-0x0B41	POLYGON_SMOOTH
+-0x0B42	POLYGON_STIPPLE
+-0x0B43	EDGE_FLAG
+-0x0B44	CULL_FACE
+-0x0B45	CULL_FACE_MODE
+-0x0B46	FRONT_FACE
+-0x0B50	LIGHTING
+-0x0B51	LIGHT_MODEL_LOCAL_VIEWER
+-0x0B52	LIGHT_MODEL_TWO_SIDE
+-0x0B53	LIGHT_MODEL_AMBIENT
+-0x0B54	SHADE_MODEL
+-0x0B55	COLOR_MATERIAL_FACE
+-0x0B56	COLOR_MATERIAL_PARAMETER
+-0x0B57	COLOR_MATERIAL
+-0x0B60	FOG
+-0x0B61	FOG_INDEX
+-0x0B62	FOG_DENSITY
+-0x0B63	FOG_START
+-0x0B64	FOG_END
+-0x0B65	FOG_MODE
+-0x0B66	FOG_COLOR
+-0x0B70	DEPTH_RANGE
+-0x0B71	DEPTH_TEST
+-0x0B72	DEPTH_WRITEMASK
+-0x0B73	DEPTH_CLEAR_VALUE
+-0x0B74	DEPTH_FUNC
+-0x0B80	ACCUM_CLEAR_VALUE
+-0x0B90	STENCIL_TEST
+-0x0B91	STENCIL_CLEAR_VALUE
+-0x0B92	STENCIL_FUNC
+-0x0B93	STENCIL_VALUE_MASK
+-0x0B94	STENCIL_FAIL
+-0x0B95	STENCIL_PASS_DEPTH_FAIL
+-0x0B96	STENCIL_PASS_DEPTH_PASS
+-0x0B97	STENCIL_REF
+-0x0B98	STENCIL_WRITEMASK
+-0x0BA0	MATRIX_MODE
+-0x0BA1	NORMALIZE
+-0x0BA2	VIEWPORT
+-0x0BA3	MODELVIEW_STACK_DEPTH
+-0x0BA4	PROJECTION_STACK_DEPTH
+-0x0BA5	TEXTURE_STACK_DEPTH
+-0x0BA6	MODELVIEW_MATRIX
+-0x0BA7	PROJECTION_MATRIX
+-0x0BA8	TEXTURE_MATRIX
+-0x0BB0	ATTRIB_STACK_DEPTH
+-0x0BB1	CLIENT_ATTRIB_STACK_DEPTH
+-0x0BC0	ALPHA_TEST
+-0x0BC1	ALPHA_TEST_FUNC
+-0x0BC2	ALPHA_TEST_REF
+-0x0BD0	DITHER
+-0x0BE0	BLEND_DST
+-0x0BE1	BLEND_SRC
+-0x0BE2	BLEND
+-0x0BF0	LOGIC_OP_MODE
+-0x0BF1	INDEX_LOGIC_OP
+-0x0BF2	COLOR_LOGIC_OP
+-0x0C00	AUX_BUFFERS
+-0x0C01	DRAW_BUFFER
+-0x0C02	READ_BUFFER
+-0x0C10	SCISSOR_BOX
+-0x0C11	SCISSOR_TEST
+-0x0C20	INDEX_CLEAR_VALUE
+-0x0C21	INDEX_WRITEMASK
+-0x0C22	COLOR_CLEAR_VALUE
+-0x0C23	COLOR_WRITEMASK
+-0x0C30	INDEX_MODE
+-0x0C31	RGBA_MODE
+-0x0C32	DOUBLEBUFFER
+-0x0C33	STEREO
+-0x0C40	RENDER_MODE
+-0x0C50	PERSPECTIVE_CORRECTION_HINT
+-0x0C51	POINT_SMOOTH_HINT
+-0x0C52	LINE_SMOOTH_HINT
+-0x0C53	POLYGON_SMOOTH_HINT
+-0x0C54	FOG_HINT
+-0x0C60	TEXTURE_GEN_S
+-0x0C61	TEXTURE_GEN_T
+-0x0C62	TEXTURE_GEN_R
+-0x0C63	TEXTURE_GEN_Q
+-0x0C70	PIXEL_MAP_I_TO_I
+-0x0C71	PIXEL_MAP_S_TO_S
+-0x0C72	PIXEL_MAP_I_TO_R
+-0x0C73	PIXEL_MAP_I_TO_G
+-0x0C74	PIXEL_MAP_I_TO_B
+-0x0C75	PIXEL_MAP_I_TO_A
+-0x0C76	PIXEL_MAP_R_TO_R
+-0x0C77	PIXEL_MAP_G_TO_G
+-0x0C78	PIXEL_MAP_B_TO_B
+-0x0C79	PIXEL_MAP_A_TO_A
+-0x0CB0	PIXEL_MAP_I_TO_I_SIZE
+-0x0CB1	PIXEL_MAP_S_TO_S_SIZE
+-0x0CB2	PIXEL_MAP_I_TO_R_SIZE
+-0x0CB3	PIXEL_MAP_I_TO_G_SIZE
+-0x0CB4	PIXEL_MAP_I_TO_B_SIZE
+-0x0CB5	PIXEL_MAP_I_TO_A_SIZE
+-0x0CB6	PIXEL_MAP_R_TO_R_SIZE
+-0x0CB7	PIXEL_MAP_G_TO_G_SIZE
+-0x0CB8	PIXEL_MAP_B_TO_B_SIZE
+-0x0CB9	PIXEL_MAP_A_TO_A_SIZE
+-0x0CF0	UNPACK_SWAP_BYTES
+-0x0CF1	UNPACK_LSB_FIRST
+-0x0CF2	UNPACK_ROW_LENGTH
+-0x0CF3	UNPACK_SKIP_ROWS
+-0x0CF4	UNPACK_SKIP_PIXELS
+-0x0CF5	UNPACK_ALIGNMENT
+-0x0D00	PACK_SWAP_BYTES
+-0x0D01	PACK_LSB_FIRST
+-0x0D02	PACK_ROW_LENGTH
+-0x0D03	PACK_SKIP_ROWS
+-0x0D04	PACK_SKIP_PIXELS
+-0x0D05	PACK_ALIGNMENT
+-0x0D10	MAP_COLOR
+-0x0D11	MAP_STENCIL
+-0x0D12	INDEX_SHIFT
+-0x0D13	INDEX_OFFSET
+-0x0D14	RED_SCALE
+-0x0D15	RED_BIAS
+-0x0D16	ZOOM_X
+-0x0D17	ZOOM_Y
+-0x0D18	GREEN_SCALE
+-0x0D19	GREEN_BIAS
+-0x0D1A	BLUE_SCALE
+-0x0D1B	BLUE_BIAS
+-0x0D1C	ALPHA_SCALE
+-0x0D1D	ALPHA_BIAS
+-0x0D1E	DEPTH_SCALE
+-0x0D1F	DEPTH_BIAS
+-0x0D30	MAX_EVAL_ORDER
+-0x0D31	MAX_LIGHTS
+-0x0D32	MAX_CLIP_PLANES
+-0x0D33	MAX_TEXTURE_SIZE
+-0x0D34	MAX_PIXEL_MAP_TABLE
+-0x0D35	MAX_ATTRIB_STACK_DEPTH
+-0x0D36	MAX_MODELVIEW_STACK_DEPTH
+-0x0D37	MAX_NAME_STACK_DEPTH
+-0x0D38	MAX_PROJECTION_STACK_DEPTH
+-0x0D39	MAX_TEXTURE_STACK_DEPTH
+-0x0D3A	MAX_VIEWPORT_DIMS
+-0x0D3B	MAX_CLIENT_ATTRIB_STACK_DEPTH
+-0x0D50	SUBPIXEL_BITS
+-0x0D51	INDEX_BITS
+-0x0D52	RED_BITS
+-0x0D53	GREEN_BITS
+-0x0D54	BLUE_BITS
+-0x0D55	ALPHA_BITS
+-0x0D56	DEPTH_BITS
+-0x0D57	STENCIL_BITS
+-0x0D58	ACCUM_RED_BITS
+-0x0D59	ACCUM_GREEN_BITS
+-0x0D5A	ACCUM_BLUE_BITS
+-0x0D5B	ACCUM_ALPHA_BITS
+-0x0D70	NAME_STACK_DEPTH
+-0x0D80	AUTO_NORMAL
+-0x0D90	MAP1_COLOR_4
+-0x0D91	MAP1_INDEX
+-0x0D92	MAP1_NORMAL
+-0x0D93	MAP1_TEXTURE_COORD_1
+-0x0D94	MAP1_TEXTURE_COORD_2
+-0x0D95	MAP1_TEXTURE_COORD_3
+-0x0D96	MAP1_TEXTURE_COORD_4
+-0x0D97	MAP1_VERTEX_3
+-0x0D98	MAP1_VERTEX_4
+-0x0DB0	MAP2_COLOR_4
+-0x0DB1	MAP2_INDEX
+-0x0DB2	MAP2_NORMAL
+-0x0DB3	MAP2_TEXTURE_COORD_1
+-0x0DB4	MAP2_TEXTURE_COORD_2
+-0x0DB5	MAP2_TEXTURE_COORD_3
+-0x0DB6	MAP2_TEXTURE_COORD_4
+-0x0DB7	MAP2_VERTEX_3
+-0x0DB8	MAP2_VERTEX_4
+-0x0DD0	MAP1_GRID_DOMAIN
+-0x0DD1	MAP1_GRID_SEGMENTS
+-0x0DD2	MAP2_GRID_DOMAIN
+-0x0DD3	MAP2_GRID_SEGMENTS
+-0x0DE0	TEXTURE_1D
+-0x0DE1	TEXTURE_2D
+-0x0DF0	FEEDBACK_BUFFER_POINTER
+-0x0DF1	FEEDBACK_BUFFER_SIZE
+-0x0DF2	FEEDBACK_BUFFER_TYPE
+-0x0DF3	SELECTION_BUFFER_POINTER
+-0x0DF4	SELECTION_BUFFER_SIZE
+-0x1000	TEXTURE_WIDTH
+-0x1001	TEXTURE_HEIGHT
+-0x1003	TEXTURE_COMPONENTS
+-0x1004	TEXTURE_BORDER_COLOR
+-0x1005	TEXTURE_BORDER
+-0x1100	DONT_CARE
+-0x1101	FASTEST
+-0x1102	NICEST
+-0x1200	AMBIENT
+-0x1201	DIFFUSE
+-0x1202	SPECULAR
+-0x1203	POSITION
+-0x1204	SPOT_DIRECTION
+-0x1205	SPOT_EXPONENT
+-0x1206	SPOT_CUTOFF
+-0x1207	CONSTANT_ATTENUATION
+-0x1208	LINEAR_ATTENUATION
+-0x1209	QUADRATIC_ATTENUATION
+-0x1300	COMPILE
+-0x1301	COMPILE_AND_EXECUTE
+-0x1400	BYTE
+-0x1401	UNSIGNED_BYTE
+-0x1402	SHORT
+-0x1403	UNSIGNED_SHORT
+-0x1404	INT
+-0x1405	UNSIGNED_INT
+-0x1406	FLOAT
+-0x1407	2_BYTES
+-0x1408	3_BYTES
+-0x1409	4_BYTES
+-0x140A	DOUBLE
+-0x1500	CLEAR
+-0x1501	AND
+-0x1502	AND_REVERSE
+-0x1503	COPY
+-0x1504	AND_INVERTED
+-0x1505	NOOP
+-0x1506	XOR
+-0x1507	OR
+-0x1508	NOR
+-0x1509	EQUIV
+-0x150A	INVERT
+-0x150B	OR_REVERSE
+-0x150C	COPY_INVERTED
+-0x150D	OR_INVERTED
+-0x150E	NAND
+-0x150F	SET
+-0x1600	EMISSION
+-0x1601	SHININESS
+-0x1602	AMBIENT_AND_DIFFUSE
+-0x1603	COLOR_INDEXES
+-0x1700	MODELVIEW
+-0x1701	PROJECTION
+-0x1702	TEXTURE
+-0x1800	COLOR
+-0x1801	DEPTH
+-0x1802	STENCIL
+-0x1900	COLOR_INDEX
+-0x1901	STENCIL_INDEX
+-0x1902	DEPTH_COMPONENT
+-0x1903	RED
+-0x1904	GREEN
+-0x1905	BLUE
+-0x1906	ALPHA
+-0x1907	RGB
+-0x1908	RGBA
+-0x1909	LUMINANCE
+-0x190A	LUMINANCE_ALPHA
+-0x1A00	BITMAP
+-0x1B00	POINT
+-0x1B01	LINE
+-0x1B02	FILL
+-0x1C00	RENDER
+-0x1C01	FEEDBACK
+-0x1C02	SELECT
+-0x1D00	FLAT
+-0x1D01	SMOOTH
+-0x1E00	KEEP
+-0x1E01	REPLACE
+-0x1E02	INCR
+-0x1E03	DECR
+-0x1F00	VENDOR
+-0x1F01	RENDERER
+-0x1F02	VERSION
+-0x1F03	EXTENSIONS
+-0x2000	S
+-0x2001	T
+-0x2002	R
+-0x2003	Q
+-0x2100	MODULATE
+-0x2101	DECAL
+-0x2200	TEXTURE_ENV_MODE
+-0x2201	TEXTURE_ENV_COLOR
+-0x2300	TEXTURE_ENV
+-0x2400	EYE_LINEAR
+-0x2401	OBJECT_LINEAR
+-0x2402	SPHERE_MAP
+-0x2500	TEXTURE_GEN_MODE
+-0x2501	OBJECT_PLANE
+-0x2502	EYE_PLANE
+-0x2600	NEAREST
+-0x2601	LINEAR
+-0x2700	NEAREST_MIPMAP_NEAREST
+-0x2701	LINEAR_MIPMAP_NEAREST
+-0x2702	NEAREST_MIPMAP_LINEAR
+-0x2703	LINEAR_MIPMAP_LINEAR
+-0x2800	TEXTURE_MAG_FILTER
+-0x2801	TEXTURE_MIN_FILTER
+-0x2802	TEXTURE_WRAP_S
+-0x2803	TEXTURE_WRAP_T
+-0x2900	CLAMP
+-0x2901	REPEAT
+-0x2A00	POLYGON_OFFSET_UNITS
+-0x2A01	POLYGON_OFFSET_POINT
+-0x2A02	POLYGON_OFFSET_LINE
+-0x2A10	R3_G3_B2
+-0x2A20	V2F
+-0x2A21	V3F
+-0x2A22	C4UB_V2F
+-0x2A23	C4UB_V3F
+-0x2A24	C3F_V3F
+-0x2A25	N3F_V3F
+-0x2A26	C4F_N3F_V3F
+-0x2A27	T2F_V3F
+-0x2A28	T4F_V4F
+-0x2A29	T2F_C4UB_V3F
+-0x2A2A	T2F_C3F_V3F
+-0x2A2B	T2F_N3F_V3F
+-0x2A2C	T2F_C4F_N3F_V3F
+-0x2A2D	T4F_C4F_N3F_V4F
+-0x3000	CLIP_PLANE0
+-0x3001	CLIP_PLANE1
+-0x3002	CLIP_PLANE2
+-0x3003	CLIP_PLANE3
+-0x3004	CLIP_PLANE4
+-0x3005	CLIP_PLANE5
+-0x4000	LIGHT0
+-0x4001	LIGHT1
+-0x4002	LIGHT2
+-0x4003	LIGHT3
+-0x4004	LIGHT4
+-0x4005	LIGHT5
+-0x4006	LIGHT6
+-0x4007	LIGHT7
+-0x8037	POLYGON_OFFSET_FILL
+-0x8038	POLYGON_OFFSET_FACTOR
+-0x803B	ALPHA4
+-0x803C	ALPHA8
+-0x803D	ALPHA12
+-0x803E	ALPHA16
+-0x803F	LUMINANCE4
+-0x8040	LUMINANCE8
+-0x8041	LUMINANCE12
+-0x8042	LUMINANCE16
+-0x8043	LUMINANCE4_ALPHA4
+-0x8044	LUMINANCE6_ALPHA2
+-0x8045	LUMINANCE8_ALPHA8
+-0x8046	LUMINANCE12_ALPHA4
+-0x8047	LUMINANCE12_ALPHA12
+-0x8048	LUMINANCE16_ALPHA16
+-0x8049	INTENSITY
+-0x804A	INTENSITY4
+-0x804B	INTENSITY8
+-0x804C	INTENSITY12
+-0x804D	INTENSITY16
+-0x804F	RGB4
+-0x8050	RGB5
+-0x8051	RGB8
+-0x8052	RGB10
+-0x8053	RGB12
+-0x8054	RGB16
+-0x8055	RGBA2
+-0x8056	RGBA4
+-0x8057	RGB5_A1
+-0x8058	RGBA8
+-0x8059	RGB10_A2
+-0x805A	RGBA12
+-0x805B	RGBA16
+-0x805C	TEXTURE_RED_SIZE
+-0x805D	TEXTURE_GREEN_SIZE
+-0x805E	TEXTURE_BLUE_SIZE
+-0x805F	TEXTURE_ALPHA_SIZE
+-0x8060	TEXTURE_LUMINANCE_SIZE
+-0x8061	TEXTURE_INTENSITY_SIZE
+-0x8063	PROXY_TEXTURE_1D
+-0x8064	PROXY_TEXTURE_2D
+-0x8066	TEXTURE_PRIORITY
+-0x8067	TEXTURE_RESIDENT
+-0x8068	TEXTURE_BINDING_1D
+-0x8069	TEXTURE_BINDING_2D
+-0x8074	VERTEX_ARRAY
+-0x8075	NORMAL_ARRAY
+-0x8076	COLOR_ARRAY
+-0x8077	INDEX_ARRAY
+-0x8078	TEXTURE_COORD_ARRAY
+-0x8079	EDGE_FLAG_ARRAY
+-0x807A	VERTEX_ARRAY_SIZE
+-0x807B	VERTEX_ARRAY_TYPE
+-0x807C	VERTEX_ARRAY_STRIDE
+-0x807E	NORMAL_ARRAY_TYPE
+-0x807F	NORMAL_ARRAY_STRIDE
+-0x8081	COLOR_ARRAY_SIZE
+-0x8082	COLOR_ARRAY_TYPE
+-0x8083	COLOR_ARRAY_STRIDE
+-0x8085	INDEX_ARRAY_TYPE
+-0x8086	INDEX_ARRAY_STRIDE
+-0x8088	TEXTURE_COORD_ARRAY_SIZE
+-0x8089	TEXTURE_COORD_ARRAY_TYPE
+-0x808A	TEXTURE_COORD_ARRAY_STRIDE
+-0x808C	EDGE_FLAG_ARRAY_STRIDE
+-0x808E	VERTEX_ARRAY_POINTER
+-0x808F	NORMAL_ARRAY_POINTER
+-0x8090	COLOR_ARRAY_POINTER
+-0x8091	INDEX_ARRAY_POINTER
+-0x8092	TEXTURE_COORD_ARRAY_POINTER
+-0x8093	EDGE_FLAG_ARRAY_POINTER
+-END
+-TYPE glENUM ENUM32 glENUM
+-
+-LIST 2BYTES length 2
+-SET_COUNTER 2
+-0	bytes	LISTofCARD8
+-END
+-LIST 3BYTES length 3
+-SET_COUNTER 3
+-0	bytes	LISTofCARD8
+-END
+-LIST 4BYTES length 4
+-SET_COUNTER 4
+-0	bytes	LISTofCARD8
+-END
+-
+-LIST RenderCommand variable min-length 4
+-0	length		COUNT16
+-SIZE COUNT
+-2	command		ENUM16 gl_command
+-IF 2 CARD16 $gl_command:Begin
+-4	mode	glENUM
+-NEXT 8
+-
+-ELSEIF 2 CARD16 $gl_command:CallList
+-4	list	LISTID
+-NEXT 8
+-
+-ELSEIF 2 CARD16 $gl_command:CallLists
+-4	n	COUNT32
+-8	type	glENUM
+-IF 8 CARD32 $glENUM:BYTE
+-12	lists	LISTofINT8
+-ELSEIF 8 CARD32 $glENUM:UNSIGNED_BYTE
+-12	lists	LISTofUINT8
+-ELSEIF 8 CARD32 $glENUM:SHORT
+-12	lists	LISTofINT16
+-ELSEIF 8 CARD32 $glENUM:UNSIGNED_SHORT
+-12	lists	LISTofUINT16
+-ELSEIF 8 CARD32 $glENUM:2_BYTES
+-# GL_2_BYTES: TODO: decide how to print
+-12	lists	LISTof2BYTES
+-ELSEIF 8 CARD32 $glENUM:3_BYTES
+-# GL_3_BYTES: TODO: decide how to print
+-12	lists	LISTof3BYTES
+-ELSEIF 8 CARD32 $glENUM:INT
+-12	lists	LISTofINT32
+-ELSEIF 8 CARD32 $glENUM:UNSIGNED_INT
+-12	lists	LISTofCARD32
+-ELSEIF 8 CARD32 $glENUM:FLOAT
+-12	lists	LISTofFLOAT32
+-ELSEIF 8 CARD32 $glENUM:4_BYTES
+-12	lists	LISTof4BYTES
+-ELSE
+-0	n	CARD16
+-RESET_COUNTER
+-12	strange-data	LISTofCARD8
+-
+-ELSEIF 2 CARD16 $gl_command:Clear
+-# TODO: what's this mask?
+-4	mask	CARD32
+-NEXT 8
+-
+-ELSEIF 2 CARD16 $gl_command:End
+-NEXT 4
+-
+-ELSEIF 2 CARD16 $gl_command:Lightfv
+-4	light	glENUM
+-8	pname	glENUM
+-# TODO: don't those floats have a meaning?
+-IF 8 CARD32 $glENUM:AMBIENT
+-SET_COUNTER	4
+-12	data	LISTofFLOAT32
+-ELSEIF 8 CARD32 $glENUM:DIFFUSE
+-SET_COUNTER	4
+-12	data	LISTofFLOAT32
+-ELSEIF 8 CARD32 $glENUM:SPECULAR
+-SET_COUNTER	4
+-12	data	LISTofFLOAT32
+-ELSEIF 8 CARD32 $glENUM:POSITION
+-SET_COUNTER	4
+-12	data	LISTofFLOAT32
+-ELSEIF 8 CARD32 $glENUM:SPOT_DIRECTION
+-SET_COUNTER	3
+-12	data	LISTofFLOAT32
+-ELSEIF 8 CARD32 $glENUM:SPOT_EXPONENT
+-12	data	FLOAT32
+-NEXT	16
+-ELSEIF 8 CARD32 $glENUM:SPOT_CUTOFF
+-12	data	FLOAT32
+-NEXT	16
+-ELSEIF 8 CARD32 $glENUM:CONSTANT_ATTENUATION
+-12	data	FLOAT32
+-NEXT	16
+-ELSEIF 8 CARD32 $glENUM:LINEAR_ATTENUATION
+-12	data	FLOAT32
+-NEXT	16
+-ELSEIF 8 CARD32 $glENUM:QUADRATIC_ATTENUATION
+-12	data	FLOAT32
+-NEXT	16
+-ELSE
+-8	pname	CARD32
+-RESET_COUNTER
+-4	unknown-light	LISTofCARD8
+-
+-ELSEIF 2 CARD16 $gl_command:ListBase
+-4	base	CARD32
+-NEXT 8
+-
+-ELSEIF 2 CARD16 $gl_command:Materialfv
+-4	face	glENUM
+-8	pname	glENUM
+-# TODO: what is the meaning of those arrays?
+-IF 8 CARD32 $glENUM:AMBIENT
+-SET_COUNTER 4
+-12	data	LISTofFLOAT32
+-ELSEIF 8 CARD32 $glENUM:DIFFUSE
+-SET_COUNTER 4
+-12	data	LISTofFLOAT32
+-ELSEIF 8 CARD32 $glENUM:SPECULAR
+-SET_COUNTER 4
+-12	data	LISTofFLOAT32
+-ELSEIF 8 CARD32 $glENUM:EMISSION
+-SET_COUNTER 4
+-12	data	LISTofFLOAT32
+-ELSEIF 8 CARD32 $glENUM:SHININESS
+-12	data	FLOAT32
+-NEXT	16
+-ELSEIF 8 CARD32 $glENUM:AMBIENT_AND_DIFFUSE
+-SET_COUNTER 4
+-12	data	LISTofFLOAT32
+-ELSEIF 8 CARD32 $glENUM:COLOR_INDEXES
+-SET_COUNTER 3
+-12	data	LISTofFLOAT32
+-ELSE
+-RESET_COUNTER
+-12	unknown-material-data	LISTofCARD8
+-
+-ELSEIF 2 CARD16 $gl_command:Normal3fv
+-SET_COUNTER 3
+- 4	v	LISTofFLOAT32
+-NEXT 16
+-
+-ELSEIF 2 CARD16 $gl_command:PopName
+-NEXT 4
+-
+-ELSEIF 2 CARD16 $gl_command:PopAttrib
+-NEXT 4
+-
+-ELSEIF 2 CARD16 $gl_command:PopMatrix
+-NEXT 4
+-
+-ELSEIF 2 CARD16 $gl_command:PushName
+-4	name	CARD32
+-NEXT 8
+-ELSEIF 2 CARD16 $gl_command:PushAttrib
+-# TODO: what's this mask?
+-4	mask	CARD32
+-NEXT 8
+-ELSEIF 2 CARD16 $gl_command:PushMatrix
+-NEXT 4
+-
+-ELSEIF 2 CARD16 $gl_command:Rotatef
+-4	angle	FLOAT32
+-8	x	FLOAT32
+-12	y	FLOAT32
+-16	z	FLOAT32
+-NEXT 20
+-
+-ELSEIF 2 CARD16 $gl_command:ShadeModel
+- 4	mode	glENUM
+-NEXT 8
+-
+-ELSEIF 2 CARD16 $gl_command:Translatef
+- 4	x	FLOAT32
+- 8	y	FLOAT32
+-12	z	FLOAT32
+-NEXT 16
+-
+-ELSEIF 2 CARD16 $gl_command:Vertex3fv
+-SET_COUNTER 3
+- 4	v	LISTofFLOAT32
+-NEXT 16
+-
+-# TODO: all the other commands still need to be implemented
+-ELSE
+-4	unknown	LISTofCARD8
+-END
+-
+-REQUEST glXRender
+-4	context_tag	CARD32
+-8	"render commands"	LISTofRenderCommand
+-END
+-
+-# opcode 2
+-REQUEST glXRenderLarge
+-4	context_tag	CARD32
+-8	req_num	CARD16
+-10	req_tot	CARD16
+-12	n	CARD32
+-END
+-
+-# opcode 3
+-REQUEST glXCreateContext
+-4	context	CARD32
+-8	visual_id	UINT32
+-12	screen	CARD32
+-16	share_list	CARD32
+-20	is_direct	UINT8
+-END
+-
+-# opcode 4
+-REQUEST glXDestroyContext
+-4	context	CARD32
+-END
+-
+-# opcode 5
+-REQUEST glXMakeCurrent
+-4	drawable	CARD32
+-8	context	CARD32
+-12	old_context_tag	CARD32
+-END
+-RESPONSE glXMakeCurrent
+-8	new_context_tag	CARD32
+-END
+-
+-# opcode 6
+-REQUEST glXIsDirect
+-4	context	CARD32
+-END
+-RESPONSE glXIsDirect
+-8	is_direct	UINT8
+-END
+-
+-# opcode 7
+-REQUEST glXQueryVersion
+-4	client_major_version	UINT32
+-8	client_minor_version	UINT32
+-END
+-RESPONSE glXQueryVersion
+-8	server_major_version	UINT32
+-12	server_minor_version	UINT32
+-END
+-
+-# opcode 8
+-REQUEST glXWaitGL
+-4	context_tag	CARD32
+-END
+-
+-# opcode 9
+-REQUEST glXWaitX
+-4	context_tag	CARD32
+-END
+-
+-# opcode 10
+-REQUEST glXCopyContext
+-4	source		CARD32
+-8	dest		CARD32
+-12	mask		CARD32
+-16	context_tag	CARD32
+-END
+-
+-# opcode 11
+-REQUEST glXSwapBuffers
+-4	context_tag	CARD32
+-8	drawable	CARD32
+-END
+-
+-# opcode 12
+-REQUEST glXUseXFont
+-4	context_tag	CARD32
+-8	font		CARD32
+-12	first		CARD32
+-16	count		CARD32
+-20	list_base	CARD32
+-END
+-
+-#opcode 13
+-REQUEST glXCreateGLXPixmap
+-4	screen		CARD32
+-8	visual		CARD32
+-12	pixmap		CARD32
+-16	glx_pixmap	CARD32
+-END
+-
+-TYPE BOOL32 ENUM32 bool
+-
+-CONSTANTS proptype
+-0x20	GLX_VISUAL_CAVEAT_EXT
+-0x23	GLX_TRANSPARENT_TYPE
+-0x25	GLX_TRANSPARENT_RED_VALUE
+-0x26	GLX_TRANSPARENT_GREEN_VALUE
+-0x27	GLX_TRANSPARENT_BLUE_VALUE
+-0x28	GLX_TRANSPARENT_ALPHA_VALUE
+-0x24	GLX_TRANSPARENT_INDEX_VALUE
+-100001	GLX_SAMPLES_SGIS
+-100000	GLX_SAMPLE_BUFFERS_SGIS
+-0x800b	GLX_VISUAL_ID
+-0x8013	GLX_FBCONFIG_ID
+-0x8012	GLX_X_RENDERABLE
+-4	GLX_RGBA
+-0x8011	GLX_RENDER_TYPE
+-5	GLX_DOUBLEBUFFER
+-6	GLX_STEREO
+-2	GLX_BUFFER_SIZE
+-3	GLX_LEVEL
+-7	GLX_AUX_BUFFERS
+-8	GLX_RED_SIZE
+-9	GLX_GREEN_SIZE
+-10	GLX_BLUE_SIZE
+-11	GLX_ALPHA_SIZE
+-14	GLX_ACCUM_RED_SIZE
+-15	GLX_ACCUM_GREEN_SIZE
+-16	GLX_ACCUM_BLUE_SIZE
+-17	GLX_ACCUM_ALPHA_SIZE
+-12	GLX_DEPTH_SIZE
+-13	GLX_STENCIL_SIZE
+-0x22	GLX_X_VISUAL_TYPE
+-0x8060	GLX_SWAP_METHOD_OML
+-0x8010	GLX_DRAWABLE_TYPE
+-0x20d0	GLX_BIND_TO_TEXTURE_RGB_EXT
+-0x20d1	GLX_BIND_TO_TEXTURE_RGBA_EXT
+-0x20d2	GLX_BIND_TO_MIPMAP_TEXTURE_EXT
+-0x20d3	GLX_BIND_TO_TEXTURE_TARGETS_EXT
+-END
+-
+-STRUCT property length 8
+-0	type	ENUM32 proptype
+-4	value	CARD32
+-END
+-
+-LIST visualconfig variable min-length 72
+-0	visualid	CARD32
+-4	class		CARD32
+-8	rgba		BOOL32
+-12	red_size	UINT32
+-16	green_size	UINT32
+-20	blue_size	UINT32
+-24	alpha_size	UINT32
+-28	accum_red_size	UINT32
+-32	accum_green_size	UINT32
+-36	accum_blue_size	UINT32
+-40	accum_alpha_size	UINT32
+-44	double_buffer	BOOL32
+-48	stereo		BOOL32
+-52	buffer_size	UINT32
+-56	depth_size	UINT32
+-60	stencil_size	UINT32
+-64	aux_buffers	UINT32
+-68	level		UINT32
+-GET 0
+-DECREMENT_COUNT 18
+-DIVIDE_COUNT 2
+-72	props	LISTofproperty
+-END
+-
+-# opcode 14
+-REQUEST glXGetVisualConfigs
+-4	screen	CARD32
+-END
+-RESPONSE glXGetVisualConfigs
+-12	num_properties	UINT32
+-12	num_properties	PUSH32
+-8	num_visuals	COUNT32
+-32	visualconfigs	LISTofvisualconfig
+-RESET_COUNTER
+-END
+-
+-# opcode 15
+-REQUEST glXDestroyGLXPixmap
+-4	glx_pixmap	CARD32
+-END
+-
+-# opcode 16
+-REQUEST glXVendorPrivate
+-4	vendor_code	CARD32
+-8	context_tag	CARD32
+-END
+-
+-CONSTANTS vendor_op
+-65540	GetFBConfigsSGIX
+-END
+-
+-LIST fbconfigattribs variable min-length 8
+-GET 0
+-0	props	LISTofproperty
+-END
+-
+-# opcode 17
+-REQUEST glXVendorPrivateWithReply TRANSFER=1
+-4	vendor_op	ENUM32 vendor_op
+-4	vendor_op	PUSH32
+-IF 4 CARD32 $vendor_op:GetFBConfigsSGIX
+-12	screen	UINT32
+-ELSE
+-8	vendor_data	LISTofCARD8
+-# FIXME proper size
+-END
+-RESPONSE glXVendorPrivateWithReply
+-GET 0
+-IF STORED CARD32 $vendor_op:GetFBConfigsSGIX
+-8	num_fbconfigs	COUNT32
+-12	num_attribs	UINT32
+-12	num_attribs	PUSH32
+-32	fbconfigs	LISToffbconfigattribs
+-RESET_COUNTER
+-ELSE
+-RESET_COUNTER
+-8	data1	LISTofCARD8
+-#32	data2	LISTofCARD8
+-END
+-
+-CONSTANTS server_string
+-1	GLX_VENDOR
+-2	GLX_VERSION
+-3	GLX_EXTENSIONS
+-END
+-
+-# opcode 19
+-REQUEST glXQueryServerString
+-4	context_tag	CARD32
+-8	name	ENUM32 server_string
+-END
+-RESPONSE glXQueryServerString
+-12	n	COUNT32
+-DECREMENT_COUNT 1
+-32	string	STRING8
+-#  FIXME proper size
+-END
+-
+-# opcode 20
+-REQUEST glXClientInfo
+-4	gl_client_major	UINT32
+-8	gl_client_minor	UINT32
+-12	n	COUNT32
+-DECREMENT_COUNT 1
+-16	extension_string	STRING8
+-# FIXME proper size
+-END
+-
+-# opcode 22
+-REQUEST glXCreatePixmap
+-4	screen		CARD32
+-8	fbconfig	CARD32
+-12	pixmap		CARD32
+-16	glx_pixmap	CARD32
+-20	num_attribs	COUNT32
+-END
+-
+-# opcode 23
+-REQUEST glXDestroyPixmap
+-4	glx_pixmap	CARD32
+-END
+-
+-# opcode 24
+-REQUEST glXCreateNewContext
+-4	context		CARD32
+-8	fbconfig	CARD32
+-12	screen		CARD32
+-16	render_type	CARD32
+-20	share_list	CARD32
+-24	is_direct	UINT8
+-25	reserved1	UINT8
+-26	reserved2	UINT16
+-END
+-
+-# opcode 26
+-REQUEST glXMakeContextCurrent
+-4	old_context_tag	CARD32
+-8	write_drawable	CARD32
+-12	read_drawable	CARD32
+-16	context		CARD32
+-END
+-RESPONSE glXMakeContextCurrent
+-8	new_context_tag	CARD32
+-END
+-
+-# opcode 27
+-REQUEST glXCreatePbuffer
+-4	screen		CARD32
+-8	fbconfig	CARD32
+-12	pbuffer		CARD32
+-16	num_attribs	CARD32
+-END
+-
+-# opcode 28
+-REQUEST glXDestroyPbuffer
+-4	pbuffer		CARD32
+-END
+-
+-# opcode 31
+-REQUEST glXCreateWindow
+-4	screen		CARD32
+-8	fbconfig	CARD32
+-12	window		CARD32
+-16	glx_window	CARD32
+-20	num_attribs	CARD32
+-END
+-
+-# opcode 32
+-REQUEST glXDestroyWindow
+-4	glx_window	CARD32
+-END
+-
+-# opcode 117
+-REQUEST glGetIntegerv
+-4	context_tag	CARD32
+-8	pname	CARD32
+-END
+-RESPONSE glGetIntegerv
+-12	n	UINT32
+-# FIXME extend
+-END
+-
+-# opcode 101
+-REQUEST glNewList
+-4	context_tag	CARD32
+-8	list	CARD32
+-12	mode	CARD32
+-END
+-
+-# opcode 102
+-REQUEST glEndList
+-4	context_tag	CARD32
+-END
+-
+-# opcode 103
+-REQUEST glDeleteLists
+-4	context_tag	CARD32
+-8	list	CARD32
+-12	range	INT32
+-END
+-
+-# opcode 104
+-REQUEST glGenLists
+-4	context_tag	CARD32
+-8	range	INT32
+-END
+-RESPONSE glGenLists
+-8	retval	UINT32
+-12	unused	LISTofCARD8
+-END
+-
+-# opcode 115
+-REQUEST glGetError
+-4	context_tag	CARD32
+-END
+-RESPONSE glGetError
+-8	error	UINT32
+-12	unused	LISTofCARD8
+-END
+-
+-# opcode 129
+-REQUEST glGetString
+-4	context_tag	CARD32
+-8	name	glENUM
+-END
+-RESPONSE glGetString
+-12	n	COUNT32
+-32	string	STRING8
+-END
+-
+-# opcode 142
+-REQUEST glFlush
+-4	context_tag	CARD32
+-END
+-
+-EVENT PbufferClobber
+- 4	event_type	CARD16
+- 6	draw_type	CARD16
+- 8	drawable	CARD32
+-12	buffer_mask	CARD32
+-16	aux_buffer	CARD16
+-18	x	CARD16
+-20	y	CARD16
+-22	width	CARD16
+-24	height	CARD16
+-26	count	CARD16
+-END
+-
+-EOF
+diff --git a/mitshm.proto b/mitshm.proto
+index bfda7d2..9998615 100644
+--- a/mitshm.proto
++++ b/mitshm.proto
+@@ -36,7 +36,6 @@
+ #in this Software without prior written authorization from The Open Group.
+ 
+ NEEDS "requests.proto"
+-NEEDS "render.proto"
+ 
+ EXTENSION "MIT-SHM" Shm
+ USE core
+diff --git a/present.proto b/present.proto
+deleted file mode 100644
+index 553fbf3..0000000
+--- a/present.proto
++++ /dev/null
+@@ -1,174 +0,0 @@
+-NEEDS "randr.proto"
+-NEEDS "fixes.proto"
+-NEEDS "sync.proto"
+-
+-EXTENSION "Present" Present
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-Pixmap
+-NotifyMSC
+-SelectInput
+-QueryCapabilities RESPONDS
+-END
+-
+-EVENTS
+-END
+-
+-ERRORS
+-END
+-
+-XGEVENTS
+-ConfigureNotify
+-CompleteNotify
+-IdleNotify
+-RedirectNotify
+-END
+-
+-TYPE PRESENT_EVENT_ID CARD32
+-
+-BITMASK present_event_mask
+- 1<<0	  ConfigureNotify
+- 1<<1	  CompleteNotify
+- 1<<2	  IdleNotify
+- 1<<3	  RedirectNotify
+-END
+-TYPE PRESENT_EVENT_MASK BITMASK32 present_event_mask
+-
+-BITMASK present_option
+- 1<<0	Async
+- 1<<1	Copy
+- 1<<2	UST
+-END
+-TYPE PRESENT_OPTION BITMASK32 present_option
+-
+-BITMASK present_capability
+- 1<<0	Async
+- 1<<1	Fence
+- 1<<2	UST
+-END
+-TYPE PRESENT_CAPABILITY BITMASK32 present_capability
+-
+-CONSTANTS present_complete_kind
+- 0	  Pixmap
+- 1	  NotifyMSC
+-END
+-TYPE PRESENT_COMPLETE_KIND ENUM8 present_complete_kind
+-
+-CONSTANTS present_complete_mode
+- 0	  Copy
+- 1	  Flip
+- 2	  Skip
+-END
+-TYPE PRESENT_COMPLETE_MODE ENUM8 present_complete_mode
+-
+-LIST PRESENT_NOTIFY length 8
+- 0     window	      WINDOW
+- 4     serial	      UINT32
+-END
+-
+-REQUEST QueryVersion
+- 4	majorVersion	UINT32
+- 8	minorVersion	UINT32
+-END
+-RESPONSE QueryVersion
+- 8	majorVersion	UINT32
+- 12	minorVersion	UINT32
+-END
+-
+-REQUEST Pixmap
+- 4	window		WINDOW
+- 8	pixmap		PIXMAP
+- 12	serial		UINT32
+- 16	valid		Fixes::REGION
+- 20	update		Fixes::REGION
+- 24	x_off		INT16
+- 26	y_off		INT16
+- 28	target_crtc	RandR::CRTC
+- 32	wait_fence	XSync::Fence
+- 36	idle_fence	XSync::Fence
+- 40	options		PRESENT_OPTION
+- 48	target_msc	XSync::Value
+- 56	divisor		XSync::Value
+- 64	remainder	XSync::Value
+- 72	notifies	LISTofPRESENT_NOTIFY
+-END
+-
+-REQUEST NotifyMSC
+- 4	window		WINDOW
+- 8	serial		UINT32
+- 16	target_msc	XSync::Value
+- 24	divisor		XSync::Value
+- 32	remainder	XSync::Value
+-END
+-
+-REQUEST SelectInput
+- 4	eid		PRESENT_EVENT_ID
+- 8	window		WINDOW
+- 12	event_mask	PRESENT_EVENT_MASK
+-END
+-
+-REQUEST QueryCapabilities
+- 4	target		UINT32
+-END
+-RESPONSE QueryCapabilities
+- 8	 capabilities	PRESENT_CAPABILITY
+-END
+-
+-XGEVENT ConfigureNotify
+- 12	 event		PRESENT_EVENT_ID
+- 16	 window		WINDOW
+- 20	 x		INT16
+- 22	 y		INT16
+- 24	 width		UINT16
+- 26	 height		UINT16
+- 28	 off_x		INT16
+- 30	 off_y		INT16
+- 32	 pixmap_width	UINT16
+- 34	 pixmap_height	UINT16
+- 36	 pixmap_flags	UINT32
+-END
+-
+-XGEVENT CompleteNotify
+- 10	 kind		PRESENT_COMPLETE_KIND
+- 11	 mode		PRESENT_COMPLETE_MODE
+- 12	 event		PRESENT_EVENT_ID
+- 16	 window		WINDOW
+- 20	 serial		UINT32
+- 24	 ust		XSync::Value
+- 32	 msc		XSync::Value
+-END
+-
+-XGEVENT IdleNotify
+- 12	 event		PRESENT_EVENT_ID
+- 16	 window		WINDOW
+- 20	 serial		UINT32
+- 24	 pixmap		PIXMAP
+- 28	 idle_fence	XSync::Fence
+-END
+-
+-XGEVENT RedirectNotify
+- 10	 update_window	BOOL
+- 12	 event		PRESENT_EVENT_ID
+- 16	 event_window	WINDOW
+- 20	 window		WINDOW
+- 24	 pixmap		PIXMAP
+- 28	 serial		UINT32
+- 32	 valid_region	Fixes::REGION
+- 36	 update_region	Fixes::REGION
+- 40	 valid_rect	RECTANGLE
+- 48	 update_rect	RECTANGLE
+- 56	 x_off		INT16
+- 58	 y_off		INT16
+- 60	 target_crtc	RandR::CRTC
+- 64	 wait_fence	XSync::Fence
+- 68	 idle_fence	XSync::Fence
+- 72	 options	PRESENT_OPTION
+- 80	 target_msc	XSync::Value
+- 88	 divisor	XSync::Value
+- 96	 remainder	XSync::Value
+- 104	 notifies	LISTofPRESENT_NOTIFY
+-END
+-
+-EOF
+diff --git a/randr.proto b/randr.proto
+deleted file mode 100644
+index 6b63c99..0000000
+--- a/randr.proto
++++ /dev/null
+@@ -1,674 +0,0 @@
+-# This file is part of "xtrace"
+-# Copyright (C) 2006 Bernhard R. Link
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License version 2 as
+-# published by the Free Software Foundation.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-#
+-# This file is based on /usr/include/X11/extensions/randr{,proto}.h which state:
+-## Copyright � 2000 Compaq Computer Corporation
+-## Copyright � 2002 Hewlett-Packard Company
+-## and
+-## Copyright � 2000, Compaq Computer Corporation,
+-## Copyright � 2002, Hewlett Packard, Inc.
+-##
+-## Permission to use, copy, modify, distribute, and sell this software and its
+-## documentation for any purpose is hereby granted without fee, provided that
+-## the above copyright notice appear in all copies and that both that
+-## copyright notice and this permission notice appear in supporting
+-## documentation, and that the name of Compaq or HP not be used in advertising
+-## or publicity pertaining to distribution of the software without specific,
+-## written prior permission.  Compaq and HP makes no representations about the
+-## suitability of this software for any purpose.  It is provided "as is"
+-## without express or implied warranty.
+-##
+-## HP DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL
+-## IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL COMPAQ
+-## BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+-## WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+-## OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+-## CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-##
+-## Author:  Jim Gettys, HP Labs, Hewlett-Packard, Inc.
+-##
+-# modified for Xrandr1.2 using /usr/share/doc/x11proto-randr-dev/randrproto.txt.gz:
+-##                The X Resize, Rotate and Reflect Extension
+-##                               Version 1.2
+-##                                2006-4-13
+-##
+-##                               Jim Gettys
+-##                            Jim.Gettys@hp.com
+-##                      Cambridge Research Laboratory
+-##                                 HP Labs
+-##                         Hewlett Packard Company
+-##
+-##                              Keith Packard
+-##                         keith.packard@intel.com
+-##                      Open Source Technology Center
+-##                            Intel Corporation
+-##
+-# from x11proto-randr-dev which states:
+-## Copyright � 2000 Compaq Computer Corporation
+-## Copyright � 2002 Hewlett-Packard Company
+-## Copyright � 2006 Intel Corporation
+-##
+-## Permission to use, copy, modify, distribute, and sell this software and its
+-## documentation for any purpose is hereby granted without fee, provided that
+-## the above copyright notice appear in all copies and that both that copyright
+-## notice and this permission notice appear in supporting documentation, and
+-## that the name of the copyright holders not be used in advertising or
+-## publicity pertaining to distribution of the software without specific,
+-## written prior permission.  The copyright holders make no representations
+-## about the suitability of this software for any purpose.  It is provided "as
+-## is" without express or implied warranty.
+-##
+-## THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+-## INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+-## EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+-## CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+-## DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+-## TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+-## OF THIS SOFTWARE.
+-
+-EXTENSION "RANDR" RandR
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-RandrOldGetScreenInfo UNSUPPORTED
+-SetScreenConfig RESPONDS
+-RandrOldScreenChangeSelectInput UNSUPPORTED
+-SelectInput
+-GetScreenInfo RESPONDS
+-# RandR 1.2:
+-GetScreenSizeRange RESPONDS
+-SetScreenSize
+-GetScreenResources RESPONDS
+-GetOutputInfo RESPONDS
+-ListOutputProperties RESPONDS
+-QueryOutputProperty RESPONDS
+-ConfigureOutputProperty
+-ChangeOutputProperty
+-DeleteOutputProperty
+-GetOutputProperty RESPONDS
+-CreateMode RESPONDS
+-DestroyMode
+-AddOutputMode
+-DeleteOutputMode
+-GetCrtcInfo RESPONDS
+-SetCrtcConfig RESPONDS
+-GetCrtcGammaSize RESPONDS
+-GetCrtcGamma RESPONDS
+-SetCrtcGamma
+-# RandR 1.3:
+-GetScreenResourcesCurrent RESPONDS
+-SetCrtcTransform
+-GetCrtcTransform RESPONDS
+-GetPanning RESPONDS
+-SetPanning RESPONDS
+-SetOutputPrimary
+-GetOutputPrimary RESPONDS
+-# RandR 1.4:
+-GetProviders RESPONDS UNSUPPORTED
+-GetProviderInfo RESPONDS UNSUPPORTED
+-SetProviderOffloadSink
+-SetProviderOutputSource
+-ListProviderProperties RESPONDS UNSUPPORTED
+-QueryProviderProperty RESPONDS UNSUPPORTED
+-ConfigureProviderProperty UNSUPPORTED
+-ChangeProviderProperty UNSUPPORTED
+-DeleteProviderProperty
+-GetProviderProperty RESPONDS UNSUPPORTED
+-# RandR 1.5:
+-GetMonitors RESPONDS UNSUPPORTED
+-SetMonitor UNSUPPORTED
+-DeleteMonitor
+-END
+-
+-EVENTS
+-RRScreenChangeNotify
+-RRNotify
+-END
+-
+-ERRORS
+-BadOutput
+-BadCrtc
+-BadMode
+-BadProvider
+-END
+-
+-CONSTANTS randr_notify
+-0	ScreenChangeNotify
+-END
+-TYPE RANDR_NOTIFY	ENUM8	randr_notify
+-
+-BITMASK randr_notify_mask
+-1<<0	ScreenChangeNotifyMask
+-1<<2	OutputChangeNotifyMask
+-1<<3	OutputPropertyNotifyMask
+-END
+-TYPE RANDR_NOTIFY_MASK	BITMASK8	randr_notify_mask
+-
+-BITMASK randr_rr
+-1	Rotate_0
+-2	Rotate_90
+-4	Rotate_180
+-8	Rotate_270
+-16	Reflect_X
+-32	Reflect_Y
+-END
+-TYPE RANDR_RR	BITMASK16	randr_rr
+-
+-CONSTANTS subpixelorder
+-0	Unknown
+-1	HorizontalRGB
+-2	HorizontalBGR
+-3	VerticalRGB
+-4	VerticalBGR
+-5	None
+-END
+-TYPE SUBPIXELORDER	CARD16	constants subpixelorder
+-
+-CONSTANTS randr_status
+-0	Success
+-1	InvalidConfigTime
+-2	InvalidTime
+-3	Failed
+-END
+-TYPE RRCONFIGSTATUS	ENUM8	randr_status
+-
+-CONSTANTS appropriate
+-0	appropriate
+-END
+-
+-CONSTANTS randr_connection
+-0	Connected
+-1	Disconnected
+-2	UnknownConnection
+-END
+-TYPE CONNECTION	CARD8	constants randr_connection
+-
+-BITMASK randr_modeflags
+-0x00000001	HSyncPositive
+-0x00000002	HSyncNegative
+-0x00000004	VSyncPositive
+-0x00000008	VSyncNegative
+-0x00000010	Interlace
+-0x00000020	DoubleScan
+-0x00000040	CSync
+-0x00000080	CSyncPositive
+-0x00000100	CSyncNegative
+-0x00000200	HSkewPresent
+-0x00000400	BCast
+-0x00000800	PixelMultiplex
+-0x00001000	DoubleClock
+-0x00002000	ClockDivideBy2
+-END
+-TYPE SETofMODEFLAG	BITMASK32	randr_modeflags
+-
+-CONSTANTS randr_changemode
+-0	Replace
+-1	Prepend
+-2	Append
+-END
+-
+-CONSTANTS randr_changenotifystate
+-0	NewValue
+-1	Deleted
+-END
+-
+-TYPE OUTPUT CARD32
+-TYPE LISTofOUTPUT LISTofCARD32
+-TYPE CRTC CARD32
+-TYPE LISTofCRTC LISTofCARD32
+-TYPE MODE CARD32
+-TYPE LISTofMODE LISTofCARD32
+-TYPE PROVIDER CARD32
+-
+-STRUCT MODEINFO length 32
+- 0	id	CARD32
+- 4	width[pixels]	UINT16
+- 6	height[pixels]	UINT16
+- 8	dot_clock	UINT32
+- 12	h_sync_start	UINT16
+- 14	h_sync_end	UINT16
+- 16	h_total	UINT16
+- 18	h_skew	UINT16
+- 20	v_sync_start	UINT16
+- 22	v_sync_end	UINT16
+- 24	v_total	UINT16
+- 26	name_length	UINT16
+- 28	mode_flags	SETofMODEFLAG
+-END
+-
+-STRUCT TRANSFORM length 36
+-0	matrix	LISTofFIXED
+-END
+-
+-REQUEST QueryVersion
+-4	major-version	UINT32
+-8	minor-version	UINT32
+-END
+-RESPONSE QueryVersion
+- 8	major-version	UINT32
+-12	minor-version	UINT32
+-END
+-
+-REQUEST GetScreenInfo
+-4	window	WINDOW
+-END
+-
+-STRUCT ScreenSizes length 8
+- 0	width[pixels]	UINT16
+- 2	height[pixels]	UINT16
+- 4	width[mm]	UINT16
+- 6	height[mm]	UINT16
+-END
+-
+-LIST Rates variable min-length 2
+- 0	count	COUNT16
+- 2	r	LISTofUINT16
+-END
+-
+-RESPONSE GetScreenInfo
+- 1	rotations	RANDR_RR
+- 8	root	WINDOW
+-12	timestamp	TIMESTAMP
+-16	config-timestamp	TIMESTAMP
+-20	nSizes	COUNT16
+-22	sizeID	CARD16
+-24	rotation	RANDR_RR
+-32	sizes	LISTofScreenSizes
+-26	rate	UINT16
+-28	nrateEnts	COUNT16
+-LATER	rates	LISTofRates
+-END
+-
+-REQUEST SetScreenConfig
+- 4	window	CARD32
+- 8	timestamp	TIMESTAMP constants curtime
+-12	config-timestamp	TIMESTAMP
+-16	"sizei index"	CARD16
+-18	"rotation"	RANDR_RR
+-20	rate	UINT16 constants appropriate
+-END
+-
+-RESPONSE SetScreenConfig
+- 1	status	RRCONFIGSTATUS
+- 8	timestamp	TIMESTAMP
+-12	config-timestamp	TIMESTAMP
+-16	root	WINDOW
+-20	subpixelOrder	SUBPIXELORDER
+-END
+-
+-REQUEST SelectInput
+- 4	window	WINDOW
+- 8	enable	RANDR_NOTIFY_MASK
+-END
+-
+-REQUEST GetScreenSizeRange
+- 4	window	WINDOW
+-END
+-RESPONSE GetScreenSizeRange
+-  8	minWidth	UINT16
+- 10	minHeight	UINT16
+- 12	maxWidth	UINT16
+- 14	maxHeight	UINT16
+-END
+-
+-REQUEST SetScreenSize
+-  4	window	WINDOW
+-  8	width	UINT16
+- 10	height	UINT16
+- 12	width[mm]	UINT32
+- 16	height[mm]	UINT32
+-END
+-
+-REQUEST GetScreenResources
+- 4	window	WINDOW
+-END
+-RESPONSE GetScreenResources
+-  8	timestamp	TIMESTAMP
+- 12	config-timestamp	TIMESTAMP
+- 16	"#CRTCs"	COUNT16
+- 32	crtcs	LISTofCRTC
+- 18	"#outputs"	COUNT16
+-LATER	outputs	LISTofOUTPUT
+- 20	"#modeinfos"	COUNT16
+-LATER	modeinfos	LISTofMODEINFO
+- 22	"total bytes in mode names"	COUNT16
+-# a way to seperate them would be nice:
+-LATER	"mode names"	STRING8
+-END
+-
+-REQUEST GetScreenResourcesCurrent ALIASES GetScreenResources
+-RESPONSE GetScreenResourcesCurrent ALIASES GetScreenResources
+-
+-REQUEST GetOutputInfo
+- 4	output	OUTPUT
+- 8	config-timestamp	TIMESTAMP
+-END
+-RESPONSE GetOutputInfo
+- 8	timestamp	TIMESTAMP
+-12	"current connected crtc"	CRTC
+-16	width[mm]	UINT32
+-20	height[mm]	UINT32
+-24	connection	CONNECTION
+-25	subpixel-order	SUBPIXELORDER
+-26	"#CRTCs"	COUNT16
+-36	crtcs	LISTofCRTC
+-28	"#modes"	COUNT16
+-LATER	modes	LISTofMODE
+-30	"preferred modes"	UINT16
+-32	clonecount	COUNT16
+-LATER	clones	LISTofOUTPUT
+-34	"length of name"	COUNT16
+-LATER	name	STRING8
+-END
+-
+-REQUEST ListOutputProperties
+- 4	output	OUTPUT
+-END
+-RESPONSE ListOutputProperties
+- 8	"#atoms"	COUNT16
+-32	atoms	LISTofATOM
+-END
+-
+-REQUEST QueryOutputProperty
+- 4	output	OUTPUT
+- 8	property	ATOM
+-END
+-RESPONSE QueryOutputProperty
+- 8	pending	BOOL
+- 9	range	BOOL
+-10	immutable	BOOL
+-32	"valid values"	LISTofUINT32
+-END
+-
+-REQUEST ConfigureOutputProperty
+- 4	output	OUTPUT
+- 8	property	ATOM
+-12	pending	BOOL
+-13	range	BOOL
+-16	"valid values"	LISTofUINT32
+-END
+-
+-REQUEST ChangeOutputProperty
+- 4	output	OUTPUT
+- 8	property	ATOM
+-12	type	ATOM
+-16	format	FORMAT8
+-17	mode	ENUM8 randr_changemode
+-20	length	COUNT32
+-24	data	LISTofFormat
+-END
+-
+-REQUEST DeleteOutputProperty
+- 4	output	OUTPUT
+- 8	property	ATOM
+-END
+-
+-REQUEST GetOutputProperty
+- 4	output	OUTPUT
+- 8	property	ATOM
+-12	type	ATOM constants any
+-16	offset	CARD32
+-20	length	CARD32
+-24	delete	BOOL
+-25	pending	BOOL
+-END
+-RESPONSE GetOutputProperty
+- 1	format	FORMAT8
+- 8	type	ATOM constants none
+-12	bytes-after	CARD32
+-16	length	COUNT32
+-32	value	LISTofFormat
+-END
+-
+-REQUEST CreateMode
+- 4	window	WINDOW
+- 8	mode	MODEINFO
+-40	"mode name"	STRING8
+-END
+-RESPONSE CreateMode
+- 8	mode	MODE
+-END
+-
+-REQUEST DestroyMode
+- 4	mode	MODE
+-END
+-
+-REQUEST AddOutputMode
+- 4	output	OUTPUT
+- 8	mode	MODE
+-END
+-
+-REQUEST DeleteOutputMode ALIASES AddOutputMode
+-
+-REQUEST GetCrtcInfo
+- 4	crtc	CRTC
+- 8	config-timestamp	TIMESTAMP
+-END
+-RESPONSE GetCrtcInfo
+- 1	status	RRCONFIGSTATUS
+- 8	timestamp	TIMESTAMP
+-12	x	INT16
+-14	y	INT16
+-16	width	UINT16
+-18	height	UINT16
+-20	mode	MODE
+-24	"current rr"	RANDR_RR
+-26	"possible rr"	RANDR_RR
+-28	"#outputs"	COUNT16
+-32	outputs	LISTofOUTPUT
+-30	"#possible outputs"	COUNT16
+-LATER	"possible outputs"	LISTofOUTPUT
+-END
+-
+-REQUEST SetCrtcConfig
+- 4	crtc	CRTC
+- 8	timestamp	TIMESTAMP
+-12	"config timestamp"	TIMESTAMP
+-16	x	INT16
+-18	y	INT16
+-20	mode	MODE
+-24	rr	RANDR_RR
+-28	outputs	LISTofOUTPUT
+-END
+-RESPONSE SetCrtcConfig
+- 1	status	RRCONFIGSTATUS
+-END
+-
+-REQUEST GetCrtcGammaSize
+- 4	crtc	CRTC
+-END
+-RESPONSE GetCrtcGammaSize
+- 8	size	CARD16
+-END
+-
+-REQUEST GetCrtcGamma ALIASES GetCrtcGammaSize
+-RESPONSE GetCrtcGamma
+- 8	size	COUNT16
+-# is this really 22??
+-22	red	LISTofCARD16
+- 8	size	COUNT16
+-LATER	green	LISTofCARD16
+- 8	size	COUNT16
+-LATER	blue	LISTofCARD16
+-END
+-
+-REQUEST SetCrtcGamma
+- 4	crtc	CRTC
+- 8	size	COUNT16
+-12	red	LISTofCARD16
+- 8	size	COUNT16
+-LATER	green	LISTofCARD16
+- 8	size	COUNT16
+-LATER	blue	LISTofCARD16
+-END
+-
+-REQUEST SetCrtcTransform
+- 4	crtc	CRTC
+- 8	transform	TRANSFORM
+-44	"filter length"	COUNT16
+-48	"filter name"	STRING8
+-ROUND
+-RESET_COUNTER
+-LATER	"filter params"	LISTofFIXED
+-END
+-
+-REQUEST GetCrtcTransform
+- 4	crtc	CRTC
+-END
+-RESPONSE GetCrtcTransform
+- 8	"pending transform"	TRANSFORM
+-44	"has transforms"	BOOL
+-48	"current transform"	TRANSFORM
+-88	"pending filter name length"	COUNT16
+-96	"pending filter name"	STRING8
+-ROUND
+-90	"pending filter num params"	COUNT16
+-LATER	"pending filter params"	LISTofFIXED
+-92	"current filter name length"	COUNT16
+-LATER	"current filter name"	STRING8
+-ROUND
+-94	"current filter num params"	COUNT16
+-LATER	"current filter params"	LISTofFIXED
+-END
+-
+-REQUEST GetPanning
+-4	crtc	CRTC
+-END
+-RESPONSE GetPanning
+- 1	status	RRCONFIGSTATUS
+- 8	timestamp	TIMESTAMP
+-12	left	UINT16
+-14	top	UINT16
+-16	width	UINT16
+-18	height	UINT16
+-20	track_left	UINT16
+-22	track_top	UINT16
+-24	track_width	UINT16
+-26	track_height	UINT16
+-28	border_left	INT16
+-30	border_top	INT16
+-32	border_right	INT16
+-34	border_bottom	INT16
+-END
+-
+-REQUEST SetPanning
+- 4	crtc	CRTC
+- 8	timestamp	TIMESTAMP
+-12	left	UINT16
+-14	top	UINT16
+-16	width	UINT16
+-18	height	UINT16
+-20	track_left	UINT16
+-22	track_top	UINT16
+-24	track_width	UINT16
+-26	track_height	UINT16
+-28	border_left	INT16
+-30	border_top	INT16
+-32	border_right	INT16
+-34	border_bottom	INT16
+-END
+-RESPONSE SetPanning
+- 1	status	RRCONFIGSTATUS
+- 8	timestamp	TIMESTAMP
+-END
+-
+-REQUEST SetOutputPrimary
+- 4	window	WINDOW
+- 8	output	OUTPUT
+-END
+-
+-REQUEST GetOutputPrimary
+- 4	window	WINDOW
+-END
+-RESPONSE GetOutputPrimary
+- 8	output	OUTPUT
+-END
+-
+-REQUEST SetProviderOffloadSink
+- 4	provider	PROVIDER
+- 8	sinkProvider	PROVIDER
+- 12	configTimestamp	TIMESTAMP
+-END
+-
+-REQUEST SetProviderOutputSource
+- 4	provider	PROVIDER
+- 8	sourceProvider	PROVIDER
+- 12	configTimestamp	TIMESTAMP
+-END
+-
+-REQUEST DeleteProviderProperty
+- 4	provider	PROVIDER
+- 8	property	ATOM
+-END
+-
+-REQUEST DeleteMonitor
+- 4	window	WINDOW
+- 8	name	ATOM
+-END
+-
+-EVENT RRScreenChangeNotify
+- 1	rotation	RANDR_RR
+- 4	timestamp	TIMESTAMP
+- 8	configTimestamp	TIMESTAMP
+-12	root	WINDOW
+-16	window	WINDOW
+-20	size-id	CARD16
+-22	subpixelOrder	SUBPIXELORDER
+-24	width[pixels]	UINT16
+-26	height[pixels]	UINT16
+-28	width[mm]	UINT16
+-30	height[mm]	UINT16
+-END
+-
+-CONSTANTS RRNotify_kind
+-0	CrtcChange
+-1	OutputChange
+-2	OutputProperty
+-END
+-
+-EVENT RRNotify
+- 1	kind	ENUM8 RRNotify_kind
+-IF 1 CARD8 0
+- 4	timestamp	TIMESTAMP
+- 8	"request window"	WINDOW
+-12	"crtc affected"	CRTC
+-16	"mode in use"	MODE
+-20	"new rr"	RANDR_RR
+-24	x	INT16
+-26	y	INT16
+-28	width	UINT16
+-30	height	UINT16
+-ELSEIF 1 CARD8 1
+- 4	timestamp	TIMESTAMP
+- 8	"config timestamp"	TIMESTAMP
+-12	"request window"	WINDOW
+-16	"output affected"	OUTPUT
+-20	"crtc in use"	CRTC
+-24	"mode in use"	MODE
+-28	rr	RANDR_RR
+-30	"connection status"	CONNECTION
+-31	"subpixel order"	SUBPIXELORDER
+-ELSEIF 1 CARD8 2
+- 4	window	WINDOW
+- 8	output	OUTPUT
+-12	atom	ATOM
+-16	time	TIMESTAMP
+-20	state	ENUM8 randr_changenotifystate
+-ELSE
+-4	unknown	LISTofCARD8
+-END
+-
+-EOF
+diff --git a/render.proto b/render.proto
+deleted file mode 100644
+index 4fcfe81..0000000
+--- a/render.proto
++++ /dev/null
+@@ -1,613 +0,0 @@
+-#  This file is part of "xtrace"
+-#  Copyright (C) 2005, 2009 Bernhard R. Link
+-#  This program is free software; you can redistribute it and/or modify
+-#  it under the terms of the GNU General Public License version 2 as
+-#  published by the Free Software Foundation.
+-#
+-#  This program is distributed in the hope that it will be useful,
+-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-#  GNU General Public License for more details.
+-#
+-#  You should have received a copy of the GNU General Public License
+-#  along with this program; if not, write to the Free Software
+-#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-#/
+-# This file is based on the render.h and renderproto.h files
+-# from the Xorg server:
+-# Copyright � 2000 SuSE, Inc.
+-#
+-# Permission to use, copy, modify, distribute, and sell this software and its
+-# documentation for any purpose is hereby granted without fee, provided that
+-# the above copyright notice appear in all copies and that both that
+-# copyright notice and this permission notice appear in supporting
+-# documentation, and that the name of SuSE not be used in advertising or
+-# publicity pertaining to distribution of the software without specific,
+-# written prior permission.  SuSE makes no representations about the
+-# suitability of this software for any purpose.  It is provided "as is"
+-# without express or implied warranty.
+-#
+-# SuSE DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL
+-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL SuSE
+-# BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+-# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+-# OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+-# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-#
+-# Author:  Keith Packard, SuSE, Inc.
+-#/
+-
+-NEEDS "requests.proto"
+-
+-EXTENSION "RENDER" Render
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-QueryPictFormats RESPONDS
+-QueryPictIndexValues RESPONDS
+-UNKNOWN
+-CreatePicture
+-ChangePicture
+-SetPictureClipRectangles
+-FreePicture
+-Composite
+-Scale
+-Trapezoids
+-Triangles
+-TriStrip
+-TriFan
+-UNKNOWN
+-UNKNOWN
+-UNKNOWN
+-CreateGlyphSet
+-ReferenceGlyphSet
+-FreeGlyphSet
+-AddGlyphs
+-UNKNOWN
+-FreeGlyphs
+-CompositeGlyphs8
+-CompositeGlyphs16
+-CompositeGlyphs32
+-FillRectangles
+-CreateCursor
+-SetPictureTransform
+-QueryFilters RESPONDS
+-SetPictureFilter
+-# 0.8
+-CreateAnimCursor
+-# 0.9
+-AddTraps
+-# 0.10
+-CreateSolidFill
+-CreateLinearGradient
+-CreateRadialGradient
+-CreateConicalGradient /* 36 */
+-END
+-
+-EVENTS
+-END
+-
+-ERRORS
+-BadPictFormat
+-BadPicture
+-BadPictOp
+-BadGlyphSet
+-BadGlyph
+-END
+-
+-CONSTANTS picttype
+-0	Indexed
+-1	Direct
+-END
+-TYPE PictType	ENUM8	picttype
+-
+-CONSTANTS pictop
+-0	Minimum/Clear
+-1	Src
+-2	Dst
+-3	Over
+-4	OverReverse
+-5	In
+-6	InReverse
+-7	Out
+-8	OutReverse
+-9	Atop
+-10	AtopReverse
+-11	Xor
+-12	Add
+-13	Saturate/Maximum
+-0x10	DisjointMinimum
+-#0x10	DisjointClear
+-0x11	DisjointSrc
+-0x12	DisjointDst
+-0x13	DisjointOver
+-0x14	DisjointOverReverse
+-0x15	DisjointIn
+-0x16	DisjointInReverse
+-0x17	DisjointOut
+-0x18	DisjointOutReverse
+-0x19	DisjointAtop
+-0x1a	DisjointAtopReverse
+-#0x1b	DisjointXor
+-0x1b	DisjointMaximum
+-0x20	ConjointMinimum
+-#0x20	ConjointClear
+-0x21	ConjointSrc
+-0x22	ConjointDst
+-0x23	ConjointOver
+-0x24	ConjointOverReverse
+-0x25	ConjointIn
+-0x26	ConjointInReverse
+-0x27	ConjointOut
+-0x28	ConjointOutReverse
+-0x29	ConjointAtop
+-0x2a	ConjointAtopReverse
+-0x2b	ConjointXor
+-#0x2b	ConjointMaximum
+-END
+-TYPE PictOp	ENUM8	pictop
+-
+-CONSTANTS polyedge
+-0	Sharp
+-1	Smooth
+-END
+-TYPE PolyEdge	ENUM8	polyedge
+-
+-CONSTANTS polymode
+-0	Precise
+-1	Imprecise
+-END
+-TYPE PolyMode	ENUM8	polymode
+-
+-CONSTANTS subpixel
+-0	Unknown
+-1	HorizontalRGB
+-2	HorizontalBGR
+-3	VerticalRGB
+-4	VerticalBGR
+-5	None
+-END
+-TYPE SUBPIXEL	ENUM8	subpixel
+-TYPE VisualID	CARD32
+-TYPE PICTURE	CARD32
+-TYPE PICTFORMAT	CARD32
+-TYPE GLYPHSET	CARD32
+-
+-LIST PictFormInfo length 28
+- 0	id	PICTFORMAT
+- 4	type	PictType
+- 5	depth	CARD8
+- 8	red	CARD16
+-10	redMask	CARD16
+-12	green	CARD16
+-14	greenMask	CARD16
+-16	blue	CARD16
+-18	blueMask	CARD16
+-20	alpha	CARD16
+-22	alphaMask	CARD16
+-24	colormap	COLORMAP
+-END
+-
+-LIST PictFormats variable min-length 28
+-GET 0
+- 0	formats	LISTofPictFormInfo
+-END
+-
+-LIST PictVisual length 8
+- 0	visual	VisualID
+- 4	format	PICTFORMAT
+-END
+-
+-LIST PictDepth variable min-length 8
+- 0	depth	CARD8
+- 2	nPictVisuals	COUNT16
+- 8	visuals	LISTofPictVisual
+-END
+-
+-LIST PictScreen variable min-length 8
+- 0	nDepth	COUNT32
+- 4	fallback	PICTFORMAT
+- 8	depths	LISTofPictDepth
+-END
+-
+-REQUEST QueryPictFormats ALIASES Empty
+-
+-RESPONSE QueryPictFormats
+- 8	numFormats	PUSH32
+- 12	numScreens	COUNT32
+- 32	formats	LISTofPictFormats
+- 12	numScreens	COUNT32
+- LATER	screens	LISTofPictScreen
+- 24	numSubpixel	COUNT32
+- LATER	subpixels	LISTofCARD32 constants subpixel
+-END
+-
+-LIST IndexValue length 12
+- 0	pixel	CARD32
+- 4	red	CARD16
+- 6	green	CARD16
+- 8	blue	CARD16
+- 10	alpha	CARD16
+-END
+-
+-STRUCT COLOR length 8
+- 0	red	CARD16
+- 2	green	CARD16
+- 4	blue	CARD16
+- 6	alpha	CARD16
+-END
+-
+-STRUCT POINTFIXED length 8
+- 0	x	FIXED
+- 4	y	FIXED
+-END
+-
+-STRUCT LineFixed length 16
+- 0	x1	FIXED
+- 4	y1	FIXED
+- 8	x2	FIXED
+-12	y2	FIXED
+-END
+-
+-LIST TRIANGLE length 24
+- 0	x1	FIXED
+- 4	y1	FIXED
+- 8	x2	FIXED
+-12	y2	FIXED
+-16	x3	FIXED
+-20	y3	FIXED
+-END
+-
+-LIST TRAPEZOID length 40
+- 0	top	FIXED
+- 4	bottom	FIXED
+- 8	left	LineFixed
+-24	right	LineFixed
+-END
+-
+-#/*
+-# * requests and replies
+-# */
+-REQUEST QueryVersion
+- 4	majorVersion	UINT32
+- 8	minorVersion	UINT32
+-END
+-RESPONSE QueryVersion
+- 8	majorVersion	UINT32
+- 12	minorVersion	UINT32
+-END
+-
+-REQUEST QueryPictIndexValues
+- 4	format	PICTFORMAT
+-END
+-RESPONSE QueryPictIndexValues
+- 8	numIndexValues	COUNT32
+-32	IndexValues	LISTofIndexValue
+-END
+-
+-VALUES RenderCP
+-1<<0	repeat  	BOOL
+-1<<1	alphaMap	PICTURE constants none
+-1<<2	alpha-x-origin	INT16
+-1<<3	alpha-y-origin	INT16
+-1<<4	clip-x-origin	INT16
+-1<<5	clip-y-origin	INT16
+-1<<6	clip-mask	PIXMAP constants none
+-1<<7	graphics-exposure	BOOL
+-1<<8	subwindow-mode	SubwindowMode
+-1<<9	poly-edge	PolyEdge
+-1<<10	poly-mode	PolyMode
+-1<<11	dither  	ATOM constants none
+-1<<12	component-alpha	BOOL
+-END
+-
+-REQUEST CreatePicture
+- 4	pid	PICTURE
+- 8	drawable	DRAWABLE
+-12	format	PICTFORMAT
+-16	mask	STORE32
+-20	values	LISTofRenderCP
+-END
+-
+-REQUEST ChangePicture
+- 4	picture	PICTURE
+- 8	mask	STORE32
+-12	values	LISTofRenderCP
+-END
+-
+-REQUEST SetPictureClipRectangles
+- 4	picture	PICTURE
+- 8	xOrigin	INT16
+-10	yOrigin	INT16
+-12	rectangles	LISTofRECTANGLE
+-END
+-
+-REQUEST FreePicture
+- 4	picture	PICTURE
+-END
+-
+-REQUEST Composite
+- 4	op	PictOp
+- 8	src	PICTURE
+-12	mask	PICTURE constants none
+-16	dst	PICTURE
+-20	xSrc	INT16
+-22	ySrc	INT16
+-24	xMask	INT16
+-26	yMask	INT16
+-28	xDst	INT16
+-30	yDst	INT16
+-32	width	UINT16
+-34	height	UINT16
+-END
+-
+-REQUEST Scale
+- 4	src	PICTURE
+- 8	dst	PICTURE
+-12	colorScale	UINT32
+-16	alphaScale	UINT32
+-20	xSrc	INT16
+-22	ySrc	INT16
+-24	xDst	INT16
+-26	yDst	INT16
+-28	width	UINT16
+-30	height	UINT16
+-END
+-
+-REQUEST Trapezoids
+- 4	op	PictOp
+- 8	src	PICTURE
+-20	xSrc	INT16
+-22	ySrc	INT16
+-12	dst	PICTURE
+-16	maskFormat	PICTFORMAT constants none
+-24	trapezoids	LISTofTRAPEZOID
+-END
+-
+-REQUEST Triangles
+- 4	op	PictOp
+- 8	src	PICTURE
+- 20	xSrc	INT16
+- 22	ySrc	INT16
+- 12	dst	PICTURE
+- 16	maskFormat	PICTFORMAT constants none
+-20	triangles	LISTofTRIANGLE
+-END
+-
+-REQUEST TriStrip
+- 4	op	PictOp
+- 8	src	PICTURE
+-20	xSrc	INT16
+-22	ySrc	INT16
+-12	dst	PICTURE
+-16	maskFormat	PICTFORMAT constants none
+-20	points	LISTofPOINTFIXED
+-END
+-
+-REQUEST TriFan
+- 4	op	PictOp
+- 8	src	PICTURE
+-20	xSrc	INT16
+-22	ySrc	INT16
+-12	dst	PICTURE
+-16	maskFormat	PICTFORMAT constants none
+-20	points	LISTofPOINTFIXED
+-END
+-
+-REQUEST CreateGlyphSet
+- 4	gsid	GLYPHSET
+- 8	format	PICTFORMAT
+-END
+-
+-REQUEST ReferenceGlyphSet
+- 4	gsid	GLYPHSET
+- 8	existing	GLYPHSET
+-END
+-
+-REQUEST FreeGlyphSet
+- 4	glyphset	GLYPHSET
+-END
+-
+-LIST GLYPHINFO length 12
+- 0	width	UINT16
+- 2	height	UINT16
+- 4	x	INT16
+- 6	y	INT16
+- 8	xOff	INT16
+-10 	yOff	INT16
+-END
+-
+-REQUEST AddGlyphs
+- 4	glyphset	GLYPHSET
+- 8	nglyphs	COUNT32
+-12	glyphids	LISTofCARD32
+- 8	nglyphs	COUNT32
+-LATER	glyphs	LISTofGLYPHINFO
+-RESET_COUNTER
+-LATER	data	LISTofCARD8
+-END
+-
+-REQUEST FreeGlyphs
+- 4	glyphset	GLYPHSET
+- 8	glyphs	LISTofCARD32
+-END
+-
+-LIST GlyphElt8 variable min-length 8
+- 4	deltax	INT16
+- 6	deltay	INT16
+-IF 0 CARD8 255
+- 8	glyphset	GLYPHSET
+-NEXT	12
+-ELSE
+- 0	len	COUNT8
+- 8	glyphs	LISTofCARD8
+-ROUND
+-END
+-LIST GlyphElt16 variable min-length 8
+- 4	deltax	INT16
+- 6	deltay	INT16
+-IF 0 CARD8 255
+- 8	glyphset	GLYPHSET
+-NEXT	12
+-ELSE
+- 0	len	COUNT8
+- 8	glyphs	LISTofCARD16
+-ROUND
+-END
+-LIST GlyphElt32 variable min-length 8
+- 4	deltax	INT16
+- 6	deltay	INT16
+-IF 0 CARD8 255
+- 8	glyphset	GLYPHSET
+-NEXT	12
+-ELSE
+- 0	len	COUNT8
+- 8	glyphs	LISTofCARD32
+-END
+-
+-REQUEST CompositeGlyphs8
+- 4	op	PictOp
+- 8	src	PICTURE
+-12	dst	PICTURE
+-16	maskFormat	PICTFORMAT constants none
+-20	glyphset	GLYPHSET
+-24	xSrc	INT16
+-26	ySrc	INT16
+-28	glyphcmds	LISTofGlyphElt8
+-END
+-REQUEST CompositeGlyphs16
+- 4	op	PictOp
+- 8	src	PICTURE
+-12	dst	PICTURE
+-16	maskFormat	PICTFORMAT constants none
+-20	glyphset	GLYPHSET
+-24	xSrc	INT16
+-26	ySrc	INT16
+-28	glyphcmds	LISTofGlyphElt16
+-END
+-REQUEST CompositeGlyphs32
+- 4	op	PictOp
+- 8	src	PICTURE
+-12	dst	PICTURE
+-16	maskFormat	PICTFORMAT constants none
+-20	glyphset	GLYPHSET
+-24	xSrc	INT16
+-26	ySrc	INT16
+-28	glyphcmds	LISTofGlyphElt32
+-END
+-
+-# 0.1 and higher
+-
+-REQUEST FillRectangles
+- 4	op	PictOp
+- 8	dst	PICTURE
+-12	color	COLOR
+-20	rects	LISTofRECTANGLE
+-END
+-
+-# 0.5 and higher
+-
+-REQUEST CreateCursor
+- 4	cid	CURSOR
+- 8	src	PICTURE
+- 12	x	UINT16
+- 14	y	UINT16
+-END
+-
+-# 0.6 and higher
+-
+-REQUEST SetPictureTransform
+- 4	picture	PICTURE
+- 8	transform	LISTofFIXED
+-END
+-
+-REQUEST QueryFilters
+- 4	drawable	DRAWABLE
+-END
+-
+-RESPONSE QueryFilters
+- 8	numAliases	COUNT32
+-32	Aliases	LISTofCARD16
+-ROUND
+-12	numFilters	COUNT32
+-LATER	Filters	LISTofSTRING8
+-END
+-
+-REQUEST SetPictureFilter
+- 4	picture	PICTURE
+- 8	nbytes	COUNT16
+-12	name	STRING8
+-ROUND
+-RESET_COUNTER
+-LATER	values	LISTofFIXED
+-END
+-
+-# 0.8 and higher
+-
+-LIST AnimCursorElt length 8
+- 0	cursor	CURSOR
+- 4	delay	CARD32
+-END
+-
+-REQUEST CreateAnimCursor
+- 4	cid	CURSOR
+- 8	cursors	LISTofAnimCursorElt
+-END
+-
+-# 0.9 and higher
+-
+-STRUCT SPANFIX length 12
+-0	l	FIXED
+-4	r	FIXED
+-8	y	FIXED
+-END
+-
+-LIST TRAP length 24
+-0	top	SPANFIX
+-12	bottom	SPANFIX
+-END
+-
+-REQUEST AddTraps
+- 4	picture	PICTURE
+- 8	x-ofs	INT16
+-10	y-ofs	INT16
+-12	traps	LISTofTRAP
+-END
+-
+-REQUEST CreateSolidFill
+- 4	picture	PICTURE
+- 8	color	COLOR
+-END
+-
+-REQUEST CreateLinearGradient
+- 4	picture	PICTURE
+- 8	p1	POINTFIXED
+-16	p2	POINTFIXED
+-24	numStops	COUNT32
+-28	stops	LISTofFIXED
+-RESET_COUNTER
+-LATER	colors	LISTofCOLOR
+-END
+-
+-REQUEST CreateRadialGradient
+- 4	picture	PICTURE
+- 8	inner	POINTFIXED
+-16	outer	POINTFIXED
+-24	innerRadius	FIXED
+-28	outerRadius	FIXED
+-32	numStops	COUNT32
+-36	stops	LISTofFIXED
+-RESET_COUNTER
+-LATER	colors	LISTofCOLOR
+-END
+-
+-REQUEST CreateConicalGradient
+- 4	picture	PICTURE
+- 8	center	POINTFIXED
+-16	angle	FIXED
+-20	numStops	COUNT32
+-24	stops	LISTofFIXED
+-END
+-
+-EOF
+diff --git a/saver.proto b/saver.proto
+deleted file mode 100644
+index f22924a..0000000
+--- a/saver.proto
++++ /dev/null
+@@ -1,119 +0,0 @@
+-#  This file is part of "xtrace"
+-#  Copyright (C) 2008 Bernhard R. Link
+-#  This program is free software; you can redistribute it and/or modify
+-#  it under the terms of the GNU General Public License version 2 as
+-#  published by the Free Software Foundation.
+-#
+-#  This program is distributed in the hope that it will be useful,
+-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-#  GNU General Public License for more details.
+-#
+-#  You should have received a copy of the GNU General Public License
+-#  along with this program; if not, write to the Free Software
+-#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-
+-EXTENSION "MIT-SCREEN-SAVER" Saver
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-QueryInfo RESPONDS
+-SelectInput
+-SetAttributes
+-UnsetAttributes
+-Suspend
+-END
+-
+-EVENTS
+-SaverNotify
+-END
+-
+-ERRORS
+-END
+-
+-CONSTANTS saver_level
+-0	on
+-1	standby
+-2	suspend
+-3	off
+-END
+-TYPE Saver_LEVEL	ENUM16	saver_level
+-
+-CONSTANTS saver_state
+-0	off
+-1	on
+-2	cycle
+-3	disable
+-END
+-TYPE Saver_STATE	ENUM8	saver_state
+-CONSTANTS saver_kind
+-0	blanked
+-1	internal
+-2	external
+-END
+-TYPE Saver_KIND	ENUM8	saver_kind
+-
+-BITMASK saver_mask
+-0x00000001	notify
+-0x00000002	cycle
+-END
+-TYPE Saver_MASK	BITMASK32	saver_mask
+-
+-REQUEST QueryVersion
+-4	"major version"	UINT8
+-5	"minor version"	UINT8
+-END
+-RESPONSE QueryVersion
+-8	"major version"	UINT16
+-10	"minor version"	UINT16
+-END
+-
+-templateREQUEST DRAWABLE
+-4	drawable	DRAWABLE
+-END
+-REQUEST QueryInfo ALIASES DRAWABLE
+-
+-#define parameterSaverQueryInfo parameterDRAWABLE
+-
+-RESPONSE QueryInfo
+- 1	state   	Saver_STATE
+- 8	window  	WINDOW
+-12	"til or since"	UINT32
+-16	idle    	UINT32
+-20	"event mask"	Saver_MASK
+-24	kind    	Saver_KIND
+-END
+-
+-REQUEST SelectInput
+- 4	drawable	DRAWABLE
+- 8	mask	Saver_MASK
+-END
+-
+-REQUEST SetAttributes
+-  4	drawable	DRAWABLE
+-  8	x	INT16
+- 10	y	INT16
+- 12	width	UINT16
+- 14	height	UINT16
+- 16	border-height	UINT16
+- 18	c_class	CARD8
+- 19	depth	UINT8
+- 20	visual-id	CARD32
+- 24	mask	Saver_MASK
+-END
+-REQUEST UnsetAttributes ALIASES DRAWABLE
+-
+-REQUEST Suspend
+- 4	suspend	BOOL
+-END
+-
+-EVENT SaverNotify
+- 1	state	Saver_STATE
+- 8	root	WINDOW
+-12	window	WINDOW
+-16	kind	Saver_KIND
+-17	forced	BOOL
+-END
+-
+-EOF
+diff --git a/shape.proto b/shape.proto
+deleted file mode 100644
+index e68a8c3..0000000
+--- a/shape.proto
++++ /dev/null
+@@ -1,186 +0,0 @@
+-#  This file is part of "xtrace"
+-#  Copyright (C) 2005 Bernhard R. Link
+-#  This program is free software; you can redistribute it and/or modify
+-#  it under the terms of the GNU General Public License version 2 as
+-#  published by the Free Software Foundation.
+-#
+-#  This program is distributed in the hope that it will be useful,
+-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-#  GNU General Public License for more details.
+-#
+-#  You should have received a copy of the GNU General Public License
+-#  along with this program; if not, write to the Free Software
+-#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-# This file is based on the
+-## 		  X Nonrectangular Window
+-## 		  Shape Extension Protocol
+-## 			Version 1.0
+-## 		   X Consortium Standard
+-## 		 X Version 11, Release 6.4
+-## 		       Keith Packard
+-## 		      MIT X Consortium
+-## Copyright (C) 1989 X Consortium
+-##
+-## Permission is hereby granted, free of charge, to any person
+-## obtaining a copy of this software and associated documenta-
+-## tion files (the ``Software''), to deal in the Software with-
+-## out restriction, including without limitation the rights to
+-## use, copy, modify, merge, publish, distribute, sublicense,
+-## and/or sell copies of the Software, and to permit persons to
+-## whom the Software is furnished to do so, subject to the fol-
+-## lowing conditions:
+-##
+-## The above copyright notice and this permission notice shall
+-## be included in all copies or substantial portions of the
+-## Software.
+-##
+-## THE SOFTWARE IS PROVIDED ``AS IS'', WITHOUT WARRANTY OF ANY
+-## KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+-## WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PUR-
+-## POSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE X
+-## CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABIL-
+-## ITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+-## ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+-## THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-##
+-## Except as contained in this notice, the name of the X Con-
+-## sortium shall not be used in advertising or otherwise to
+-## promote the sale, use or other dealings in this Software
+-## without prior written authorization from the X Consortium.
+-
+-EXTENSION "SHAPE" Shape
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-Rectangles
+-Mask
+-Combine
+-Offset
+-QueryExtents RESPONDS
+-SelectInput
+-InputSelected RESPONDS
+-GetRectangles RESPONDS
+-END
+-
+-EVENTS
+-ShapeNotify
+-END
+-
+-ERRORS
+-END
+-
+-CONSTANTS shape_kind
+-0	Bounding
+-1	Clip
+-2	Input
+-END
+-TYPE SHAPE_KIND	ENUM8	shape_kind
+-CONSTANTS shape_op
+-0	Set
+-1	Union
+-2	Intersect
+-3	Subtract
+-4	Invert
+-END
+-TYPE SHAPE_OP	ENUM8	shape_op
+-CONSTANTS shape_sort
+-0	UnSorted
+-1	YSorted
+-2	YXSorted
+-3	YXBanded
+-END
+-
+-REQUEST QueryVersion ALIASES Empty
+-
+-RESPONSE QueryVersion
+-8	"major version"	UINT16
+-10	"minor version"	UINT16
+-END
+-
+-REQUEST Rectangles
+-4	operation	SHAPE_OP
+-5	"destination kind"	SHAPE_KIND
+-6	ordering	ENUM8 shape_sort
+-8	"destination window"	WINDOW
+-12	x-offset	INT16
+-14	y-offset	INT16
+-16	rectangles	LISTofRECTANGLE
+-END
+-
+-REQUEST Mask
+-4	operation	SHAPE_OP
+-5	destination-kind	SHAPE_KIND
+-8	destination-window	WINDOW
+-12	x-offset	INT16
+-14	y-offset	INT16
+-16	source-bitmap	PIXMAP constants none
+-END
+-
+-REQUEST Combine
+-4	operation	SHAPE_OP
+-5	destination-kind	SHAPE_KIND
+-6	source-kind	SHAPE_KIND
+-8	"destination window"	WINDOW
+-12	"x offset"	INT16
+-14	"y offset"	INT16
+-16	source-window	WINDOW
+-END
+-
+-REQUEST Offset
+-4	"destination kind"	SHAPE_KIND
+-8	"destination window"	WINDOW
+-12	"x offset"	INT16
+-14	"y offset"	INT16
+-END
+-
+-REQUEST QueryExtents ALIASES WINDOW
+-
+-RESPONSE QueryExtents
+-8	"bounding shaped"	BOOL
+-9	"clip shaped"	BOOL
+-12	"bounding shape extents x"	INT16
+-14	"bounding shape extents y"	INT16
+-16	"bounding shape extents width"	UINT16
+-18	"bounding shape extents height"	UINT16
+-20	"clip shape extents x"	INT16
+-22	"clip shape extents y"	INT16
+-24	"clip shape extents width"	UINT16
+-26	"clip shape extents height"	UINT16
+-END
+-
+-REQUEST SelectInput
+-4	"destination window"	WINDOW
+-8	enable	BOOL
+-END
+-
+-REQUEST InputSelected ALIASES WINDOW
+-
+-RESPONSE InputSelected
+-1	enabled	BOOL
+-END
+-
+-REQUEST GetRectangles
+-4	window	WINDOW
+-8	source-kind	SHAPE_KIND
+-END
+-
+-RESPONSE GetRectangles
+-1	ordering	ENUM8 shape_sort
+-8	nrects	COUNT32
+-32	rectangles	LISTofRECTANGLE
+-END
+-
+-EVENT ShapeNotify
+-1	"shape kind"	SHAPE_KIND
+-4	"affected window"	WINDOW
+-8	"x value of extents"	INT16
+-10	"y value of extents"	INT16
+-12	"width of extents"	UINT16
+-14	"height of extents"	UINT16
+-16	"server time"	TIMESTAMP
+-22	shaped	BOOL
+-END
+-
+-EOF
+diff --git a/sync.proto b/sync.proto
+deleted file mode 100644
+index b3a5faa..0000000
+--- a/sync.proto
++++ /dev/null
+@@ -1,214 +0,0 @@
+-EXTENSION "SYNC" XSync
+-USE core
+-
+-REQUESTS
+-Initialize RESPONDS
+-ListSystemCounters RESPONDS
+-CreateCounter
+-SetCounter
+-ChangeCounter
+-QueryCounter RESPONDS
+-DestroyCounter
+-Await
+-CreateAlarm
+-ChangeAlarm
+-QueryAlarm RESPONDS
+-DestroyAlarm
+-SetPriority
+-GetPriority RESPONDS
+-CreateFence
+-TriggerFence
+-ResetFence
+-DestroyFence
+-QueryFence RESPONDS
+-AwaitFence /* 19 */
+-END
+-
+-EVENTS
+-CounterNotify
+-AlarmNotify
+-END
+-
+-ERRORS
+-BadCounter
+-BadAlarm
+-END
+-
+-# XSyncCounter, XSyncAlarm and XSyncFence are just IDs:
+-TYPE Counter	CARD32
+-TYPE Alarm	CARD32
+-TYPE Fence	CARD32
+-# a XSyncValue is two 32 bit integers meaning on 64 bit one:
+-TYPE Value	INT32_32
+-
+-CONSTANTS alarm_state
+-0	Active
+-1	Inactive
+-2	Destroyed
+-END
+-TYPE AlarmState	ENUM8	alarm_state
+-
+-CONSTANTS test_type
+-0	PositiveTransition
+-1	NegativeTransition
+-2	PositiveComparison
+-3	NegativeComparison
+-END
+-TYPE TestType	ENUM32	test_type
+-
+-CONSTANTS value_type
+-0	Absolute
+-1	Relative
+-END
+-TYPE ValueType	ENUM32	value_type
+-
+-REQUEST Initialize
+- 4	major-version	UINT8
+- 5	minor-version	UINT8
+-END
+-RESPONSE Initialize
+- 8	major-version	UINT8
+- 9	minor-version	UINT8
+-END
+-
+-LIST SystemCounter variable min-length 14
+- 0	counter		Counter
+- 4	resolution	Value
+-12	name_length	COUNT16
+-14	name		STRING8
+-ROUND
+-END
+-
+-REQUEST ListSystemCounters ALIASES Empty
+-RESPONSE ListSystemCounters
+- 8	num-counters	COUNT32
+-32	counter		LISTofSystemCounter
+-END
+-
+-REQUEST CreateCounter
+- 4	counter		Counter
+- 8	initial-value	Value
+-END
+-
+-REQUEST SetCounter
+- 4	counter	Counter
+- 8	value	Value
+-END
+-
+-REQUEST ChangeCounter
+- 4	counter	Counter
+- 8	value	Value
+-END
+-
+-REQUEST QueryCounter
+- 4	counter	Counter
+-END
+-RESPONSE QueryCounter
+- 8	value	Value
+-END
+-
+-REQUEST DestroyCounter
+- 4	counter	Counter
+-END
+-
+-LIST WaitCondition length 28
+- 0	counter		Counter
+- 4	value-type	ValueType
+- 8	wait-value	Value
+-16	test-type	TestType
+-20	event-threshold Value
+-END
+-
+-REQUEST Await
+- 4	conditions LISTofWaitCondition
+-END
+-
+-VALUES AlarmAttributes
+-1<<0	Counter		Counter
+-1<<1	ValueType	ValueType
+-1<<2	Value		Value
+-1<<3	TestType	TestType
+-1<<4	Delta		Value
+-1<<5	Events		BOOL
+-END
+-
+-REQUEST CreateAlarm
+- 4	alarm		Alarm
+- 8	value-mask	STORE16
+-12	values		LISTofAlarmAttributes
+-END
+-
+-REQUEST ChangeAlarm
+- 4	alarm		Alarm
+- 8	value-mask	STORE16
+-12	values		LISTofAlarmAttributes
+-END
+-
+-REQUEST QueryAlarm
+- 4	alarm	Alarm
+-END
+-RESPONSE QueryAlarm
+- 8	counter		Counter
+-12	value-type	ValueType
+-16	wait-value	Value
+-24	test-type	TestType
+-28	delta		Value
+-36	events		BOOL
+-37	state		AlarmState
+-END
+-
+-REQUEST DestroyAlarm
+- 4	alarm	Alarm
+-END
+-
+-REQUEST SetPriority
+- 4	client-resource-id	CARD32	constants none
+- 8	priority		INT32
+-END
+-
+-REQUEST GetPriority
+- 4	client-resource-id	CARD32	constants none
+-END
+-RESPONSE GetPriority
+- 8	priority	INT32
+-END
+-
+-REQUEST CreateFence
+- 4	drawable	DRAWABLE
+- 8	fid		Fence
+-12	initial-triggered	BOOL
+-END
+-
+-templateREQUEST Fence
+- 4	fid		Fence
+-END
+-
+-REQUEST TriggerFence ALIASES Fence
+-REQUEST ResetFence ALIASES Fence
+-REQUEST DestroyFence ALIASES Fence
+-REQUEST QueryFence ALIASES Fence
+-
+-RESPONSE QueryFence
+- 8	triggered	BOOL
+-END
+-
+-REQUEST AwaitFence ALIASES Empty
+-
+-EVENT CounterNotify
+- 4	counter		Counter
+- 8	wait-value	Value
+-16	counter-value	Value
+-24	time		TIMESTAMP
+-28	count		UINT16
+-30	destroyed	BOOL
+-END
+-
+-EVENT AlarmNotify
+- 4	alarm		Alarm
+- 8	counter-value	Value
+-16	alarm-value	Value
+-24	time		TIMESTAMP
+-28	state		AlarmState
+-END
+-
+-EOF
+diff --git a/vidmode.proto b/vidmode.proto
+deleted file mode 100644
+index f614087..0000000
+--- a/vidmode.proto
++++ /dev/null
+@@ -1,339 +0,0 @@
+-# This file is part of "xtrace"
+-# Copyright (C) 2006 Bernhard R. Link
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License version 2 as
+-# published by the Free Software Foundation.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-#
+-# This file is based on /usr/include/X11/extensions/xf86vmstr.h which states:
+-## Copyright 1995  Kaleb S. KEITHLEY
+-##
+-## Permission is hereby granted, free of charge, to any person obtaining
+-## a copy of this software and associated documentation files (the
+-## "Software"), to deal in the Software without restriction, including
+-## without limitation the rights to use, copy, modify, merge, publish,
+-## distribute, sublicense, and/or sell copies of the Software, and to
+-## permit persons to whom the Software is furnished to do so, subject to
+-## the following conditions:
+-##
+-## The above copyright notice and this permission notice shall be
+-## included in all copies or substantial portions of the Software.
+-##
+-## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+-## EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+-## MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+-## IN NO EVENT SHALL Kaleb S. KEITHLEY BE LIABLE FOR ANY CLAIM, DAMAGES 
+-## OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+-## ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+-## OTHER DEALINGS IN THE SOFTWARE.
+-##
+-## Except as contained in this notice, the name of Kaleb S. KEITHLEY 
+-## shall not be used in advertising or otherwise to promote the sale, use 
+-## or other dealings in this Software without prior written authorization
+-## from Kaleb S. KEITHLEY
+-
+-EXTENSION "XFree86-VidModeExtension" VidMode
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-GetModeLine RESPONDS
+-ModModeLine
+-SwitchMode
+-GetMonitor RESPONDS
+-LockModeSwitch
+-GetAllModeLines RESPONDS
+-AddModeLine
+-DeleteModeLine
+-ValidateModeLine RESPONDS
+-SwitchToMode
+-GetViewPort RESPONDS
+-SetViewPort
+-GetDotClocks RESPONDS
+-SetClientVersion
+-SetGamma
+-GetGamma RESPONDS
+-GetGammaRamp RESPONDS
+-SetGammaRamp
+-GetGammaRampSize RESPONDS
+-GetPermissions RESPONDS
+-END
+-
+-EVENTS
+-END
+-
+-ERRORS
+-BadClock
+-BadHTimings
+-BadVTimings
+-ModeUnsuitable
+-ExtensionDisabled
+-ClientNotLocal
+-ZoomLocked
+-END
+-
+-BITMASK xf86vidmode_perms
+-1	read
+-2	write
+-END
+-
+-BITMASK xf86vidmode_flags
+-# taken from xvidtune:
+-1	+hsync
+-2	-hsync
+-4	+vsync
+-8	-vsync
+-16	interlace
+-32	doublescan
+-64	csync
+-128	+csync
+-256	-csync
+-END
+-
+-REQUEST QueryVersion
+-END
+-RESPONSE QueryVersion
+- 8	major-version	UINT16
+-10	minor-version	UINT16
+-END
+-
+-REQUEST GetModeLine
+- 4	screen	UINT16
+-END
+-
+-REQUEST GetAllModeLines ALIASES GetModeLine
+-
+-REQUEST GetMonitor ALIASES GetModeLine
+-
+-REQUEST GetViewPort ALIASES GetModeLine
+-
+-REQUEST GetDotClocks ALIASES GetModeLine
+-
+-REQUEST GetPermissions ALIASES GetModeLine
+-
+-REQUEST GetGamma ALIASES GetModeLine
+-
+-RESPONSE GetModeLine
+- 8	dotclock	UINT32
+-12	hdisplay	UINT16
+-14	hsyncstart	UINT16
+-16	hsyncend	UINT16
+-18	htotal	UINT16
+-20	hskew	UINT16
+-22	vdisplay	UINT16
+-24	vsyncstart	UINT16
+-26	vsyncend	UINT16
+-28	vtotal	UINT16
+-32	flags	BITMASK32 xf86vidmode_flags
+-36	reserved1	UINT32
+-40	reserved2	UINT32
+-44	reserved3	UINT32
+-48	privsize	UINT32
+-END
+-
+-LIST Modes length 48
+-# This is somehow buggy, xf86vmstr.h values cannot
+-# be, this looks a bit better, but I'm still not sure
+- 0	dotclock	UINT32
+- 4	hdisplay	UINT16
+- 6	hsyncstart	UINT16
+- 8	hsyncend	UINT16
+-10	htotal	UINT16
+-12	hskew	UINT32
+-16	vdisplay	UINT16
+-18	vsyncstart	UINT16
+-20	vsyncend	UINT16
+-22	vtotal	UINT16
+-28	flags	BITMASK32 xf86vidmode_flags
+-32	reserved1	UINT32
+-36	reserved2	UINT32
+-40	reserved3	UINT32
+-44	privsize	UINT32
+-END
+-
+-RESPONSE GetAllModeLines
+- 8	modecount	UINT32
+- 8	modecount	COUNT32
+-32	modes	LISTofModes
+-END
+-
+-LIST Sync length 4
+- 0	min		UINT16
+- 2	max		UINT16
+-END
+-
+-RESPONSE GetMonitor
+- 8	vendorLength	COUNT8
+-32	vendor	STRING8
+- 9	modelLength	COUNT8
+-LATER	model	STRING8
+-10	nhsync	COUNT8
+-LATER	hsync	LISTofSync
+-11	nvsync	COUNT8
+-LATER	vsync	LISTofSync
+-END
+-
+-REQUEST AddModeLine
+- 4	screen	CARD32
+- 8	dotclock	UINT32
+-12	hdisplay	UINT16
+-14	hsyncstart	UINT16
+-16	hsyncend	UINT16
+-18	htotal	UINT16
+-20	hskew	UINT16
+-22	vdisplay	UINT16
+-24	vsyncstart	UINT16
+-26	vsyncend	UINT16
+-28	vtotal	UINT16
+-32	flags	BITMASK32 xf86vidmode_flags
+-36	reserved1	UINT32
+-40	reserved2	UINT32
+-44	reserved3	UINT32
+-48	privsize	UINT32
+-52	after_dotclock	UINT32
+-56	after_hdisplay	UINT16
+-58	after_hsyncstart	UINT16
+-60	after_hsyncend	UINT16
+-62	after_htotal	UINT16
+-64	after_hskew	UINT16
+-66	after_vdisplay	UINT16
+-68	after_vsyncstart	UINT16
+-70	after_vsyncend	UINT16
+-72	after_vtotal	UINT16
+-76	after_flags	CARD32
+-80	reserved4	UINT32
+-84	reserved5	UINT32
+-88	reserved6	UINT32
+-END
+-
+-REQUEST ModModeLine
+- 4	screen	CARD32
+- 8	hdisplay	UINT16
+-10	hsyncstart	UINT16
+-12	hsyncend	UINT16
+-14	htotal	UINT16
+-16	hskew	UINT16
+-18	vdisplay	UINT16
+-20	vsyncstart	UINT16
+-22	vsyncend	UINT16
+-24	vtotal	UINT16
+-28	flags	BITMASK32 xf86vidmode_flags
+-32	reserved1	UINT32
+-36	reserved2	UINT32
+-40	reserved3	UINT32
+-44	privsize	UINT32
+-END
+-
+-REQUEST ValidateModeLine
+- 4	screen	CARD32
+- 8	dotclock	UINT32
+-12	hdisplay	UINT16
+-14	hsyncstart	UINT16
+-16	hsyncend	UINT16
+-18	htotal	UINT16
+-20	hskew	UINT16
+-22	vdisplay	UINT16
+-24	vsyncstart	UINT16
+-26	vsyncend	UINT16
+-28	vtotal	UINT16
+-32	flags	BITMASK32 xf86vidmode_flags
+-36	reserved1	UINT32
+-40	reserved2	UINT32
+-44	reserved3	UINT32
+-48	privsize	UINT32
+-END
+-RESPONSE ValidateModeLine
+- 8	status	CARD32
+-END
+-
+-REQUEST DeleteModeLine ALIASES ValidateModeLine
+-
+-REQUEST SwitchToMode ALIASES ValidateModeLine
+-
+-REQUEST SwitchMode
+- 4	screen	CARD16
+- 6	zoom	UINT16
+-END
+-REQUEST LockModeSwitch
+- 4	screen	CARD16
+- 6	lock	CARD16
+-END
+-
+-RESPONSE GetViewPort
+- 8	x	UINT32
+-12	y	UINT32
+-END
+-
+-REQUEST SetViewPort
+- 4	screen	CARD16
+- 8	x	UINT32
+-12	y	UINT32
+-END
+-
+-RESPONSE GetDotClocks
+- 8	flags	BITMASK32 xf86vidmode_flags
+-12	clocks	UINT32
+-16	maxclocks	UINT32
+-END
+-
+-REQUEST SetClientVersion
+- 4	major	UINT16
+- 6	minor	UINT16
+-END
+-
+-RESPONSE GetGamma
+- 8	red	UINT32
+-12	green	UINT32
+-16	blue	UINT32
+-END
+-
+-REQUEST SetGamma
+- 4	screen	CARD16
+- 8	red	UINT32
+-12	green	UINT32
+-16	blue	UINT32
+-END
+-
+-REQUEST SetGammaRamp
+- 4	screen	CARD16
+- 8	size	COUNT32
+-12	red	LISTofUINT16
+- 8	size	COUNT32
+-LATER	green	LISTofUINT16
+- 8	size	COUNT32
+-LATER	blue	LISTofUINT16
+-END
+-
+-REQUEST GetGammaRamp
+- 4	screen	CARD16
+- 6	size	UINT16
+-END
+-RESPONSE GetGammaRamp
+- 8	size	COUNT16
+-32	red	LISTofUINT16
+- 8	size	COUNT16
+-LATER	green	LISTofUINT16
+- 8	size	COUNT16
+-LATER	blue	LISTofUINT16
+-END
+-
+-REQUEST GetGammaRampSize
+- 4	screen	CARD16
+-END
+-
+-RESPONSE GetGammaRampSize
+- 8	size	UINT16
+-END
+-RESPONSE GetPermissions
+- 8	permissions	BITMASK32 xf86vidmode_perms
+-END
+-
+-EOF
+diff --git a/xinerama.proto b/xinerama.proto
+deleted file mode 100644
+index a9ab397..0000000
+--- a/xinerama.proto
++++ /dev/null
+@@ -1,75 +0,0 @@
+-EXTENSION "XINERAMA" Xinerama
+-USE core
+-
+-REQUESTS
+-QueryVersion RESPONDS
+-GetState RESPONDS
+-GetScreenCount RESPONDS
+-GetScreenSize RESPONDS
+-IsActive RESPONDS
+-QueryScreens RESPONDS
+-END
+-
+-EVENTS
+-END
+-
+-ERRORS
+-END
+-
+-LIST ScreenInfo length 8
+- 0	x	INT16
+- 2	y	INT16
+- 4	width	UINT16
+- 6	height	UINT16
+-END
+-
+-REQUEST QueryVersion
+- 4	major-version	UINT8
+- 5	minor-version	UINT8
+-END
+-RESPONSE QueryVersion
+- 8	major-version	UINT16
+-10	minor-version	UINT16
+-END
+-
+-REQUEST GetState
+- 4	window	WINDOW
+-END
+-RESPONSE GetState
+- 1	state	CARD8 constants bool
+- 8	window	WINDOW
+-END
+-
+-REQUEST GetScreenCount
+- 4	window	WINDOW
+-END
+-RESPONSE GetScreenCount
+- 1	ScreenCount	INT8
+- 8	window	WINDOW
+-END
+-
+-REQUEST GetScreenSize
+- 4	window	WINDOW
+- 8	screen	UINT32
+-END
+-RESPONSE GetScreenSize
+- 8	width	UINT32
+-12	height	UINT32
+-16	window	WINDOW
+-20	screen	UINT32
+-END
+-
+-REQUEST IsActive
+-END
+-RESPONSE IsActive
+- 8	state	CARD32 constants bool
+-END
+-
+-REQUEST QueryScreens
+-END
+-RESPONSE QueryScreens
+- 8	number	COUNT32
+-32	screens	LISTofScreenInfo
+-END
+-
+-EOF
+diff --git a/xinput.proto b/xinput.proto
+deleted file mode 100644
+index 4af65c9..0000000
+--- a/xinput.proto
++++ /dev/null
+@@ -1,1398 +0,0 @@
+-EXTENSION "XInputExtension" XInput
+-USE core
+-
+-TYPE FP1616 FIXED
+-TYPE FP3232 FIXED3232
+-
+-#define ra(a) { #a , parameterXInput ## a , NULL,NULL,NULL}
+-#define rb(a) { #a , parameterXInput ## a , returnXInput ## a ,NULL,NULL}
+-REQUESTS
+-UNKNOWN /* 0 */
+-GetExtensionVersion RESPONDS /* 1 */
+-ListInputDevices RESPONDS /* 2 */
+-OpenDevice RESPONDS /* 3 */
+-CloseDevice /* 4 */
+-SetDeviceMode RESPONDS /* 5 */
+-SelectExtensionEvent /* 6 */
+-GetSelectedExtensionEvents RESPONDS /* 7 */
+-ChangeDeviceDontPropagateList /* 8 */
+-GetDeviceDontPropagateList RESPONDS /* 9 */
+-GetDeviceMotionEvents RESPONDS /* 10 */
+-ChangeKeyboardDevice RESPONDS /* 11 */
+-ChangePointerDevice RESPONDS /* 12 */
+-GrabDevice RESPONDS /* 13 */
+-UngrabDevice /* 14 */
+-GrabDeviceKey /* 15 */
+-UngrabDeviceKey /* 16 */
+-GrabDeviceButton /* 17 */
+-UngrabDeviceButton /* 18 */
+-AllowDeviceEvents /* 19 */
+-GetDeviceFocus RESPONDS /* 20 */
+-SetDeviceFocus /* 21 */
+-GetFeedbackControl RESPONDS /* 22 */
+-ChangeFeedbackControl /* 23 */
+-GetDeviceKeyMapping RESPONDS /* 24 */
+-ChangeDeviceKeyMapping /* 25 */
+-GetDeviceModifierMapping RESPONDS /* 26 */
+-SetDeviceModifierMapping RESPONDS /* 27 */
+-GetDeviceButtonMapping RESPONDS /* 28 */
+-SetDeviceButtonMapping RESPONDS /* 29 */
+-QueryDeviceState RESPONDS /* 30 */
+-SendExtensionEvent /* 31 */
+-DeviceBell /* 32 */
+-SetDeviceValuators RESPONDS /* 33 */
+-GetDeviceControl RESPONDS /* 34 */
+-ChangeDeviceControl RESPONDS /* 35 */
+-# XI 1.5
+-ListDeviceProperties RESPONDS /* 36 */
+-ChangeDeviceProperty /* 37 */
+-DeleteDeviceProperty /* 38 */
+-GetDeviceProperty RESPONDS /* 39 */
+-
+-# XI 2
+-XIQueryPointer RESPONDS /* 40 */
+-XIWarpPointer /* 41 */
+-XIChangeCursor /* 42 */
+-XIChangeHierarchy /* 43 */
+-XISetClientPointer /* 44 */
+-XIGetClientPointer RESPONDS /* 45 */
+-XISelectEvents /* 46 */
+-XIQueryVersion RESPONDS /* 47 */
+-XIQueryDevice RESPONDS /* 48 */
+-XISetFocus /* 49 */
+-XIGetFocus RESPONDS /* 50 */
+-XIGrabDevice /* 51 */
+-XIUngrabDevice UNSUPPORTED /* 52 */
+-XIAllowEvents UNSUPPORTED /* 53 */
+-XIPassiveGrabDevice UNSUPPORTED RESPONDS /* 54 */
+-XIPassiveUngrabDevice UNSUPPORTED /* 55 */
+-XIListProperties RESPONDS /* 56 */
+-XIChangeProperty /* 57 */
+-XIDeleteProperty /* 58 */
+-XIGetProperty RESPONDS /* 59 */
+-XIGetSelectedEvents UNSUPPORTED /* 60 */
+-END
+-
+-EVENTS
+-DeviceValuator
+-DeviceKeyPress
+-DeviceKeyRelease
+-DeviceButtonPress
+-DeviceButtonRelease
+-DeviceMotionNotify
+-DeviceFocusIn
+-DeviceFocusOut
+-ProximityIn
+-ProximityOut
+-DeviceStateNotify
+-DeviceMappingNotify
+-ChangeDeviceNotify
+-DeviceKeystateNotify
+-DeviceButtonstateNotify
+-DevicePresenceNotify
+-DevicePropertyNotify
+-END
+-
+-ERRORS
+-BadDevice
+-BadEvent
+-BadMode
+-DeviceBusy
+-BadClass
+-END
+-
+-XGEVENTS
+-UNKNOWN
+-DeviceChanged		/* 1 */ UNSUPPORTED
+-KeyPress		/* 2 */
+-KeyRelease		/* 3 */
+-ButtonPress		/* 4 */
+-ButtonRelease		/* 5 */
+-Motion			/* 6 */
+-Enter			/* 7 */
+-Leave			/* 8 */
+-FocusIn			/* 9 */
+-FocusOut		/* 10 */
+-HierarchyChanged	/* 11 */ UNSUPPORTED
+-PropertyEvent		/* 12 */ UNSUPPORTED
+-RawKeyPress		/* 13 */ UNSUPPORTED
+-RawKeyRelease		/* 14 */ UNSUPPORTED
+-RawButtonPress		/* 15 */ UNSUPPORTED
+-RawButtonRelease	/* 16 */ UNSUPPORTED
+-RawMotion		/* 17 */ UNSUPPORTED
+-TouchBegin              /* 18 */
+-TouchUpdate             /* 19 */
+-TouchEnd                /* 20 */
+-TouchOwnership          /* 21 */ UNSUPPORTED
+-RawTouchBegin           /* 22 */ UNSUPPORTED
+-RawTouchUpdate          /* 23 */ UNSUPPORTED
+-RawTouchEnd             /* 24 */ UNSUPPORTED
+-BarrierHit              /* 25 */ UNSUPPORTED
+-BarrierLeave            /* 26 */ UNSUPPORTED
+-END
+-
+-CONSTANTS device_change
+-0	Added
+-1	Removed
+-2	Enabled
+-3	Disabled
+-4	Unrecoverable
+-END
+-
+-CONSTANTS syncmode
+-0	AsyncThisDevice
+-1	SyncThisDevice
+-2	ReplayThisDevice
+-3	AsyncOtherDevice
+-4	AsyncAll
+-5	SyncAll
+-END
+-
+-CONSTANTS device_use
+-0	Pointer
+-1	Keyboard
+-2	ExtensionDevice
+-3	ExtensionKeyboard
+-4	ExtensionPointer
+-END
+-
+-CONSTANTS notify_mode
+-0	Normal
+-1	Grab
+-2	Ungrab
+-3	WhileGrabbed
+-4	PassiveGrab
+-5	PassiveUngrab
+-END
+-
+-CONSTANTS notify_detail
+-0	Ancestor
+-1	Virtual
+-2	Inferior
+-3	Nonlinear
+-4	NonlinearVirtual
+-5	Pointer
+-6	PointerRoot
+-7	DetailNone
+-END
+-
+-CONSTANTS usexkeyboard
+-0xFF	UseXKeyboard
+-END
+-
+-CONSTANTS anykey
+-0x00	AnyKey
+-END
+-
+-CONSTANTS anybutton
+-0x00	AnyButton
+-END
+-
+-# there is only one set of constants in the header files for this,
+-# so I assume this are the correct values and what is described for most
+-# other status values in the XIproto.ps is just bogus
+-CONSTANTS device_status
+-0	Success
+-1	AlreadyGrabbed
+-2	InvalidTime
+-3	NotViewable
+-4	Frozen
+-END
+-
+-CONSTANTS input_class_id
+-0	key
+-1	button
+-2	valuator
+-3	feedback
+-4	proximity
+-5	focus
+-6	other
+-END
+-
+-CONSTANTS device_mode
+-0	relative
+-1	absolute
+-END
+-
+-CONSTANTS device_mode_and_prox
+-0	"relative, in proximity"
+-1	"absolute, in proximity"
+-2	"relative, out of proximity"
+-3	"absolute, out of proximity"
+-END
+-
+-BITMASK classes_reported
+-0x01	"reporting keys"
+-0x02	"reporting buttons"
+-0x04	"reporting valuators"
+-0x40	absolute
+-0x80	"out of proximity"
+-END
+-
+-CONSTANTS feedback_class
+-0	Kbd
+-1	Ptr
+-2	String
+-3	Integer
+-4	Led
+-5	Bell
+-END
+-
+-CONSTANTS auto_repeat_mode
+-0	Off
+-1	On
+-2	Default
+-END
+-
+-BITMASK dv_pointer
+-1<<0	AccelNum
+-1<<1	AccelDenom
+-1<<2	Threshold
+-END
+-
+-BITMASK dv_keyboardbellled
+-1<<0	KeyClickPercent
+-1<<1	Percent
+-1<<2	Pitch
+-1<<3	Duration
+-1<<4	Led
+-1<<5	LedMode
+-1<<6	Key
+-1<<7	AutoRepeatMode
+-END
+-BITMASK dv_string
+-1<<0	String
+-END
+-BITMASK dv_integer
+-1<<0	Integer
+-END
+-
+-CONSTANTS devicecontroltype
+-0	Resolution?
+-1	RESOLUTION
+-2	ABS_CALIB
+-3	CORE
+-4	ENABLE
+-5	ABS_AREA
+-END
+-
+-CONSTANTS changereason
+-1	SlaveSwitch
+-2	DeviceChange
+-END
+-TYPE CHANGEREASON ENUM8 changereason
+-
+-REQUEST GetExtensionVersion
+- 4	len	COUNT16
+- 8	name	STRING8
+-END
+-
+-RESPONSE GetExtensionVersion
+- 8	major_version	UINT16
+-10	minor_version	UINT16
+-12	present	BOOL
+-END
+-
+-REQUEST ListInputDevices ALIASES Empty
+-
+-LIST AXISINFO length 12
+-0	resolution	UINT32
+-4	min	UINT32
+-8	max	UINT32
+-END
+-
+-# /* that's what xspecs says it would like:
+-# LIST INPUTINFO variable length 4
+-# //	{	0,	"class id",	ft_ENUM8,	c_class_id},
+-# 	{	0,	"\0",	ft_IF8,	(void*)structpartKEYINFO},
+-# 	{	0,	"\1",	ft_IF8,	(void*)structpartBUTTONINFO},
+-# 	{	0,	"\2",	ft_IF8,	(void*)structpartVALUATORINFO},
+-# 1	len	COUNT8
+-# 0	unsupported	LISTofCARD8
+-# END
+-#
+-# LIST DEVICEINFO length 8
+-# 0	type	CARD32
+-# 4	id	CARD8
+-# 6	use	ENUM8 device_use
+-# 5	"#classes"	COUNT8
+-# 8	classes	LISTofINPUTINFO
+-# LATER	name	LISTofSTRING8
+-# END
+-#
+-# RESPONSE ListInputDevices
+-#  8	#devices	COUNT8
+-# 32	devices	LISTofDEVICEINFO
+-# END
+-#
+-# but the implementation in reality it is totally different:
+-#
+-# first come all the device structs, then all the INPUTINFO structs,
+-# then all the names. To know how many INPUTINFO structs there are,
+-# one would need to sum the numbers from the devices, which we cannot
+-# do yet. So we assume that none will have a name with at most 2 characters:
+-
+-LIST INPUTINFO variable min-length 4
+-IF 0 CARD8 0
+- 2	"min keycode"	CARD8
+- 3	"max keycode"	CARD8
+- 4	"#keys"	UINT16
+- NEXT 8
+-ELSEIF 0 CARD8 1
+- 2	"#buttons"	CARD16
+- NEXT 4
+-ELSEIF 0 CARD8 2
+- 2	"#axes"	CARD16
+- 3	mode	ENUM8 device_mode
+- 4	"motion buffer size"	UINT32
+- 2	"#axes"	COUNT16
+- 8	axes	LISTofAXISINFO
+-ELSE
+-# otherwise we assume that it is time for the strings
+-0	len	COUNT8
+-1	name	STRING8
+-END
+-
+-LIST DEVICEINFO length 8
+-0	type	CARD32
+-4	id	CARD8
+-5	"#classes"	UINT8
+-6	use	ENUM8 device_use
+-END
+-
+-RESPONSE ListInputDevices
+- 8	"#devices"	COUNT8
+-32	devices	LISTofDEVICEINFO
+-RESET_COUNTER
+-LATER	infos	LISTofINPUTINFO
+-END
+-
+-# The rest I had no program to test with. Judging from the problems
+-# above, that might mean the actual code is totally different, too
+-
+-templateREQUEST Device
+- 4	device	CARD8
+-END
+-REQUEST OpenDevice ALIASES Device
+-
+-LIST INPUTCLASSINFO length 2
+-0	class	ENUM8 input_class_id
+-1	"event type base"	CARD8
+-END
+-RESPONSE OpenDevice
+- 8	"#classes"	COUNT8
+-32	classes	LISTofINPUTCLASSINFO
+-END
+-
+-REQUEST CloseDevice ALIASES Device
+-
+-REQUEST SetDeviceMode
+- 4	device	CARD8
+- 5	mode	ENUM8 device_mode
+-END
+-
+-templateRESPONSE Status
+- 8	status	CARD8 constants device_status
+-END
+-RESPONSE SetDeviceMode ALIASES Status
+-
+-TYPE LISTofEVENTCLASS LISTofCARD32
+-
+-REQUEST SelectExtensionEvent
+- 4	window	WINDOW
+- 8	count	UINT16
+-12	"desired events"	LISTofEVENTCLASS
+-END
+-
+-REQUEST GetSelectedExtensionEvents
+- 4	window	WINDOW
+-END
+-RESPONSE GetSelectedExtensionEvents
+- 8	"#this client"	COUNT16
+-32	"this client"	LISTofEVENTCLASS
+-10	"#all clients"	COUNT16
+-LATER	"all clients"	LISTofEVENTCLASS
+-END
+-
+-REQUEST ChangeDeviceDontPropagateList
+- 4	window	WINDOW
+- 8	count	COUNT16
+-10	mode	ENUM8 device_mode
+-12	"desired events"	LISTofEVENTCLASS
+-END
+-
+-REQUEST GetDeviceDontPropagateList ALIASES GetSelectedExtensionEvents
+-
+-RESPONSE GetDeviceDontPropagateList
+- 8	count	COUNT16
+-32	list	LISTofEVENTCLASS
+-END
+-
+-REQUEST GetDeviceMotionEvents
+- 4	start-time	TIMESTAMP constants curtime
+- 8	stop-time	TIMESTAMP constants curtime
+-10	device	CARD8
+-END
+-
+-LIST DEVICETIMECOORD variable min-length 4
+- 0	time	TIMESTAMP
+-GET  0
+-# TODO huch?
+- 0	valuators	LISTofUINT32
+-END
+-
+-RESPONSE GetDeviceMotionEvents
+- 8	"#events"	UINT32
+-12	axes	UINT8
+-12	axes	PUSH8
+-13	mode	ENUM8 device_mode
+-32	events	LISTofDEVICETIMECOORD
+-END
+-
+-REQUEST ChangeKeyboardDevice ALIASES Device
+-RESPONSE ChangeKeyboardDevice ALIASES Status
+-
+-REQUEST ChangePointerDevice
+- 4	xaxis	CARD8
+- 5	yaxis	CARD8
+- 6	device	CARD8
+-END
+-RESPONSE ChangePointerDevice ALIASES Status
+-
+-REQUEST GrabDevice
+- 4	window	WINDOW
+- 8	time	TIMESTAMP constants curtime
+-12	"#event"	COUNT16
+-14	this-device-mode	ENUM8 synmode
+-15	other-device-mode	ENUM8 synmode
+-16	owner-events	BOOL
+-17	device	CARD8
+-20	events	LISTofEVENTCLASS
+-END
+-RESPONSE GrabDevice ALIASES Status
+-
+-REQUEST UngrabDevice
+- 4	time	TIMESTAMP constants curtime
+- 8	device	CARD8
+-END
+-
+-REQUEST GrabDeviceKey
+- 4	window	WINDOW
+- 8	"#event"	COUNT16
+-10	modifiers	SETofKEYMASK
+-12	modifier_device	CARD8 constants usexkeyboard
+-13	grabbed_device	CARD8
+-14	key	CARD8 constants anykey
+-15	this-device-mode	ENUM8 synmode
+-16	other-device-mode	ENUM8 synmode
+-17	owner-events	BOOL
+-20	events	LISTofEVENTCLASS
+-END
+-
+-REQUEST UngrabDeviceKey
+- 4	window	WINDOW
+- 8	modifiers	SETofKEYMASK
+-10	modifier_device	CARD8 constants usexkeyboard
+-11	key	CARD8 constants anykey
+-12	grabbed_device	CARD8
+-END
+-
+-
+-REQUEST GrabDeviceButton
+- 4	window	WINDOW
+- 8	grabbed_device	CARD8
+- 9	modifier_device	CARD8 constants usexkeyboard
+-10	"#event"	COUNT16
+-12	modifiers	SETofKEYMASK
+-14	this-device-mode	ENUM8 synmode
+-15	other-device-mode	ENUM8 synmode
+-16	button	UINT8 constants anybutton
+-17	owner-events	BOOL
+-20	events	LISTofEVENTCLASS
+-END
+-
+-REQUEST UngrabDeviceButton
+- 4	window	WINDOW
+- 8	modifiers	SETofKEYMASK
+-10	modifier_device	CARD8 constants usexkeyboard
+-11	button	UINT8 constants anybutton
+-12	grabbed_device	CARD8
+-END
+-
+-REQUEST AllowDeviceEvents
+- 4	time	TIMESTAMP constants curtime
+- 8	mode	ENUM8 syncmode
+- 9	device	CARD8
+-END
+-
+-REQUEST GetDeviceFocus ALIASES Device
+-RESPONSE GetDeviceFocus
+- 8	focus	WINDOW constants revertto
+-12	time	TIMESTAMP
+-16	revert-to	ENUM8 revertto
+-END
+-
+-REQUEST SetDeviceFocus
+- 4	focus	WINDOW constants revertto
+- 8	time	TIMESTAMP
+-12	revert-to	ENUM8 revertto
+-13	device	CARD8
+-END
+-
+-LIST FEEDBACKSTATE variable min-length 4
+-# XIproto.ps has strange values here, XI.h looks more reasonable:
+- 0	"feedback class"	ENUM8 feedback_class
+- 1	id	CARD8
+-IF 0 CARD8 $feedback_class:Kbd
+- 4	pitch	UINT16
+- 6	duration	UINT16
+- 8	led_mask	CARD32
+-12	led_values	CARD32
+-16	global-auto-repeat	BOOL
+-17	click	UINT8
+-18	percent	UINT8
+-SET_COUNTER 32
+-20	auto-repeats	LISTofCARD8
+-ELSEIF 0 CARD8 $feedback_class:Ptr
+-# PTR
+- 6	acceleration	FRACTION16_16
+-10	treshold	UINT16
+-NEXT	12
+-ELSEIF 0 CARD8 $feedback_class:String
+- 4	"max symbols"	UINT16
+- 6	"#keysyms"	COUNT16
+- 8	keysyms	LISTofKEYSYM
+-ELSEIF 0 CARD8 $feedback_class:Integer
+- 4	resolution	UINT32
+- 8	min	INT32
+-12	max	INT32
+-NEXT 16
+-ELSEIF 0 CARD8 $feedback_class:Led
+- 4	mask	CARD32
+- 8	values	CARD32
+-NEXT 12
+-ELSEIF 0 CARD8 $feedback_class:Bell
+- 4	percent	UINT8
+- 8	pitch	UINT16
+-10	duration	UINT16
+-NEXT 12
+-ELSE
+-# fallback in case of unsupported:
+- 2	length	COUNT16
+- 0	unsupported	LISTofCARD8
+-END
+-
+-REQUEST GetFeedbackControl ALIASES Device
+-RESPONSE GetFeedbackControl
+- 8	"#feedbacks"	COUNT16
+-32	feedbacks	LISTofFEEDBACKSTATE
+-END
+-
+-REQUEST ChangeFeedbackControl
+- 8	device	CARD8
+- 9	"feedback id"	CARD8
+-12	"feedback class"	ENUM8 feedback_class
+-13	"feedback id"	CARD8
+-IF 12 CARD8 $feedback_class:Kbd
+- 4	mask	BITMASK32 dv_keyboardbellled
+-16	key	CARD8
+-17	auto-repeat	ENUM8 auto_repeat_mode
+-18	click-percent	UINT8
+-19	bell-percent	UINT8
+-20	bell-pitch	UINT16
+-22	bell-duration	UINT16
+-24	led_mask	CARD32
+-28	led_values	CARD32
+-ELSEIF 12 CARD8 $feedback_class:Ptr
+- 4	mask	BITMASK32 dv_pointer
+-18	acceleration	FRACTION16_16
+-22	treshold	UINT16
+-ELSEIF 12 CARD8 $feedback_class:String
+- 4	mask	BITMASK32 dv_string
+-18	"#keysyms"	COUNT16
+-20	keysyms	LISTofCARD32
+-ELSEIF 12 CARD8 $feedback_class:Integer
+- 4	mask	BITMASK32 dv_integer
+-16	integer	INT32
+-ELSEIF 12 CARD8 $feedback_class:Led
+- 4	mask	BITMASK32 dv_keyboardbellled
+-16	led_mask	CARD32
+-20	led_values	CARD32
+-ELSEIF 12 CARD8 $feedback_class:Bell
+- 4	mask	BITMASK32 dv_keyboardbellled
+-16	percent	UINT8
+-20	pitch	INT16
+-22	duration	INT16
+-ELSE
+-14	length	COUNT16
+-12	unsupported	LISTofCARD8
+-END
+-
+-REQUEST GetDeviceKeyMapping
+- 4	device	CARD8
+- 5	firstKeyCode	CARD8
+- 6	count	UINT8
+-END
+-RESPONSE GetDeviceKeyMapping
+- 8	keysSyms/keyCode	UINT8
+-32	keysyms	LISTofCARD32
+-END
+-
+-REQUEST ChangeDeviceKeyMapping
+- 4	device	CARD8
+- 5	firstKeyCode	CARD8
+- 6	"#keycodes"	UINT8
+- 7	"#keySyms/keyCode"	UINT8
+- 8	keysyms	LISTofCARD32
+-END
+-
+-REQUEST GetDeviceModifierMapping ALIASES Device
+-RESPONSE GetDeviceModifierMapping
+- 8	keycodes/modifier	UINT8
+-32	keycodes	LISTofCARD8
+-END
+-
+-REQUEST SetDeviceModifierMapping
+- 4	device	CARD8
+- 5	keycodes/modifier	UINT8
+- 8	keycodes	LISTofCARD8
+-END
+-RESPONSE SetDeviceModifierMapping ALIASES Status
+-
+-REQUEST GetDeviceButtonMapping ALIASES Device
+-RESPONSE GetDeviceButtonMapping
+- 8	l(map)	COUNT8
+-32	map	LISTofCARD8
+-END
+-
+-REQUEST SetDeviceButtonMapping
+- 4	device	CARD8
+- 5	l(map)	COUNT8
+- 8	map	LISTofCARD8
+-END
+-RESPONSE SetDeviceButtonMapping ALIASES Status
+-
+-
+-LIST INPUTSTATE variable min-length 2
+- 0	class	ENUM8 input_class_id
+-IF 0 CARD8 $input_class_id:key
+- 2	"#keys"	UINT8
+-SET_COUNTER	32
+- 4	"key states"	LISTofCARD8
+-ELSEIF 0 CARD8 $input_class_id:button
+- 2	"#buttons"	UINT8
+-SET_COUNTER	32
+- 4	"button states"	LISTofCARD8
+-ELSEIF 0 CARD8 $input_class_id:valuator
+- 2	"#valuators"	COUNT8
+- 3	mode	ENUM8 device_mode_and_prox
+- 4	"valuator states"	LISTofCARD32
+-ELSE
+- 1	length	COUNT8
+- 0	unsupported	LISTofCARD8
+-END
+-
+-REQUEST QueryDeviceState ALIASES Device
+-RESPONSE QueryDeviceState
+- 8	"#classes"	COUNT8
+-32	classes	LISTofINPUTSTATE
+-END
+-
+-LIST XiEVENT length 32
+- 0	event	EVENT
+-END
+-REQUEST SendExtensionEvent
+- 4	destinatione	WINDOW
+- 8	device	CARD8
+- 9	propagate	BOOL
+-12	"#events"	COUNT8
+-16	events	LISTofXiEVENT
+-10	"#event classes"	COUNT16
+-LATER	"desired events"	LISTofEVENTCLASS
+-END
+-
+-REQUEST DeviceBell
+- 4	device	CARD8
+- 5	"feedback id"	CARD8
+- 6	"feedback class"	ENUM8 feedback_class
+- 7	percent	INT8
+-END
+-
+-REQUEST SetDeviceValuators
+- 4	device	CARD8
+- 5	"first valuator"	UINT8
+- 6	"#valuators"	COUNT8
+- 8	valuators	LISTofUINT32
+-END
+-RESPONSE SetDeviceValuators ALIASES Status
+-
+-LIST DEVICESTATE variable min-length 4
+-# this is supposed to be the length, but at least in
+-# lenny the xserver is still buggy and returns bogus values:
+- 2	"length (often faulty)"	UINT16
+-# Xspecs says 0, DEVICE_RESOLUTION is 1...
+-IF 0 CARD16 0
+-# RESOLUTIONSTATE
+- 4	"#valuators"	COUNT32
+- 8	values	LISTofUINT32
+- 4	"#valuators"	COUNT32
+-LATER	min_values	LISTofUINT32
+- 4	"#valuators"	COUNT32
+-LATER	max_values	LISTofUINT32
+-ELSEIF 0 CARD16 1
+-# RESOLUTIONSTATE
+- 4	"#valuators"	COUNT32
+- 8	values	LISTofUINT32
+- 4	"#valuators"	COUNT32
+-LATER	min_values	LISTofUINT32
+- 4	"#valuators"	COUNT32
+-LATER	max_values	LISTofUINT32
+-ELSEIF 0 CARD16 2
+-# ABSCALIBSTATE
+- 4	min_x	UINT32
+- 8	max_x	UINT32
+-12	min_y	UINT32
+-16	max_y	UINT32
+-20	flip_x	UINT32
+-24	flip_y	UINT32
+-28	rotation	UINT32
+-32	button_threshold	UINT32
+-NEXT	36
+-ELSEIF 0 CARD16 3
+-# CORESTATE
+- 4	status	CARD8
+- 5	iscore	BOOL
+-NEXT 8
+-ELSEIF 0 CARD16 4
+-# ENABLESTATE
+- 4	enable	CARD8
+-NEXT 8
+-ELSEIF 0 CARD16 5
+-# ABSAREASTATE
+- 4	offset_x	UINT32
+- 8	offset_y	UINT32
+-12	width	UINT32
+-16	height	UINT32
+-20	screen	CARD32
+-24	following	CARD32
+-NEXT	28
+-ELSE
+- 2	length	COUNT16
+- 0	unsupported	LISTofCARD8
+-END
+-REQUEST GetDeviceControl
+- 6	device	CARD8
+- 4	"device control type"	ENUM16 devicecontroltype
+-END
+-RESPONSE GetDeviceControl
+- 8	status	CARD8 constants device_status
+-32	states	LISTofDEVICESTATE
+-END
+-
+-LIST DEVICECONTROL variable min-length 4
+- 2	length	UINT16
+-# Xspecs says 0, DEVICE_RESOLUTION is 1...
+-IF 0 CARD16 0
+-# RESOLUTIONCONTOL
+- 4	"first valuator"	UINT8
+- 5	"#valuators"	COUNT8
+- 8	values	LISTofUINT32
+-ELSEIF 0 CARD16 1
+-# RESOLUTIONCONTOL
+- 4	"first valuator"	UINT8
+- 5	"#valuators"	COUNT8
+- 8	values	LISTofUINT32
+-ELSEIF 0 CARD16 2
+-# ABSCALIBCONTOL
+- 4	min_x	UINT32
+- 8	max_x	UINT32
+-12	min_y	UINT32
+-16	max_y	UINT32
+-20	flip_x	UINT32
+-24	flip_y	UINT32
+-28	rotation	UINT32
+-32	button_threshold	UINT32
+-NEXT	36
+-ELSEIF 0 CARD16 3
+-# CORECONTOL
+- 4	status	CARD8
+-NEXT	8
+-ELSEIF 0 CARD16 4
+-# ENABLECONTOL
+- 4	enable	CARD8
+-NEXT	8
+-ELSEIF 0 CARD16 5
+-# ABSAREACONTOL
+- 4	offset_x	UINT32
+- 8	offset_y	UINT32
+-12	width	UINT32
+-16	height	UINT32
+-20	screen	CARD32
+-24	following	CARD32
+-NEXT	28
+-ELSE
+- 2	length	COUNT16
+- 0	unsupported	LISTofCARD8
+-END
+-
+-REQUEST ChangeDeviceControl
+- 6	device	CARD8
+- 4	"device control type"	ENUM16 devicecontroltype
+- 8	data	LISTofDEVICECONTROL
+-END
+-RESPONSE ChangeDeviceControl ALIASES Status
+-
+-REQUEST ListDeviceProperties
+- 4	device	UINT8
+-END
+-RESPONSE ListDeviceProperties
+- 8	nAtoms	COUNT16
+-32	Atoms	LISTofATOM
+-END
+-
+-REQUEST ChangeDeviceProperty
+- 4	property	ATOM
+- 8	type	ATOM
+-12	device	UINT8
+-13	format	FORMAT8
+-14	mode	ENUM8 change_mode
+-16	nUnits	COUNT32
+-IF 8 ATOM "ATOM"
+-20	value	LISTofATOM
+-ELSEIF 8 ATOM "FLOAT"
+-20	value	LISTofFLOAT32
+-ELSE
+-20	value	LISTofFormat
+-END
+-
+-REQUEST DeleteDeviceProperty
+- 4	property	ATOM
+- 8	device	UINT8
+-END
+-
+-REQUEST GetDeviceProperty
+- 4	property	ATOM
+- 8	type	ATOM
+-12	longOffset	UINT32
+-16	longLength	UINT32
+-20	device	UINT8
+-21	delete	BOOL
+-END
+-RESPONSE GetDeviceProperty
+- 8	type	ATOM
+-12	bytesAfter	UINT32
+-16	nItems	COUNT32
+-20	format	FORMAT8
+-21	device	UINT8
+-IF 8 ATOM "ATOM"
+-32	value	LISTofATOM
+-ELSEIF 8 ATOM "FLOAT"
+-32	value	LISTofFLOAT32
+-ELSE
+-32	value	LISTofFormat
+-END
+-
+-STRUCT MODIFIERINFO length 16
+- 0	base_mods	CARD32
+- 4	latched_mods	CARD32
+- 8	locked_mods	CARD32
+-12	effective_mods	CARD32
+-END
+-
+-STRUCT GROUPINFO length 4
+-0	base_group	CARD8
+-1	latched_group	CARD8
+-2	locked_group	CARD8
+-3	effective_group	CARD8
+-END
+-
+-REQUEST XIQueryPointer
+- 4	window	WINDOW
+- 8	device	UINT16
+-END
+-RESPONSE XIQueryPointer
+- 8	root	WINDOW
+-12	child	WINDOW
+-16	root_x	FIXED
+-20	root_y	FIXED
+-24	win_x	FIXED
+-28	win_y	FIXED
+-32	same_screen	BOOL
+-34	buttons_len	COUNT16
+-36	mods	MODIFIERINFO
+-52	groups	GROUPINFO
+-56	buttons	LISTofCARD8
+-END
+-
+-REQUEST XIWarpPointer
+- 4	src_win	WINDOW
+- 8	dst_win	WINDOW
+-12	src_x	FIXED
+-16	src_y	FIXED
+-20	src_width	UINT16
+-22	src_height	UINT16
+-24	dst_x	FIXED
+-28	dst_y	FIXED
+-32	device	CARD16
+-END
+-
+-REQUEST XIChangeCursor
+- 4	win	WINDOW
+- 8	cursor	CURSOR
+-12	device	CARD16
+-END
+-
+-CONSTANTS hierarchy_change
+-1	AddMaster
+-2	RemoveMaster
+-3	AttachSlave
+-4	DetachSlave
+-END
+-
+-CONSTANTS change_mode
+-1	Attach
+-2	Float
+-END
+-
+-LIST HIERARCHYCHANGE variable min-length 8
+- 0	type	ENUM16 hierarchy_change
+- 2	length	COUNT16
+-IF 0 CARD16 $hierarchy_change:AddMaster
+- 4	name_len	COUNT16
+- 6	send_core	BOOL
+- 7	enable	BOOL
+- 8	name	STRING8
+-ELSEIF 0 CARD16 $hierarchy_change:RemoveMaster
+- 4	device	UINT16
+- 6	return_mode	ENUM8 change_mode
+- 8	return_pointer	UINT16
+-10	return_keyboard	UINT16
+- NEXT	12
+-ELSEIF 0 CARD16 $hierarchy_change:AttachSlave
+- 4	device	UINT16
+- 6	new_master	UINT16
+- NEXT	8
+-ELSEIF 0 CARD16 $hierarchy_change:DetachSlave
+- 4	device	UINT16
+- NEXT	8
+-ELSE
+- 0	pad	LISTofCARD32
+-END
+-
+-REQUEST XIChangeHierarchy
+- 4	num_changes	COUNT8
+- 8	changes	LISTofHIERARCHYCHANGE
+-END
+-
+-REQUEST XISetClientPointer
+- 4	win	WINDOW
+- 8	device	UINT16
+-END
+-
+-REQUEST XIGetClientPointer
+- 4	win	WINDOW
+-END
+-RESPONSE XIGetClientPointer
+- 8	set	BOOL
+-10	device	UINT16
+-END
+-
+-LIST EVENTMASK variable min-length 4
+-0	device	UINT16
+-2	mask_len	COUNT16
+-4	mask	LISTofCARD32
+-END
+-
+-REQUEST XISelectEvents
+- 4	win	WINDOW
+- 8	num_masks	COUNT16
+-12	masks	LISTofEVENTMASK
+-END
+-
+-REQUEST XIQueryVersion
+- 4	major	UINT16
+- 6	minor	UINT16
+-END
+-RESPONSE XIQueryVersion
+- 8	major	UINT16
+-10	minor	UINT16
+-END
+-
+-# TODO: could be > 32bits if the device has more than 2^32 buttons
+-TYPE SETofBUTTONMASK CARD32
+-
+-CONSTANTS class
+-0	KeyClass
+-1	ButtonClass
+-2	ValuatorClass
+-3	ScrollClass
+-8	TouchClass
+-END
+-
+-CONSTANTS scrolltype
+-1 vertical
+-2 horizontal
+-END
+-TYPE ScrollType ENUM32 scrolltype
+-BITMASK scrollflag
+-1<<0	NoEmulation
+-1<<1	Preferred
+-END
+-TYPE ScrollFlag BITMASK32 scrollflag
+-CONSTANTS touchmode
+-1 DirectTouch
+-2 DependentTouch
+-END
+-TYPE TouchMode ENUM8 touchmode
+-
+-LIST CLASS variable min-length 8
+-0	type	ENUM16	class
+-2	length	COUNT16
+-4	sourceid	UINT16
+-IF 0 CARD16 $class:KeyClass
+-6	num_keys	COUNT16
+-8	keys	LISTofCARD32
+-ELSEIF 0 CARD16 $class:ButtonClass
+-6	num_buttons	COUNT16
+-8	state	SETofBUTTONMASK
+-12	labels	LISTofATOM
+-ELSEIF 0 CARD16 $class:ValuatorClass
+-6	number	UINT16
+-8	label	ATOM
+-12	min	FP3232
+-20	max	FP3232
+-28	value	FP3232
+-36	resolution	UINT32
+-40	mode	CARD8
+-NEXT	44
+-ELSEIF 0 CARD16 $class:ScrollClass
+-6	number	UINT16
+-8	type	ScrollType
+-12	flags	ScrollFlag
+-16	increment	FP3232
+-NEXT	24
+-ELSEIF 0 CARD16 $class:TouchClass
+-6	mode	TouchMode
+-7	touch_max	UINT8
+-NEXT	8
+-ELSE
+-0	pad	LISTofCARD32
+-END
+-
+-CONSTANTS xi_device_use
+-1	MasterPointer
+-2	MasterKeyboard
+-3	SlavePointer
+-4	SlaveKeyboard
+-5	FloatingSlave
+-END
+-
+-LIST XIDEVICEINFO variable min-length 12
+- 0	device	UINT16
+- 2	use	ENUM16 xi_device_use
+- 4	attachment	CARD16
+-10	enabled	BOOL
+- 8	name_len	COUNT16
+-12	name	STRING8
+-ROUND
+- 6	num_classes	COUNT16
+-LATER	classes	LISTofCLASS
+-END
+-
+-CONSTANTS xidevice
+-0	AllDevices
+-1	AllMasterDevices
+-END
+-
+-REQUEST XIQueryDevice
+- 4	device	ENUM16 xidevice
+-END
+-RESPONSE XIQueryDevice
+- 8	num_devices	COUNT16
+-32	deviceinfo	LISTofXIDEVICEINFO
+-END
+-
+-REQUEST XISetFocus
+- 4	focus	WINDOW
+- 8	time	TIMESTAMP
+-10	device	UINT16
+-END
+-
+-REQUEST XIGetFocus
+- 4	device	UINT16
+-END
+-RESPONSE XIGetFocus
+- 8	focus	WINDOW
+-END
+-
+-REQUEST XIGrabDevice
+- 4	grab_window	WINDOW
+- 8	time	TIMESTAMP
+-12	cursor	CURSOR
+-16	device	UINT16
+-18	grab_mode	ENUM8	synmode
+-19	paired_device_mode	ENUM8	synmode
+-20	owner_events	BOOL
+-22	mask_len	COUNT16
+-24	masks	LISTofCARD32
+-END
+-
+-REQUEST XIListProperties
+- 4	device	UINT16
+-END
+-RESPONSE XIListProperties
+- 8	"#properties"	COUNT16
+-32	properties	LISTofATOM
+-END
+-
+-REQUEST XIChangeProperty
+- 4	device	UINT16
+- 6	mode	ENUM8	device_mode
+- 7	format	FORMAT8
+- 8	property	ATOM
+-12	type	ATOM
+-16	num_items	COUNT32
+-IF 12 ATOM "ATOM"
+-20	value	LISTofATOM
+-ELSEIF 12 ATOM "FLOAT"
+-20	value	LISTofFLOAT32
+-ELSE
+-20	value	LISTofFormat
+-END
+-
+-REQUEST XIDeleteProperty
+- 4	device	UINT16
+- 8	property	ATOM
+-END
+-
+-REQUEST XIGetProperty
+- 4	device	UINT16
+- 6	delete	BOOL
+- 8	property	ATOM
+-12	type	ATOM
+-16	offset	UINT32
+-20	len	UINT32
+-END
+-RESPONSE XIGetProperty
+- 8	type	ATOM
+-12	bytes_after	UINT32
+-16	num_items	COUNT32
+-20	format	FORMAT8
+-IF 8 ATOM "ATOM"
+-32	value	LISTofATOM
+-ELSEIF 8 ATOM "FLOAT"
+-32	value	LISTofFLOAT32
+-ELSE
+-32	value	LISTofFormat
+-END
+-
+-# Events
+-
+-# the top-most bit of the device-id (0x80) always means more events to follow.
+-# TODO: how to express that?
+-
+-EVENT DeviceValuator
+- 1	device	CARD8
+- 4	state	SETofKEYBUTMASK
+- 6	"#valuators"	COUNT8
+- 7	"first axis"	CARD8
+-# should be LISTofINT32?
+- 8	valuators	LISTofUINT32
+-END
+-
+-templateEVENT KeyButtonPointer
+-# keycode, button, ... depending on actual even
+- 1	detail	CARD8
+- 4	"timestamp"	TIMESTAMP
+- 8	"root window"	WINDOW
+-12	"event window"	WINDOW
+-16	"child window"	WINDOW constants none
+-20	root-x	INT16
+-22	root-y	INT16
+-24	event-x	INT16
+-26	event-y	INT16
+-28	state	SETofKEYBUTMASK
+-30	same-screen	BOOL
+-31	device	CARD8
+-END
+-EVENT DeviceKeyPress ALIASES KeyButtonPointer
+-EVENT DeviceKeyRelease ALIASES KeyButtonPointer
+-EVENT DeviceButtonPress ALIASES KeyButtonPointer
+-EVENT DeviceButtonRelease ALIASES KeyButtonPointer
+-
+-EVENT DeviceMotionNotify
+- 1	detail	ENUM8 normalhint
+-        4	"timestamp"	TIMESTAMP
+- 8	"root window"	WINDOW
+-12	"event window"	WINDOW
+-16	"child window"	WINDOW constants none
+-20	root-x	INT16
+-22	root-y	INT16
+-24	event-x	INT16
+-26	event-y	INT16
+-28	state	SETofKEYBUTMASK
+-30	same-screen	BOOL
+-31	device	CARD8
+-END
+-
+-templateEVENT Proximity
+-        4	"timestamp"	TIMESTAMP
+- 8	"root window"	WINDOW
+-12	"event window"	WINDOW
+-16	"child window"	WINDOW constants none
+-20	root-x	INT16
+-22	root-y	INT16
+-24	event-x	INT16
+-26	event-y	INT16
+-28	state	SETofKEYBUTMASK
+-30	same-screen	BOOL
+-31	device	CARD8
+-END
+-EVENT ProximityIn ALIASES Proximity
+-EVENT ProximityOut ALIASES Proximity
+-
+-templateEVENT DeviceFocus
+- 1	detail	ENUM8 enterdetail
+-        4	"timestamp"	TIMESTAMP
+- 8	"event window"	WINDOW
+-12	mode	ENUM8 grabmode
+-13	device	CARD8
+-END
+-EVENT DeviceFocusOut ALIASES DeviceFocus
+-EVENT DeviceFocusIn ALIASES DeviceFocus
+-
+-EVENT DeviceStateNotify
+- 1	device	CARD8
+-        4	"timestamp"	TIMESTAMP
+-11	reported	BITMASK8 classes_reported
+- 8	"#keys"	COUNT8
+-12	keys	LISTofCARD8
+- 9	"#buttons"	COUNT8
+-LATER	buttons	LISTofCARD8
+-10	"#valuators"	COUNT8
+-LATER	valuators	LISTofCARD32
+-END
+-
+-EVENT DeviceKeystateNotify
+- 1	device	CARD8
+- 4	keys	LISTofCARD8
+-END
+-
+-EVENT DeviceButtonstateNotify
+- 1	device	CARD8
+- 4	buttons	LISTofCARD8
+-END
+-
+-EVENT DeviceMappingNotify
+- 1	device	CARD8
+- 4	request	CARD8
+- 5	"first key code"	KEYCODE
+- 6	count	UINT8
+- 8	"timestamp"	TIMESTAMP
+-END
+-
+-EVENT ChangeDeviceNotify
+- 1	device	CARD8
+- 4	"timestamp"	TIMESTAMP
+- 8	request	CARD8
+-END
+-
+-EVENT DevicePresenceNotify
+- 4	timestamp	TIMESTAMP
+- 8	change	ENUM8 device_change
+- 9	device	CARD8
+-10	control	CARD16
+-END
+-
+-EVENT DevicePropertyNotify
+- 1	state	ENUM8	newdeleted
+- 4	timestamp	TIMESTAMP
+- 8	atom	ATOM
+-31	device	CARD8
+-END
+-
+-STRUCT ModifierInfo length 16
+- 0	base_mods	CARD32
+- 4	latched_mods	CARD32
+- 8	locked_mods	CARD32
+-12	effective_mods	CARD32
+-END
+-
+-STRUCT GroupInfo length 4
+-0	base_group	CARD8
+-1	latched_group	CARD8
+-2	locked_group	CARD8
+-3	effective_group	CARD8
+-END
+-
+-# This does not work. I do not know if XIDEVICEINFO
+-# is broken or if the event encodes it differently...
+-# XGEVENT DeviceChanged
+-# 10	deviceid	CARD8
+-# 12	time		TIMESTAMP
+-# 16	"#classes"	COUNT16
+-# 18	sourceid	CARD8
+-# 20	reason		CHANGEREASON
+-# 32	classes		LISTofXIDEVICEINFO
+-# END
+-
+-templateEVENT Device
+-10	deviceid	CARD8
+-12	time		TIMESTAMP
+-16	detail		CARD32
+-20	root		WINDOW
+-24	event		WINDOW
+-28	child		WINDOW
+-32	root_x		FP1616
+-36	root_y		FP1616
+-40	event_x		FP1616
+-44	event_y		FP1616
+-52	sourceid	CARD16
+-# TODO: meaning of flags...
+-56	flags		CARD32
+-60	mods		ModifierInfo
+-76	group		GroupInfo
+-48	buttons_len	COUNT16
+-80	buttons		LISTofCARD32
+-50	valuators_len	COUNT16
+-LATER	valuators	LISTofCARD32
+-RESET_COUNTER
+-LATER	axisvalues	LISTofFIXED3232
+-END
+-
+-XGEVENT KeyPress ALIASES Device
+-XGEVENT KeyRelease ALIASES Device
+-XGEVENT ButtonPress ALIASES Device
+-XGEVENT ButtonRelease ALIASES Device
+-XGEVENT Motion ALIASES Device
+-XGEVENT TouchBegin ALIASES Device
+-XGEVENT TouchUpdate ALIASES Device
+-XGEVENT TouchEnd ALIASES Device
+-
+-templateEVENT Notify
+-10	deviceid	CARD8
+-12	time		TIMESTAMP
+-16	sourceid	CARD8
+-18	mode		ENUM8 notify_mode
+-19	detail		ENUM8 notify_detail
+-20	root		WINDOW
+-24	event		WINDOW
+-28	child		WINDOW
+-32	root_x		FP1616
+-36	root_y		FP1616
+-40	event_x		FP1616
+-44	event_y		FP1616
+-48	same_screen	BOOL
+-49	focus		BOOL
+-52	mods		ModifierInfo
+-68	group		GroupInfo
+-50	buttons_len	COUNT16
+-72	masks		LISTofCARD32
+-END
+-
+-XGEVENT Enter ALIASES Notify
+-XGEVENT Leave ALIASES Notify
+-XGEVENT FocusIn ALIASES Notify
+-XGEVENT FocusOut ALIASES Notify
+-
+-EOF
+diff --git a/xkb.proto b/xkb.proto
+deleted file mode 100644
+index a88b78a..0000000
+--- a/xkb.proto
++++ /dev/null
+@@ -1,215 +0,0 @@
+-EXTENSION "XKEYBOARD" Xkb
+-USE core
+-
+-REQUESTS
+-UseExtension RESPONDS /* 0 */
+-# TODO:
+-SelectEvents UNSUPPORTED /* 1 */
+-Unknown UNSUPPORTED
+-Bell /* 3 */
+-GetState RESPONDS UNSUPPORTED /* 4 */
+-LatchLockState UNSUPPORTED /* 5 */
+-GetControls RESPONDS UNSUPPORTED /* 6 */
+-SetControls UNSUPPORTED /* 7 */
+-GetMap RESPONDS /* 8 */
+-SetMap UNSUPPORTED /* 9 */
+-GetCompatMap RESPONDS UNSUPPORTED /* 10 */
+-SetCompatMap UNSUPPORTED /* 11 */
+-GetIndicatorState RESPONDS UNSUPPORTED /* 12 */
+-GetIndicatorMap RESPONDS UNSUPPORTED /* 13 */
+-SetIndicatorMap UNSUPPORTED /* 14 */
+-GetNamedIndicator RESPONDS /* 15 */
+-SetNamedIndicator UNSUPPORTED /* 16 */
+-GetNames RESPONDS /* 17 */
+-SetNames UNSUPPORTED /* 18 */
+-GetGeometry RESPONDS UNSUPPORTED /* 19 */
+-SetGeometry UNSUPPORTED /* 20 */
+-PerClientFlags UNSUPPORTED /* 21 */
+-ListComponents RESPONDS UNSUPPORTED /* 22 */
+-GetKbdByName RESPONDS UNSUPPORTED /* 23 */
+-GetDeviceInfo RESPONDS UNSUPPORTED /* 24 */
+-SetDeviceInfo UNSUPPORTED /* 25 */
+-END
+-
+-EVENTS
+-XkbEvent
+-END
+-
+-ERRORS
+-# this also packs the type in subvalues,
+-# to support this we need support of parsing error packets, too
+-"Keyboard"
+-END
+-
+-REQUEST UseExtension
+- 4	major	UINT16
+- 6	minor	UINT16
+-END
+-RESPONSE UseExtension
+- 8	major	UINT16
+-10	minor	UINT16
+-END
+-
+-CONSTANTS DEVICESPEC
+-0x100 UseCoreKbd
+-0x200 UseCorePtr
+-END
+-TYPE DEVICESPEC UINT16 constants DEVICESPEC
+-
+-CONSTANTS BELLCLASSSPEC
+-0 KbdFeedback
+-5 LedFeedback
+-0x300 DefaultXI
+-# AllXI ???
+-END
+-TYPE BELLCLASSSPEC ENUM16 BELLCLASSSPEC
+-
+-CONSTANTS IDSPEC
+-0x400 DfltXIId
+-END
+-TYPE IDSPEC UINT16 constants IDSPEC
+-
+-REQUEST Bell
+- 4 deviceSpec DEVICESPEC
+- 6 bellClass BELLCLASSSPEC
+- 8 bellID IDSPEC
+-10 percent INT8
+-11 forceSound BOOL
+-12 eventOnly BOOL
+-14 pitch INT16
+-16 duration INT16
+-20 name ATOM
+-24 window WINDOW
+-END
+-
+-TYPE KEYCODE UINT8
+-
+-REQUEST GetMap
+- 4 deviceSpec DEVICESPEC
+- 6 full UINT16
+- 8 partial UINT16
+-10 firstType UINT8
+-11 nTypes UINT8
+-12 firstKeySym KEYCODE
+-13 nKeySyms UINT8
+-14 firstKeyAct KEYCODE
+-15 nKeyActs UINT8
+-16 firstKeyBehavior KEYCODE
+-17 nKeyBehaviors UINT8
+-18 virtualMods UINT16
+-END
+-
+-RESPONSE GetMap
+- 2	deviceID	UINT8
+-10	minKeyCode	KEYCODE
+-11	maxKeyCode	KEYCODE
+-12	present		UINT16
+-14	firstType	UINT8
+-15	nTypes		UINT8
+-16	totalTypes	UINT8
+-17	firstKeySym	KEYCODE
+-18	totalSyms	UINT16
+-20	nKeySyms	UINT8
+-21	firstKeyAct	KEYCODE
+-22	totalActs	UINT16
+-24	nKeyActs	UINT8
+-25	firstKeyBehavior	KEYCODE
+-26	nKeyBehaviors	UINT8
+-27	totalKeyBehaviors	UINT8
+-28	firstKeyExplicit	KEYCODE
+-29	nKeyExplicit	UINT8
+-30	totalKeyExplicit	UINT8
+-31	firstModMapKey	KEYCODE
+-32	nModMapKeys	UINT8
+-33	totalModMapKeys	UINT8
+-34	firstVModMapKey	KEYCODE
+-35	nVModMapKeys	UINT8
+-36	totalVModMapKeys	UINT8
+-38	virtualMods	UINT16
+-# TODO
+-40	not-yet-supported	LISTofCARD8
+-END
+-
+-BITMASK namedetailmask
+-   1	keycodes
+-   2	geometry
+-   4	symbols
+-   8	phys_symbols
+-  16	type
+-  32	compat
+-  64	key_type_names
+- 128	key_type_level_names
+- 256	indicators
+- 512	key_names
+-1024	key_aliases
+-2048	vmods
+-4096	groups
+-8192	radio_groups
+-END
+-
+-REQUEST GetNames
+- 4	deviceSpec	DEVICESPEC
+- 8	which		BITMASK32 namedetailmask
+-END
+-
+-RESPONSE GetNames
+- 1	deviceID	UINT8
+- 8	which		BITMASK32 namedetailmask
+-12	minKeyCode	KEYCODE
+-13	maxKeyCode	KEYCODE
+-14	nTypes		UINT8
+-15	groupNames	UINT8
+-16	virtualMods	UINT16
+-18	firstKey	KEYCODE
+-19	nKeys		UINT8
+-20	indicators	CARD32
+-24	nRadioGroups	UINT8
+-25	nKeyAliases	UINT8
+-26	nKTLevels	UINT16
+-# TODO
+-32	valueList	LISTofCARD8
+-END
+-
+-CONSTANTS LEDCLASSSPEC
+-0	KbdFeedbackClass
+-4	LedFeedbackClass
+-0x0300	DfltXIClass
+-0x0500	AllXIClasses
+-0xff00	XINone
+-END
+-
+-REQUEST GetNamedIndicator
+- 4	deviceSpec	DEVICESPEC
+- 6	ledClass	ENUM16 LEDCLASSSPEC
+- 8	ledID		IDSPEC
+-12	indicator	ATOM
+-END
+-
+-RESPONSE GetNamedIndicator
+- 1	deviceID	UINT8
+- 8	indicator	ATOM
+-12	found		BOOL
+-13	on		BOOL
+-14	realIndicator	BOOL
+-15	ndx		UINT8
+-16	flags		CARD8
+-17	whichGroups	CARD8
+-18	groups		CARD8
+-19	whichMods	CARD8
+-20	mods		CARD8
+-21	realMods	CARD8
+-22	virtualMods	CARD16
+-24	ctrls		CARD32
+-28	supported	BOOL
+-END
+-
+-EVENT XkbEvent
+-# all events packaged into one? WTF?
+- 1	type	UINT8
+- 4	time	TIMESTAMP
+- 8	device	CARD8
+-# TODO:
+- 9	not-yet-supported	LISTofCARD8
+-END
+-
+-EOF
+diff --git a/xvideo.proto b/xvideo.proto
+deleted file mode 100644
+index 6833de9..0000000
+--- a/xvideo.proto
++++ /dev/null
+@@ -1,398 +0,0 @@
+-# This file is part of xtrace.
+-# Copyright (C) 2006 Bernhard R. Link
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License version 2 as
+-# published by the Free Software Foundation.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-# 
+-# This file is based on /usr/include/X11/extensions/Xvproto.h which states:
+-# Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts,
+-# and the Massachusetts Institute of Technology, Cambridge, Massachusetts.
+-# 
+-#                         All Rights Reserved
+-# 
+-# Permission to use, copy, modify, and distribute this software and its 
+-# documentation for any purpose and without fee is hereby granted, 
+-# provided that the above copyright notice appear in all copies and that
+-# both that copyright notice and this permission notice appear in 
+-# supporting documentation, and that the names of Digital or MIT not be
+-# used in advertising or publicity pertaining to distribution of the
+-# software without specific, written prior permission.  
+-# 
+-# DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+-# ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
+-# DIGITAL BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR
+-# ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+-# WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+-# ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+-# SOFTWARE.
+-#
+-# and on /usr/share/xcb/xv.xml, which states:
+-# Copyright (C) 2006 Jeremy Kolb.
+-# All Rights Reserved.
+-# 
+-# Permission is hereby granted, free of charge, to any person obtaining a copy
+-# of this software and associated documentation files (the "Software"), to deal
+-# in the Software without restriction, including without limitation the rights
+-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-# copies of the Software, and to permit persons to whom the Software is
+-# furnished to do so, subject to the following conditions:
+-# 
+-# The above copyright notice and this permission notice shall be included in all
+-# copies or substantial portions of the Software.
+-# 
+-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-# AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+-# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+-# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-# 
+-# Except as contained in this notice, the names of the authors or their
+-# institutions shall not be used in advertising or otherwise to promote the
+-# sale, use or other dealings in this Software without prior written
+-# authorization from the authors.
+-
+-EXTENSION "XVideo" XV
+-USE core
+-
+-REQUESTS
+-QueryExtension RESPONDS /* 0 */
+-QueryAdaptors RESPONDS
+-QueryEncodings RESPONDS
+-GrabPort RESPONDS
+-UngrabPort
+-PutVideo
+-PutStill
+-GetVideo
+-GetStill
+-StopVideo
+-SelectVideoNotify /* 10 */
+-SelectPortNotify
+-QueryBestSize RESPONDS
+-SetPortAttribute
+-GetPortAttribute RESPONDS
+-QueryPortAttributes RESPONDS
+-ListImageFormats RESPONDS
+-QueryImageAttributes RESPONDS
+-PutImage
+-ShmPutImage
+-END
+-
+-EVENTS
+-VideoNotify
+-PortNotify
+-END
+-
+-ERRORS
+-BadPort
+-BadEncoding
+-BadMode
+-END
+-
+-TYPE PORT	UINT32
+-TYPE ENCODING UINT32
+-
+-BITMASK xvtype
+-1<<0	Input
+-1<<1	Output
+-1<<2	Video
+-1<<3	Still
+-1<<4	Image
+-END
+-
+-CONSTANTS ImageFormatInfoType
+- 0	RGB
+- 1	YUV
+-END
+-
+-CONSTANTS ImageFormatInfoFormat
+- 0	Packed
+- 1	Planar
+-END
+-
+-BITMASK attribute_flag
+- 1	Gettable
+- 2	Settable
+-END
+-
+-CONSTANTS video_notify_reason
+- 0	Started
+- 1	Stopped
+- 2	Busy
+- 3	Preempted
+- 4	HardError
+-END
+-
+-CONSTANTS scanline_order
+- 0	TopToBottom
+- 1	BottomToTop
+-END
+-
+-CONSTANTS grab_port_status
+- 0	Success
+- 1	BadExtension
+- 2	AlreadyGrabbed
+- 3	InvalidTime
+- 4	BadReply
+- 5	BadAlloc
+-END
+-
+-STRUCT Rational length 8
+-0	numerator	INT32
+-4	denominator	INT32
+-END
+-
+-LIST XVFormat length 8
+- 0	visual	VISUALID
+- 4	depth	UINT8
+-END
+-
+-LIST AdaptorInfo variable min-length 12
+- 0	base_id	PORT
+- 6	num_ports	UINT16
+-10	type	BITMASK8 xvtype
+- 4	name_size	COUNT16
+-12	name	STRING8
+-ROUND
+- 8	num_formats	COUNT16
+-LATER	formats	LISTofXVFormat
+-END
+-
+-LIST EncodingInfo variable min-length 20
+- 0	encoding	ENCODING
+- 4	name_size	COUNT16
+- 6	width	UINT16
+- 8	height	UINT16
+-12	rate	Rational
+-20	name	STRING8
+-ROUND
+-END
+-
+-LIST AttributeInfo variable min-length 16
+- 0	flags	BITMASK32 attribute_flag
+- 4	min	INT32
+- 8	max	INT32
+-12	size	COUNT32
+-16	name	STRING8
+-ROUND
+-END
+-
+-LIST ImageFormatInfo length 128
+- 0	id	CARD32
+- 4	type	ENUM8 ImageFormatInfoType
+- 5	byte_order	CARD8
+-SET_COUNTER 16
+- 8	guid	STRING8
+-24	bpp	UINT8
+-25	num_planes	UINT8
+-28	depth	UINT8
+-32	red_mask	CARD32
+-36	green_mask	CARD32
+-40	blue_mask	CARD32
+-44	format	ENUM8 ImageFormatInfoFormat
+-48	y_sample_bits	CARD32
+-52	u_sample_bits	CARD32
+-56	v_sample_bits	CARD32
+-60	vhorz_y_period	CARD32
+-64	vhorz_u_period	CARD32
+-68	vhorz_v_period	CARD32
+-72	vvert_y_period	CARD32
+-76	vvert_u_period	CARD32
+-80	vvert_v_period	CARD32
+-SET_COUNTER 32
+-84	vcomp_order	LISTofCARD8
+-116	vscanline_order	ENUM8 scanline_order
+-END
+-
+-REQUEST QueryExtension
+-END
+-RESPONSE QueryExtension
+- 8	major	UINT16
+-10	minor	UINT16
+-END
+-
+-REQUEST QueryAdaptors
+- 4	window	WINDOW
+-END
+-RESPONSE QueryAdaptors
+- 8	num_adaptors	COUNT16
+-32	adaptors	LISTofAdaptorInfo
+-END
+-
+-REQUEST QueryEncodings
+- 4	port	PORT
+-END
+-RESPONSE QueryEncodings
+- 8	num_encodings	COUNT16
+-32	encodings	LISTofEncodingInfo
+-END
+-
+-REQUEST GrabPort
+- 4	port	PORT
+- 8	time	TIMESTAMP
+-END
+-RESPONSE GrabPort
+- 1	result	ENUM8 grab_port_status
+-END
+-
+-REQUEST UngrabPort
+- 4	port	PORT
+- 8	time	TIMESTAMP
+-END
+-
+-templateREQUEST Put
+- 4	port	PORT
+- 8	drawable	DRAWABLE
+-12	gc	GCONTEXT
+-16	vid_x	INT16
+-18	vid_y	INT16
+-20	vid_w	UINT16
+-22	vid_h	UINT16
+-24	drw_x	INT16
+-26	drw_y	INT16
+-28	drw_w	UINT16
+-30	drw_h	UINT16
+-END
+-
+-REQUEST PutVideo ALIASES Put
+-REQUEST PutStill ALIASES Put
+-REQUEST GetVideo ALIASES Put
+-REQUEST GetStill ALIASES Put
+-
+-REQUEST StopVideo
+- 4	port	PORT
+- 8	drawable	DRAWABLE
+-END
+-
+-REQUEST SelectVideoNotify
+- 4	drawable	DRAWABLE
+- 8	onoff	BOOL
+-END
+-
+-REQUEST SelectPortNotify
+- 4	port	PORT
+- 8	onoff	BOOL
+-END
+-
+-REQUEST QueryBestSize
+- 4	port	PORT
+- 8	vid_w	UINT16
+-10	vid_h	UINT16
+-12	drw_w	UINT16
+-14	drw_h	UINT16
+-16	motion	BOOL
+-END
+-RESPONSE QueryBestSize
+- 8	actual_width	UINT16
+-10	actual_height	UINT16
+-END
+-
+-REQUEST SetPortAttribute
+- 4	port	PORT
+- 8	attribute	ATOM
+-12	value	INT32
+-END
+-
+-REQUEST GetPortAttribute
+- 4	port	PORT
+- 8	attribute	ATOM
+-END
+-RESPONSE GetPortAttribute
+- 8	value	INT32
+-END
+-
+-REQUEST QueryPortAttributes
+- 4	port	PORT
+-END
+-RESPONSE QueryPortAttributes
+- 8	num_attributes	COUNT32
+-12	text_size	UINT32
+-32	attributes	LISTofAttributeInfo
+-END
+-
+-REQUEST ListImageFormats
+- 4	port	PORT
+-END
+-RESPONSE ListImageFormats
+- 8	num_formats	COUNT32
+-32	format	LISTofImageFormatInfo
+-END
+-
+-REQUEST QueryImageAttributes
+- 4	port	PORT
+- 8	id	CARD32
+-12	width	UINT16
+-14	height	UINT16
+-END
+-RESPONSE QueryImageAttributes
+-12	data_size	UINT32
+-16	width	UINT16
+-18	height	UINT16
+- 8	num_planes	COUNT32
+-32	pitches	LISTofUINT32
+-RESET_COUNTER
+-LATER	offsets	LISTofUINT32
+-END
+-
+-REQUEST PutImage
+- 4	port	PORT
+- 8	drawable	DRAWABLE
+-12	gc	GCONTEXT
+-16	id	CARD32
+-20	src_x	INT16
+-22	src_y	INT16
+-24	src_w	UINT16
+-26	src_h	UINT16
+-28	drw_x	INT16
+-30	drw_y	INT16
+-32	drw_w	UINT16
+-34	drw_h	UINT16
+-36	width	UINT16
+-38	height	UINT16
+-40	data	LISTofCARD8
+-END
+-
+-REQUEST ShmPutImage
+- 4	port	PORT
+- 8	drawable	DRAWABLE
+-12	gc	GCONTEXT
+-16	shmseg	Shm::ShmSeg
+-20	id	CARD32
+-24	offset	UINT32
+-28	src_x	INT16
+-30	src_y	INT16
+-32	src_w	UINT16
+-34	src_h	UINT16
+-36	drw_x	INT16
+-38	drw_y	INT16
+-40	drw_w	UINT16
+-42	drw_h	UINT16
+-44	width	UINT16
+-46	height	UINT16
+-48	send_event	BOOL
+-END
+-
+-EVENT VideoNotify
+- 1	reason	ENUM8 video_notify_reason
+- 4	timestamp	TIMESTAMP
+- 8	drawable	DRAWABLE
+-12	port	PORT
+-END
+-
+-EVENT PortNotify
+- 4	timestamp	TIMESTAMP
+- 8	port	PORT
+-12	attribute	ATOM
+-16	value	INT32
+-END
+-
+-EOF
+-- 
+2.27.0
+

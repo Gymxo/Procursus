@@ -20,7 +20,7 @@ openbox: openbox-setup libx11 libxau libxmu xorgproto xxhash
 		--x-libraries=$(BUILD_BASE)/usr/lib \
 		--x-includes=$(BUILD_BASE)/usr/include \
 		--with-x \
-		--disable-xinerama
+		--disable-startup-notification
 	+$(MAKE) -C $(BUILD_WORK)/openbox
 	+$(MAKE) -C $(BUILD_WORK)/openbox install \
 		DESTDIR=$(BUILD_STAGE)/openbox

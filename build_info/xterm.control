@@ -1,10 +1,4 @@
 Package: xterm
-<<<<<<< HEAD
-Version: 1
-Architecture: @DEB_ARCH@
-Maintainer: @DEB_MAINTAINER@
-Description: 
-=======
 Version: @DEB_XTERM_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
@@ -32,4 +26,3 @@ Description: X terminal emulator
  .
  Those interested in using koi8rxterm will likely want to install the
  xfonts-cyrillic package as well.
->>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4

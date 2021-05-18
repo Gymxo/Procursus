@@ -1,0 +1,16 @@
+Package: xfdesktop4
+Version: @DEB_XFDESKTOP_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: libcairo2
+Recommends: default-dbus-session-bus | dbus-session-bus, librsvg2-common, tumbler, xdg-user-dirs
+Replaces: xfdesktop4-data (<< 4.5.92)
+Section: XFCE
+Priority: optional
+Homepage: https://docs.xfce.org/xfce/xfdesktop/start
+Description: Xfce desktop background, icons and root menu manager
+ xfdesktop4 sets the background image, provides a right-click menu to
+ launch applications and can optionally show files (including application
+ launchers) or iconified windows. It includes gradient support for
+ background color, saturation support for background image, real multiscreen
+ and xinerama support.

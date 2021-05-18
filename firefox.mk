@@ -15,15 +15,14 @@ firefox:
 	@echo "Using previously built firefox."
 else
 firefox: firefox-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/firefox/js/src && mkdir -p build && cd build && ../configure \
+	cd $(BUILD_WORK)/firefox && mkdir -p obj && cd obj && ../js/src/configure \
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
-		--disable-jemalloc \
-		--with-macos-sdk=$(TARGET_SYSROOT)
-	+$(MAKE) -C $(BUILD_WORK)/firefox/js/src/build
-	+$(MAKE) -C $(BUILD_WORK)/firefox/js/src/build install \
+		--disable-compile-environment
+	+$(MAKE) -i -C $(BUILD_WORK)/firefox/obj
+	+$(MAKE) -i -C $(BUILD_WORK)/firefox/obj install \
 		DESTDIR=$(BUILD_STAGE)/firefox
-	+$(MAKE) -C $(BUILD_WORK)/firefox/js/src/build install \
+	+$(MAKE) -i -C $(BUILD_WORK)/firefox/obj install \
 		DESTDIR=$(BUILD_BASE)
 	touch $(BUILD_WORK)/firefox/.build_complete
 endif
