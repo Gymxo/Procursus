@@ -1,0 +1,14 @@
+Package: xfce4-terminal
+Version: @DEB_XFCE4-TERMINAL_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: libcairo2, libglib2.0-0
+Recommends: default-dbus-session-bus | dbus-session-bus
+Provides: x-terminal-emulator
+Section: XFCE
+Priority: optional
+Homepage: https://docs.xfce.org/apps/terminal/start
+Description: Xfce terminal emulator
+ This package contains Terminal, which is a lightweight and easy to use
+ terminal emulator for X11. It was created to fit nicely into the Xfce
+ desktop environment, but it also fits nice with other environments.

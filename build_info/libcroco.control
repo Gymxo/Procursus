@@ -1,0 +1,28 @@
+Package: libcroco
+Maintainer: @DEB_MAINTAINER@
+Architecture: @DEB_ARCH@
+Version: @DEB_LIBCROCO_V@
+Depends: libglib2.0-0
+Section: Libraries
+Priority: optional
+Multi-Arch: same
+Description: Cascading Style Sheet (CSS) parsing and manipulation toolkit
+ Services provided by Libcroco
+  * A parser module that provides
+    o A SAC like API. SAC stands for Simple API for CSS. SAC is an event driven
+      API which resembles SAX in the xml world.
+    o A CSSOM like API. CSSOM stands for Cascading Style Sheet Object Model.
+ .
+    The libcroco parser implements the CSS Level 2 specification, the CSS
+    forward compatibility rules and the CSS cascading rules.
+ .
+  * A CSS2 selection engine
+    Given an xml element node (that obviously comes from an xml document) and
+    a stylesheet cascade, the Libcroco selection engine can evaluate the css
+    selectors of the cascade and return the style properties associated to
+    the xml element node.
+ .
+    Note that the xml manipulation toolkit used by the libcroco selection
+    engine at the moment is libxml2.
+ .
+ This package contains the shared libraries.

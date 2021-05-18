@@ -42,9 +42,7 @@ gdk-pixbuf: gdk-pixbuf-setup libx11 libxau libxmu xorgproto libfribidi
 	--libdir=/usr/local/lib \
 	--prefix="/usr/local" \
 	--wrap-mode=nofallback \
-	-Dx11=true \
     -Ddocs=false \
-    -Dgir=true \
     -Drelocatable=true \
     -Dintrospection=enabled \
 	-Dbuiltin_loaders=all \
@@ -58,13 +56,11 @@ gdk-pixbuf: gdk-pixbuf-setup libx11 libxau libxmu xorgproto libfribidi
 	PKG_CONFIG="pkg-config" meson \
 		--cross-file cross.txt \
 		--wrap-mode=nofallback \
-		-Dx11=true \
     	-Ddocs=false \
-    	-Dgir=true \
-    	-Dgir=true \
    		-Drelocatable=true \
     	-Dintrospection=enabled \
 		-Dbuiltin_loaders=all \
+		-Dnative_windows_loaders=true \
 		..
 	cd $(BUILD_WORK)/gdk-pixbuf/build && sed -i 's/--cflags-begin/--cflags-begin -arch arm64/g' build.ninja && \
 	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-load.sh && \

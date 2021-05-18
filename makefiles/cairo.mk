@@ -23,7 +23,6 @@ cairo: cairo-setup freetype gettext fontconfig glib2.0 libpng16 liblzo2 libpixma
 		--enable-tee \
 		--enable-pref-utils \
 		--enable-svg \
-		--disable-xcb \
 		--enable-gobject \
 		--with-x \
 		--enable-xlib=yes \

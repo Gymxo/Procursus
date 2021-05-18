@@ -1,0 +1,10 @@
+Package: libgtop
+Version: @DEB_LIBGTOP_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: libglib2.0-0, libxau6
+Section: Libraries
+Priority: optional
+Description: gtop system monitoring library
+ The gtop library reads information about processes and the state of the
+ system. It is used by the GNOME desktop environment.
