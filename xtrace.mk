@@ -2,14 +2,13 @@ ifneq ($(PROCURSUS),1)
 $(error Use the main Makefile)
 endif
 
-SUBPROJECTS   += xtrace
+SUBPROJECTS    += xtrace
 XTRACE_VERSION := 1.4.0
 DEB_XTRACE_V   ?= $(XTRACE_VERSION)
 
 xtrace-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://salsa.debian.org/debian/xtrace/-/archive/xtrace-$(XTRACE_VERSION)/xtrace-xtrace-$(XTRACE_VERSION).tar.gz
 	$(call EXTRACT_TAR,xtrace-xtrace-$(XTRACE_VERSION).tar.gz,xtrace-xtrace-$(XTRACE_VERSION),xtrace)
-	$(call DO_PATCH,xtrace,xtrace,-p1)
 
 ifneq ($(wildcard $(BUILD_WORK)/xtrace/.build_complete),)
 xtrace:
