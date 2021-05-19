@@ -20,7 +20,8 @@ libxcb: libxcb-setup xcb-proto libxau libxdmcp libpthread-stubs
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--with-launchd \
 		--enable-dri3 \
-		--enable-xevie
+		--enable-xevie \
+		--disable-shm
 	+$(MAKE) -C $(BUILD_WORK)/libxcb \
 		XCBPROTO_XCBPYTHONDIR="$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/python3/dist-packages" \
 		XCBPROTO_XCBINCLUDEDIR="$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/xcb"
@@ -148,14 +149,6 @@ libxcb-package: libxcb-stage
 	cp -a $(BUILD_STAGE)/libxcb/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxcb-shape.{a,dylib} $(BUILD_DIST)/libxcb-shape0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 	cp -a $(BUILD_STAGE)/libxcb/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/xcb/shape.h $(BUILD_DIST)/libxcb-shape0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/xcb
 	cp -a $(BUILD_STAGE)/libxcb/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig/xcb-shape.pc $(BUILD_DIST)/libxcb-shape0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig
-
-	# libxcb.mk Prep libxcb-shm0
-	cp -a $(BUILD_STAGE)/libxcb/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxcb-shm.0* $(BUILD_DIST)/libxcb-shm0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
-
-	# libxcb.mk Prep libxcb-shm0-dev
-	cp -a $(BUILD_STAGE)/libxcb/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxcb-shm.{a,dylib} $(BUILD_DIST)/libxcb-shm0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
-	cp -a $(BUILD_STAGE)/libxcb/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/xcb/shm.h $(BUILD_DIST)/libxcb-shm0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/xcb
-	cp -a $(BUILD_STAGE)/libxcb/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig/xcb-shm.pc $(BUILD_DIST)/libxcb-shm0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig
 
 	# libxcb.mk Prep libxcb-sync1
 	cp -a $(BUILD_STAGE)/libxcb/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libxcb-sync.1* $(BUILD_DIST)/libxcb-sync1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib

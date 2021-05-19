@@ -24,6 +24,8 @@ mesa-demos-setup: setup
 
 ifneq ($(wildcard $(BUILD_WORK)/mesa-demos/.build_complete),)
 mesa-demos:
+	find $(BUILD_STAGE)/mesa-demos -type f -exec codesign --remove {} \; &> /dev/null; \
+	find $(BUILD_STAGE)/mesa-demos -type f -exec codesign --sign $(CODESIGN_IDENTITY) --force --preserve-metadata=entitlements,requirements,flags,runtime {} \; &> /dev/null
 	@echo "Using previously built mesa-demos."
 else
 <<<<<<< HEAD
@@ -44,8 +46,7 @@ mesa-demos: mesa-demos-setup mesa libglu glew libx11 libxext freetype
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--enable-x11 \
 		--enable-gles2 \
-		--enable-gles1 \
-		--enable-osmesa
+		--enable-gles1
 	+$(MAKE) -C $(BUILD_WORK)/mesa-demos
 	+$(MAKE) -C $(BUILD_WORK)/mesa-demos install \
 		DESTDIR=$(BUILD_STAGE)/mesa-demos

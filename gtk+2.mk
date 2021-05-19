@@ -37,13 +37,14 @@ gtk+2: gtk+2-setup libx11 libxau libxmu xorgproto xxhash
     	--disable-visibility \
 		--disable-cups \
 		--with-x \
+		--disable-shm \
 		--x-libraries=$(BUILD_BASE)/usr/lib \
 		--x-includes=$(BUILD_BASE)/usr/include
 	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-load.sh && \
-	$(MAKE) -C $(BUILD_WORK)/gtk+2
-	+$(MAKE) -C $(BUILD_WORK)/gtk+2 install \
+	+$(MAKE) -i -C $(BUILD_WORK)/gtk+2
+	+$(MAKE) -i -C $(BUILD_WORK)/gtk+2 install \
 		DESTDIR=$(BUILD_STAGE)/gtk+2
-	+$(MAKE) -C $(BUILD_WORK)/gtk+2 install \
+	+$(MAKE) -i -C $(BUILD_WORK)/gtk+2 install \
 		DESTDIR=$(BUILD_BASE)
 endif
 

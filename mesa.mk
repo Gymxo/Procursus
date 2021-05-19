@@ -3,8 +3,8 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS  += mesa
-MESA_VERSION := 21.0.0
-DEB_MESA_V   ?= $(MESA_VERSION)
+MESA_VERSION := 21.0.2
+DEB_MESA_V   ?= $(MESA_VERSION)-1
 
 mesa-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://mesa.freedesktop.org/archive/mesa-$(MESA_VERSION).tar.xz{,.sig}

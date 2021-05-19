@@ -15,10 +15,9 @@ libpixman:
 	@echo "Using previously built libpixman."
 else
 libpixman: libpixman-setup
-	cd $(BUILD_WORK)/libpixman && ./configure -C \
+	cd $(BUILD_WORK)/libpixman && ./configure -h -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--disable-dependency-tracking \
-		--disable-gtk \
 		--disable-silent-rules
 	+$(MAKE) -C $(BUILD_WORK)/libpixman
 	+$(MAKE) -C $(BUILD_WORK)/libpixman install \
