@@ -1,0 +1,11 @@
+Package: xfconf
+Version: @DEB_XFCONF_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Section: xfce
+Priority: optional
+Homepage: https://docs.xfce.org/xfce/xfconf/start
+Description: utilities for managing settings in Xfce
+ xfconf contains xfconfd and xfconf-query.
+  - xfconfd handles the Xfce settings storage
+  - xfconf-query enables users to tune settings from command line

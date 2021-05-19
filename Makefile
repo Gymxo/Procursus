@@ -15,8 +15,8 @@ ifneq ($(shell umask),0022)
 $(error Please run `umask 022` before running this)
 endif
 
-MEMO_TARGET          ?= iphoneos-arm64
-MEMO_CFVER           ?= 1700
+MEMO_TARGET          ?= darwin-amd64
+MEMO_CFVER           ?= 1600
 # iOS 13.0 == 1665.15.
 CFVER_WHOLE          := $(shell echo $(MEMO_CFVER) | cut -d. -f1)
 

@@ -1,0 +1,12 @@
+Package: libxfce4util
+Version: @DEB_LIBXFCE4UTIL_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Section: libs
+Priority: optional
+Multi-Arch: same
+Homepage: https://docs.xfce.org/xfce/libxfce4util/start
+Description: Utility functions library for Xfce4
+ This package contains libxfce4util7, the basic utility
+ function library for Xfce4. If you intend to run Xfce4,
+ you need this library.

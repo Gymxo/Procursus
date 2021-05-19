@@ -15,7 +15,7 @@ harfbuzz:
 	@echo "Using previously built harfbuzz."
 else
 harfbuzz: harfbuzz-setup cairo freetype glib2.0 graphite2 icu4c fontconfig
-	cd $(BUILD_WORK)/harfbuzz && ./autogen.sh \
+	cd $(BUILD_WORK)/harfbuzz && ./autogen.sh -h \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--with-cairo \
 		--with-freetype \

@@ -6,7 +6,7 @@ Section: Libraries
 Conflicts: libgl1
 Replaces: libgl1
 Provides: libgl1
-Depends: libglapi-mesa (= @DEB_MESA_V@), libx11-6, libx11-xcb1, libxcb1, libxcb-glx0, libxext6, libxxf86vm1, libxcb-shm0, libgl1-mesa-dri
+Depends: libglapi-mesa (= @DEB_MESA_V@), libx11-6, libx11-xcb1, libxcb1, libxcb-glx0, libxext6, libxxf86vm1
 Priority: optional
 Homepage: https://mesa3d.org/
 Description: free implementation of the OpenGL API -- GLX runtime

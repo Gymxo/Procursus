@@ -25,6 +25,7 @@ cairo: cairo-setup freetype fontconfig glib2.0 libpng16 liblzo2 libpixman
 		--enable-svg \
 		--enable-gobject \
 		--with-x \
+		--enable-xcb-shm=no \
 		--enable-xlib=yes \
 		--enable-xcb=yes \
 		--x-libraries=$(BUILD_BASE)/usr/lib \
