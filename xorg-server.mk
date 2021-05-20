@@ -6,6 +6,12 @@ SUBPROJECTS         += xorg-server
 XORG-SERVER_VERSION := 1.20.10
 DEB_XORG-SERVER_V   ?= $(XORG-SERVER_VERSION)-1
 
+ifeq ($(MEMO_TARGET),iphoneos-arm64)
+MIT-SHM := --disable-mitshm
+else
+MIT-SHM := --enable-mitshm
+endif 
+
 xorg-server-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://www.x.org/archive//individual/xserver/xorg-server-$(XORG-SERVER_VERSION).tar.gz{,.sig}
 	$(call PGP_VERIFY,xorg-server-$(XORG-SERVER_VERSION).tar.gz)

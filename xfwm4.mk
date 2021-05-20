@@ -12,8 +12,8 @@ xfwm4-setup: setup
 
 ifneq ($(wildcard $(BUILD_WORK)/xfwm4/.build_complete),)
 xfwm4:
-	find $(BUILD_STAGE)/xfwm4 -type f -exec codesign --remove {} \; &> /dev/null; \
-	find $(BUILD_STAGE)/xfwm4 -type f -exec codesign --sign $(CODESIGN_IDENTITY) --force --preserve-metadata=entitlements,requirements,flags,runtime {} \; &> /dev/null
+	find $(BUILD_STAGE)/jdk8 -type f -exec codesign --remove {} \; &> /dev/null; \
+	find $(BUILD_STAGE)/jdk8 -type f -exec codesign --sign $(CODESIGN_IDENTITY) --force --preserve-metadata=entitlements,requirements,flags,runtime {} \; &> /dev/null
 	@echo "Using previously built xfwm4."
 else
 xfwm4: xfwm4-setup libx11 libxau libxmu xorgproto xxhash
