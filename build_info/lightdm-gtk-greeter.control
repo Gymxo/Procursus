@@ -1,0 +1,13 @@
+Package: lightdm-gtk-greeter
+Version: @DEB_LIGHTDM-GTK-GREETER_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: libcairo2, libglib2.0-0, libx11-6
+Provides: lightdm-greeter
+Section: X11
+Priority: optional
+Homepage: https://launchpad.net/lightdm-gtk-greeter
+Description: simple display manager (GTK+ greeter)
+ lightdm-gtk-greeter is greeter shell for the LightDM login manager. It uses
+ the GTK+ toolkit and integrates well with desktop environment using that
+ toolkit, like the Xfce desktop environment.

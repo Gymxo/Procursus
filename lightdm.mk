@@ -20,12 +20,11 @@ lightdm: lightdm-setup libx11 libxau libxmu xorgproto xxhash libgcrypt
 		--with-user-session=Procursus \
 		--with-greeter-user=mobile \
 		--disable-tests \
-		--enable-introspection=no \
-		--disable-nls
-	+$(MAKE) -i -C $(BUILD_WORK)/lightdm
-	+$(MAKE) -i -C $(BUILD_WORK)/lightdm install \
+		--enable-introspection=no
+	+$(MAKE) -C $(BUILD_WORK)/lightdm
+	+$(MAKE) -C $(BUILD_WORK)/lightdm install \
 		DESTDIR=$(BUILD_STAGE)/lightdm
-	+$(MAKE) -i -C $(BUILD_WORK)/lightdm install \
+	+$(MAKE) -C $(BUILD_WORK)/lightdm install \
 		DESTDIR=$(BUILD_BASE)
 	touch $(BUILD_WORK)/lightdm/.build_complete
 endif

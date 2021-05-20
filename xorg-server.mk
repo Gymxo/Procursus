@@ -6,6 +6,12 @@ SUBPROJECTS         += xorg-server
 XORG-SERVER_VERSION := 1.20.11
 DEB_XORG-SERVER_V   ?= $(XORG-SERVER_VERSION)
 
+ifeq ($(MEMO_TARGET),iphoneos-arm64)
+MIT-SHM := --disable-mitshm
+else
+MIT-SHM := --enable-mitshm
+endif 
+
 xorg-server-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://www.x.org/archive//individual/xserver/xorg-server-$(XORG-SERVER_VERSION).tar.gz{,.sig}
 	$(call PGP_VERIFY,xorg-server-$(XORG-SERVER_VERSION).tar.gz)
@@ -28,7 +34,7 @@ xorg-server: xorg-server-setup libmd libx11 libxau libxmu xorgproto font-util li
 		--enable-xephyr \
 		--enable-kdrive \
 		--disable-glamor \
-		--enable-xquartz \
+		--disable-xquartz \
 		--with-sha1=libmd \
 		CFLAGS="$(CFLAGS) -I$(BUILD_BASE)/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/pixman-1"
 	$(SED) -i 's|panoramiX.\$$(OBJEXT)||' $(BUILD_WORK)/xorg-server/hw/dmx/Makefile
