@@ -53,7 +53,7 @@ tigervnc: tigervnc-setup libx11 libxau libxmu xorgproto libpixman gnutls libjpeg
 		--without-dtrace \
 		--disable-static \
 		--disable-dri \
-		--disable-xinerama \
+		--enable-xinerama \
 		--disable-xvfb \
 		--disable-xnest \
 		--disable-xorg \
@@ -78,25 +78,41 @@ tigervnc: tigervnc-setup libx11 libxau libxmu xorgproto libpixman gnutls libjpeg
 	cd $(BUILD_WORK)/tigervnc/unix/xserver && $(MAKE) TIGERVNC_SRCDIR=$(BUILD_WORK)/tigervnc
 	+$(MAKE) -C $(BUILD_WORK)/tigervnc/unix/xserver install \
 		DESTDIR=$(BUILD_STAGE)/tigervnc
-	+$(MAKE) -C $(BUILD_WORK)/tigervnc/unix/xserver install \
-		DESTDIR=$(BUILD_BASE)
 	touch $(BUILD_WORK)/tigervnc/.build_complete
 endif
 
 tigervnc-package: tigervnc-stage
 # tigervnc.mk Package Structure
 	rm -rf $(BUILD_DIST)/tigervnc
+	mkdir -p $(BUILD_DIST)/tigervnc-standalone-server/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
+	mkdir -p $(BUILD_DIST)/tigervnc-common/$(MEMO_PREFIX)/etc
+	mkdir -p $(BUILD_DIST)/tigervnc-standalone-server/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{libexec,bin}
 	
-# tigervnc.mk Prep tigervnc
+# tigervnc.mk Prep tigervnc-standalone-server
 	rm -rf $(BUILD_STAGE)/tigervnc/usr/lib/xorg/protocol.txt
 	rm -rf $(BUILD_STAGE)/tigervnc/usr/share/man/man1/Xserver.1
-	cp -a $(BUILD_STAGE)/tigervnc $(BUILD_DIST)
+	cp -a $(BUILD_STAGE)/tigervnc/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/Xvnc $(BUILD_DIST)/tigervnc-standalone-server/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
+
+# tigervnc.mk Prep tigervnc-common
+	cp -a $(BUILD_STAGE)/tigervnc/$(MEMO_PREFIX)/etc $(BUILD_DIST)/tigervnc-common$(MEMO_PREFIX)/etc
+
+# tigervnc.mk Prep tigervnc-xorg-extension
+	cp -a $(BUILD_STAGE)/tigervnc/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/xorg/modules/extensions/libvnc.so $(BUILD_DIST)/tigervnc-xorg-extension
+
+# tigervnc.mk Prep tigervnc-standalone-server
+	cp -a $(BUILD_STAGE)/tigervnc/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/{vncconfig,vncpasswd,x0vncserver} $(BUILD_DIST)tigervnc-standalone-server/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/
+	cp -a $(BUILD_STAGE)/tigervnc/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/libexec $(BUILD_DIST)tigervnc-standalone-server/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/libexec
 
 # tigervnc.mk Sign
-	$(call SIGN,tigervnc,general.xml)
+	$(call SIGN,tigervnc-standalone-server,general.xml)
+	$(call SIGN,tigervnc-xorg-extension,general.xml)
+	$(call SIGN,tigervnc-standalone-server,general.xml)
 	
 # tigervnc.mk Make .debs
-	$(call PACK,tigervnc,DEB_TIGERVNC_V)
+	$(call PACK,tigervnc-standalone-server,DEB_TIGERVNC_V)
+	$(call PACK,tigervnc-xorg-extension,DEB_TIGERVNC_V)
+	$(call PACK,tigervnc-standalone-server,DEB_TIGERVNC_V)
+	$(call PACK,tigervnc-common,DEB_TIGERVNC_V)
 	
 # tigervnc.mk Build cleanup
 	rm -rf $(BUILD_DIST)/tigervnc
