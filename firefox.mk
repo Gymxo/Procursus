@@ -15,7 +15,7 @@ firefox:
 	@echo "Using previously built firefox."
 else
 firefox: firefox-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/firefox && mkdir -p obj && cd obj && ../js/src/configure \
+	cd $(BUILD_WORK)/firefox && mkdir -p obj && cd obj && ..//configure \
 		--host=$(GNU_HOST_TRIPLE) \
 		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
 		--disable-compile-environment
