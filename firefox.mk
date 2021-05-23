@@ -3,28 +3,31 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS   += firefox
-FIREFOX_VERSION := 78.9.0
+FIREFOX_VERSION := 78.4.0
 DEB_FIREFOX_V   ?= $(FIREFOX_VERSION)
 
 firefox-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://archive.mozilla.org/pub/firefox/releases/78.9.0esr/source/firefox-78.9.0esr.source.tar.xz
-	$(call EXTRACT_TAR,firefox-$(FIREFOX_VERSION)esr.source.tar.xz,firefox-$(FIREFOX_VERSION),firefox)
+	wget -q -nc -P $(BUILD_SOURCE) http://deb.debian.org/debian/pool/main/m/mozjs78/mozjs78_78.4.0.orig.tar.xz
+	$(call EXTRACT_TAR,mozjs78_78.4.0.orig.tar.xz,firefox-$(FIREFOX_VERSION),firefox)
 
 ifneq ($(wildcard $(BUILD_WORK)/firefox/.build_complete),)
 firefox:
 	@echo "Using previously built firefox."
 else
 firefox: firefox-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/firefox && mkdir -p obj && cd obj && ..//configure \
-		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
-		--disable-compile-environment
-	+$(MAKE) -i -C $(BUILD_WORK)/firefox/obj
-	+$(MAKE) -i -C $(BUILD_WORK)/firefox/obj install \
+	cd $(BUILD_WORK)/firefox && ./mach bootstrap
+	cd $(BUILD_WORK)/firefox/js/src && mkdir -p obj && cd obj && SDKROOT="$(TARGET_SYSROOT)" ../configure \
+	--enable-jit \
+	--enable-dbus \
+	--host=aarch64-apple-linux \
+	--target=aarch64-apple-linux \
+	--disable-shared-memory \
+	--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+	+$(MAKE) -C $(BUILD_WORK)/firefox/obj
+	+$(MAKE) -C $(BUILD_WORK)/firefox/obj install \
 		DESTDIR=$(BUILD_STAGE)/firefox
-	+$(MAKE) -i -C $(BUILD_WORK)/firefox/obj install \
+	+$(MAKE) -C $(BUILD_WORK)/firefox/obj install \
 		DESTDIR=$(BUILD_BASE)
-	touch $(BUILD_WORK)/firefox/.build_complete
 endif
 
 firefox-package: firefox-stage

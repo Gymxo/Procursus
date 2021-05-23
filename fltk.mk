@@ -25,7 +25,7 @@ fltk: fltk-setup libx11 libxau libxmu xorgproto
 	--enable-threads \
 	--x-libraries=$(BUILD_BASE)/usr/lib \
 	--x-includes=$(BUILD_BASE)/usr/include
-	cd $(BUILD_WORK)/fltk && $(SED) -i 's/__APPLE__/NONEXIST/' $(grep -rl -- __APPLE__ $(find . -name \*.c -o -name \*.cxx -o -name \*.h -o -name \*.H))
+	cd $(BUILD_WORK)/fltk && $(SED) -i 's/__APPLE__/NONEXIST/' $(shell grep -rl -- __APPLE__ $(shell find . -name \*.c -o -name \*.cxx -o -name \*.h -o -name \*.H))
 	$(SED) -i 's/fluid test/fluid/' $(BUILD_WORK)/fltk/Makefile
 	+$(MAKE) -C $(BUILD_WORK)/fltk
 	+$(MAKE) -C $(BUILD_WORK)/fltk install \
