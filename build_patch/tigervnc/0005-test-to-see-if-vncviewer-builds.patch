@@ -25,7 +25,7 @@ index e4fad782..ec44bc07 100644
  if(WIN32)
    set(VNCVIEWER_SOURCES ${VNCVIEWER_SOURCES} Surface_Win32.cxx)
 -elseif(APPLE)
-+elseif(who)
++elseif(APPLE)
    set(VNCVIEWER_SOURCES ${VNCVIEWER_SOURCES} Surface_OSX.cxx)
  else()
    set(VNCVIEWER_SOURCES ${VNCVIEWER_SOURCES} Surface_X11.cxx)
