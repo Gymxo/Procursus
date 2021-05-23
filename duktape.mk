@@ -24,7 +24,7 @@ duktape:
 	@echo "Using previously built duktape."
 else
 duktape: duktape-setup
-	cd $(BUILD_WORK)/duktape && python2 tools/configure.py --output-directory \
+	cd $(BUILD_WORK)/duktape && python1 tools/configure.py --output-directory \
 	$(BUILD_STAGE)/duktape/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include -UDUK_USE_ES6_PROXY
 	+$(MAKE) -C $(BUILD_WORK)/duktape -f Makefile.sharedlibrary install \
     CCOPTS="$(CFLAGS)" CCLIBS="$(LDFLAGS) -lm" \
