@@ -9,14 +9,16 @@ DEB_POLKIT_V   ?= $(POLKIT_VERSION)
 polkit-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://www.freedesktop.org/software/polkit/releases/polkit-0.118.tar.gz
 	$(call EXTRACT_TAR,polkit-$(POLKIT_VERSION).tar.gz,polkit-$(POLKIT_VERSION),polkit)
+	$(call DO_PATCH,polkit,polkit,-p1)
 
 ifneq ($(wildcard $(BUILD_WORK)/polkit/.build_complete),)
 polkit:
 	@echo "Using previously built polkit."
 else
 polkit: polkit-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/polkit && ./configure -h -C \
-		$(DEFAULT_CONFIGURE_FLAGS)
+	cd $(BUILD_WORK)/polkit && autoreconf -fiv && ./configure -C \
+		$(DEFAULT_CONFIGURE_FLAGS) \
+		--with-duktape
 	+$(MAKE) -C $(BUILD_WORK)/polkit
 	+$(MAKE) -C $(BUILD_WORK)/polkit install \
 		DESTDIR=$(BUILD_STAGE)/polkit
