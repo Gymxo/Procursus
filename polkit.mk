@@ -18,7 +18,11 @@ else
 polkit: polkit-setup libx11 libxau libxmu xorgproto xxhash
 	cd $(BUILD_WORK)/polkit && autoreconf -fiv && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
-		--with-duktape
+		--with-duktape \
+		--enable-libelogind=no \
+		--enable-introspection=no \
+		--enable-libsystemd-login=no \
+		ac_cv_file__etc_gentoo_release=yes
 	+$(MAKE) -C $(BUILD_WORK)/polkit
 	+$(MAKE) -C $(BUILD_WORK)/polkit install \
 		DESTDIR=$(BUILD_STAGE)/polkit
