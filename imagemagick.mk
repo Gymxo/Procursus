@@ -20,8 +20,8 @@ ifneq ($(wildcard $(BUILD_WORK)/imagemagick/.build_complete),)
 imagemagick:
 	@echo "Using previously built imagemagick."
 else
-imagemagick: imagemagick-setup openexr fontconfig freetype glib2.0 ghostscript gettext jbigkit libjemalloc lcms2 liblqr xz openmp openjpeg libpng16 libtiff libwebp libzip libtool
-	cd $(BUILD_WORK)/imagemagick && PKG_CONFIG="pkg-config --define-prefix" ./configure -C \
+imagemagick: imagemagick-setup openexr fontconfig freetype glib2.0 ghostscript libheif gettext jbigkit libjemalloc lcms2 liblqr xz openmp openjpeg libpng16 libtiff libwebp libzip libtool
+	cd $(BUILD_WORK)/imagemagick && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--enable-osx-universal-binary=no \
 		--disable-dependency-tracking \

@@ -15,12 +15,12 @@ python3-psutil:
 	@echo "Using previously built python3-psutil."
 else
 python3-psutil: python3-psutil-setup python3
-	cd $(BUILD_WORK)/python3-psutil && unset MACOSX_DEPLOYMENT_TARGET && python3 ./setup.py \
+	cd $(BUILD_WORK)/python3-psutil && $(DEFAULT_SETUP_PY_ENV) python3 ./setup.py \
 		install \
 		--prefix="$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)" \
 		--root="$(BUILD_STAGE)/python3-psutil" \
 		--install-layout=deb
-	find $(BUILD_STAGE)/python3-psutil -name __pycache__ -exec rm -rf {} +
+	find $(BUILD_STAGE)/python3-psutil -name __pycache__ -prune -exec rm -rf {} \;
 	touch $(BUILD_WORK)/python3-psutil/.build_complete
 endif
 

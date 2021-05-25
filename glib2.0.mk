@@ -4,13 +4,15 @@ endif
 
 SUBPROJECTS     += glib2.0
 GLIB2.0_MAJOR_V := 2.68
-GLIB2.0_VERSION := $(GLIB2.0_MAJOR_V).1
+GLIB2.0_VERSION := $(GLIB2.0_MAJOR_V).2
 DEB_GLIB2.0_V   ?= $(GLIB2.0_VERSION)
 
 glib2.0-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://ftp.gnome.org/pub/gnome/sources/glib/$(GLIB2.0_MAJOR_V)/glib-$(GLIB2.0_VERSION).tar.xz
 	$(call EXTRACT_TAR,glib-$(GLIB2.0_VERSION).tar.xz,glib-$(GLIB2.0_VERSION),glib2.0)
 	$(call DO_PATCH,glib2.0,glib2.0,-p1)
+	$(SED) -i -e 's|@MEMO_PREFIX@|$(MEMO_PREFIX)|g' -e 's|@MEMO_SUB_PREFIX@|$(MEMO_SUB_PREFIX)|g' \
+		$(BUILD_WORK)/glib2.0/{gio/xdgmime/xdgmime.c,glib/gutils.c}
 	mkdir -p $(BUILD_WORK)/glib2.0/build
 
 	echo -e "[host_machine]\n \
@@ -20,19 +22,21 @@ glib2.0-setup: setup
 	system = 'darwin'\n \
 	[properties]\n \
 	root = '$(BUILD_BASE)'\n \
+	needs_exe_wrapper = true\n \
 	[paths]\n \
 	prefix ='$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)'\n \
 	[binaries]\n \
 	c = '$(CC)'\n \
 	objc = '$(CC)'\n \
-	cpp = '$(CXX)'\n" > $(BUILD_WORK)/glib2.0/build/cross.txt
+	cpp = '$(CXX)'\n \
+	pkgconfig = '$(BUILD_TOOLS)/cross-pkg-config'\n" > $(BUILD_WORK)/glib2.0/build/cross.txt
 
 ifneq ($(wildcard $(BUILD_WORK)/glib2.0/.build_complete),)
 glib2.0:
 	@echo "Using previously built glib2.0."
 else
 glib2.0: glib2.0-setup gettext pcre libffi
-	cd $(BUILD_WORK)/glib2.0/build && PKG_CONFIG="pkg-config" meson \
+	cd $(BUILD_WORK)/glib2.0/build && meson \
 		--cross-file cross.txt \
 		-Ddtrace=false \
 		-Diconv=external \

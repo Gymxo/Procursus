@@ -9,7 +9,6 @@ Provides: xserver
 Section: x11
 =======
 Depends: libmd0, libpixman-1-0, libx11-6, libxau6, libxdmcp6, libxext6, libxfont2, xserver-common
-Recommends: libgl1-mesa-dri
 Provides: xserver
 Section: X11
 >>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
