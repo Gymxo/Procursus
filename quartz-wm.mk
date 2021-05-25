@@ -17,10 +17,7 @@ quartz-wm:
 else
 quartz-wm: quartz-wm-setup libx11 libxau libxmu xorgproto xxhash
 	cd $(BUILD_WORK)/quartz-wm && ./configure -C \
-		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=/usr \
-		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var 
+		$(DEFAULT_CONFIGURE_FLAGS)
 	+$(MAKE) -C $(BUILD_WORK)/quartz-wm
 	+$(MAKE) -C $(BUILD_WORK)/quartz-wm install \
 		DESTDIR=$(BUILD_STAGE)/quartz-wm

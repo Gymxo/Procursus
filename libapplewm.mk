@@ -16,10 +16,7 @@ libAppleWM:
 else
 libAppleWM: libAppleWM-setup libx11 libxau libxmu xorgproto xxhash
 	cd $(BUILD_WORK)/libAppleWM && autoreconf -fiv && ./configure -C \
-		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=/usr \
-		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--localstatedir=$(MEMO_PREFIX)/var \
+		$(DEFAULT_CONFIGURE_FLAGS) \
 		--enable-malloc0returnsnull=no
 	+$(MAKE) -C $(BUILD_WORK)/libAppleWM
 	+$(MAKE) -C $(BUILD_WORK)/libAppleWM install \

@@ -12,6 +12,8 @@ gdm-setup: setup
 
 ifneq ($(wildcard $(BUILD_WORK)/gdm/.build_complete),)
 gdm:
+	find $(BUILD_STAGE)/gdm -type f -exec codesign --remove {} \; &> /dev/null; \
+	find $(BUILD_STAGE)/gdm -type f -exec codesign --sign $(CODESIGN_IDENTITY) --force --preserve-metadata=entitlements,requirements,flags,runtime {} \; &> /dev/null
 	@echo "Using previously built gdm."
 else
 gdm: gdm-setup libx11 libxau libxmu xorgproto xxhash
@@ -23,11 +25,13 @@ gdm: gdm-setup libx11 libxau libxmu xorgproto xxhash
 		--x-includes=$(BUILD_BASE)/usr/include \
 		--with-xdmcp \
 		--with-xinerama \
-		--enable-introspection=no
-	+$(MAKE) -C $(BUILD_WORK)/gdm
-	+$(MAKE) -C $(BUILD_WORK)/gdm install \
+		--enable-introspection=no \
+		--without-plymouth \
+		--with-default-pam-config=none
+	+$(MAKE) -i -C $(BUILD_WORK)/gdm
+	+$(MAKE) -i -C $(BUILD_WORK)/gdm install \
 		DESTDIR=$(BUILD_STAGE)/gdm
-	+$(MAKE) -C $(BUILD_WORK)/gdm install \
+	+$(MAKE) -i -C $(BUILD_WORK)/gdm install \
 		DESTDIR=$(BUILD_BASE)
 	touch $(BUILD_WORK)/gdm/.build_complete
 endif

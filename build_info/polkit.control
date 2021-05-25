@@ -1,0 +1,16 @@
+Package: policykit-1
+Version: @DEB_POLKIT_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: duktape, libduktape206
+Section: Administration
+Priority: optional
+Multi-Arch: foreign
+Homepage: https://www.freedesktop.org/wiki/Software/polkit/
+Description: framework for managing administrative policies and privileges
+ PolicyKit is an application-level toolkit for defining and handling the policy
+ that allows unprivileged processes to speak to privileged processes.
+ .
+ It is a framework for centralizing the decision making process with respect to
+ granting access to privileged operations for unprivileged (desktop)
+ applications.
