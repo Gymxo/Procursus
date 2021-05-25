@@ -22,8 +22,7 @@ polkit: polkit-setup libx11 libxau libxmu xorgproto xxhash
 		--enable-libelogind=no \
 		--enable-introspection=no \
 		--enable-libsystemd-login=no \
-		--disable-test \
-		ac_cv_file__etc_gentoo_release=yes
+		--disable-test
 	find $(BUILD_WORK)/polkit -type f -exec sed -i 's/-Wl,--as-needed/-Wl/g' {} \;
 	+$(MAKE) -C $(BUILD_WORK)/polkit
 	+$(MAKE) -C $(BUILD_WORK)/polkit install \
