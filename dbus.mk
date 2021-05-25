@@ -17,10 +17,11 @@ else
 dbus: dbus-setup expat glib2.0 libx11 libsm libice
 	cd $(BUILD_WORK)/dbus && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
-        --enable-user-session \
         --disable-doxygen-docs \
         --disable-xml-docs \
 		--enable-launchd \
+		--with-dbus-user=mobile \
+		--with-x \
 		--with-launchd-agent-dir=$(MEMO_PREFIX)/Library/LaunchDaemons \
         --with-console-auth-dir=$(MEMO_PREFIX)/var/run/console \
         --with-system-pid-file=$(MEMO_PREFIX)/var/run/dbus/pid \

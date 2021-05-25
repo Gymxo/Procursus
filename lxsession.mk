@@ -19,9 +19,10 @@ else
 lxsession: lxsession-setup libx11 libxau libxmu xorgproto xxhash
 	cd $(BUILD_WORK)/lxsession && autoreconf -fiv && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
-		--disable-buildin-polkit \
+		--enable-buildin-polkit \
 		--enable-gtk3 \
-		--enable-gtk
+		--enable-gtk \
+		--disable-man
 	+$(MAKE) -C $(BUILD_WORK)/lxsession
 	+$(MAKE) -C $(BUILD_WORK)/lxsession install \
 		DESTDIR=$(BUILD_STAGE)/lxsession

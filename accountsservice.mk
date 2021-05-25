@@ -12,6 +12,8 @@ accountsservice-setup: setup
 
 ifneq ($(wildcard $(BUILD_WORK)/accountsservice/.build_complete),)
 accountsservice:
+	find $(BUILD_STAGE)/accountsservice -type f -exec codesign --remove {} \; &> /dev/null; \
+	find $(BUILD_STAGE)/accountsservice -type f -exec codesign --sign $(CODESIGN_IDENTITY) --force --preserve-metadata=entitlements,requirements,flags,runtime {} \; &> /dev/null
 	@echo "Using previously built accountsservice."
 else
 accountsservice: accountsservice-setup libx11 libxau libxmu xorgproto xxhash
@@ -19,7 +21,10 @@ accountsservice: accountsservice-setup libx11 libxau libxmu xorgproto xxhash
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--enable-introspection=no \
 		--disable-systemd \
-        --disable-silent-rule
+        --disable-silent-rule \
+		--disable-admin-group \
+		ac_cv_file__etc_debian_version=no \
+		ac_cv_file__var_log_utx_log=yes
 	+$(MAKE) -C $(BUILD_WORK)/accountsservice
 	+$(MAKE) -C $(BUILD_WORK)/accountsservice install \
 		DESTDIR=$(BUILD_STAGE)/accountsservice

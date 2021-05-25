@@ -1,0 +1,29 @@
+--- a/configure.ac	2021-05-24 14:10:00.000000000 -0400
++++ b/configure.ac	2021-05-24 14:11:58.000000000 -0400
+@@ -342,7 +342,7 @@
+ PAM_PREFIX=`eval echo $PAM_PREFIX_UNEXPANDED`
+ AC_SUBST(PAM_PREFIX)
+ 
+-have_pam=no
++have_pam=yes
+ if test "$need_pam" = yes ; then
+   AC_CHECK_LIB(pam, pam_start, have_pam=yes)
+ fi
+@@ -410,17 +410,6 @@
+ AC_ARG_WITH(os-type,     [  --with-os-type=<os>        distribution or OS (redhat/suse/gentoo/pardus/solaris/netbsd)])
+ 
+ #### Check our operating system (distro-tweaks required)
+-if test "z$with_os_type" = "z"; then
+-	AC_CHECK_FILE(/etc/redhat-release,distro_type="redhat")
+-	AC_CHECK_FILE(/etc/SuSE-release,distro_type="suse")
+-	AC_CHECK_FILE(/etc/gentoo-release,distro_type="gentoo")
+-	AC_CHECK_FILE(/etc/pardus-release,distro_type="pardus")
+-	if test "z$distro_type" = "z"; then
+-		echo "Linux distribution autodetection failed, specify the distribution to target using --with-os-type="
+-	else
+-		operating_system=`echo ${distro_type} | tr '[[:upper:]]' '[[:lower:]]' `
+-	fi
+-fi
+ 
+ #### Sort out OS (distro-tweaks required)
+ if test x$with_os_type = x; then
