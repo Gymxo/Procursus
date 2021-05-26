@@ -20,6 +20,8 @@ endif
 
 MEMO_TARGET          ?= iphoneos-arm64
 MEMO_CFVER           ?= 1700
+HOST_MEMO_TARGET     ?= darwin-amd64
+HOST_MEMO_CFVER      ?= 1600
 # iOS 13.0 == 1665.15.
 CFVER_WHOLE          := $(shell echo $(MEMO_CFVER) | cut -d. -f1)
 
@@ -177,6 +179,23 @@ GNU_PREFIX           := g
 ON_DEVICE_SDK_PATH   := /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 BARE_PLATFORM        := MacOSX
 
+else ifeq ($(HOST_MEMO_TARGET),darwin-amd64)
+ifneq ($(MEMO_QUIET),1)
+$(warning Building for macOS amd64)
+endif # ($(MEMO_QUIET),1)
+HOST_MEMO_ARCH            := x86_64
+HOST_PLATFORM             := macosx
+HOST_DEB_ARCH             := darwin-amd64
+HOST_GNU_HOST_TRIPLE      := x86_64-apple-darwin
+HOST_RUST_TARGET          := $(GNU_HOST_TRIPLE)
+HOST_PLATFORM_VERSION_MIN := -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
+HOST_MEMO_PREFIX          ?= /opt/procursus
+HOST_MEMO_SUB_PREFIX      ?=
+HOST_MEMO_ALT_PREFIX      ?=
+HOST_GNU_PREFIX           := g
+HOST_ON_DEVICE_SDK_PATH   := /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+HOST_BARE_PLATFORM        := MacOSX
+
 else
 $(error Platform not supported)
 endif
@@ -232,7 +251,7 @@ BUILD_CXXFLAGS :=
 BUILD_LDFLAGS  :=
 
 else ifeq ($(UNAME),Darwin)
-ifeq ($(shell sw_vers -productName),macOS)
+ifeq ($(shell sw_vers -productName),Mac OS X)
 ifneq ($(MEMO_QUIET),1)
 $(warning Building on MacOS)
 endif # ($(MEMO_QUIET),1)
@@ -243,10 +262,10 @@ CXX             := $(shell xcrun --sdk $(PLATFORM) --find c++)
 CPP             := $(shell xcrun --sdk $(PLATFORM) --find cc) -E
 PATH            := /opt/procursus/bin:/opt/procursus/libexec/gnubin:/usr/bin:$(PATH)
 
-BUILD_CFLAGS   := -arch $(shell uname -m) -mmacosx-version-min=$(shell sw_vers -productVersion) -isysroot $(MACOSX_SYSROOT)
-BUILD_CPPFLAGS := -arch $(shell uname -m) -mmacosx-version-min=$(shell sw_vers -productVersion) -isysroot $(MACOSX_SYSROOT)
-BUILD_CXXFLAGS := -arch $(shell uname -m) -mmacosx-version-min=$(shell sw_vers -productVersion) -isysroot $(MACOSX_SYSROOT)
-BUILD_LDFLAGS  := -arch $(shell uname -m) -mmacosx-version-min=$(shell sw_vers -productVersion) -isysroot $(MACOSX_SYSROOT)
+BUILD_CFLAGS   := $(OPTIMIZATION_FLAGS) -arch $(HOST_MEMO_ARCH) -isysroot $(MACOSX_SYSROOT) $(HOST_PLATFORM_VERSION_MIN) -isystem $(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)/include -isystem $(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)$(HOST_MEMO_ALT_PREFIX)/include -F$(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)/System/Library/Frameworks -F$(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)/Library/Frameworks
+BUILD_CXXFLAGS := $(BUILD_CFLAGS)
+BUILD_CPPFLAGS := -arch $(HOST_MEMO_ARCH) $(HOST_PLATFORM_VERSION_MIN) -isysroot $(MACOSX_SYSROOT) -isystem $(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)/include -isystem $(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)$(HOST_MEMO_ALT_PREFIX)/include -Wno-error-implicit-function-declaration
+BUILD_LDFLAGS  := $(OPTIMIZATION_FLAGS) -arch $(HOST_MEMO_ARCH) -isysroot $(TARGET_SYSROOT) $(HOST_PLATFORM_VERSION_MIN) -L$(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)/lib -L$(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)$(HOST_MEMO_ALT_PREFIX)/lib -F$(BUILD_BASE)$(MEMO_PREFIX)/System/Library/Frameworks -F$(BUILD_BASE)$(MEMO_PREFIX)/Library/Frameworks
 
 else
 ifneq ($(MEMO_QUIET),1)
@@ -294,6 +313,8 @@ BUILD_ROOT     ?= $(PWD)
 BUILD_SOURCE   := $(BUILD_ROOT)/build_source
 # Base headers/libs (e.g. patched from SDK)
 BUILD_BASE     := $(BUILD_ROOT)/build_base/$(MEMO_TARGET)/$(MEMO_CFVER)
+# Base headers/libs (e.g. patched from SDK)
+HOST_BUILD_BASE     := $(BUILD_ROOT)/build_base/$(HOST_MEMO_TARGET)/$(HOST_MEMO_CFVER)
 # Dpkg info storage area
 BUILD_INFO     := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))/build_info
 # Miscellaneous Procursus files
@@ -327,8 +348,8 @@ CFLAGS              := $(OPTIMIZATION_FLAGS) -arch $(MEMO_ARCH) -isysroot $(TARG
 CXXFLAGS            := $(CFLAGS)
 CPPFLAGS            := -arch $(MEMO_ARCH) $(PLATFORM_VERSION_MIN) -isysroot $(TARGET_SYSROOT) -isystem $(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include -isystem $(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)$(MEMO_ALT_PREFIX)/include -Wno-error-implicit-function-declaration
 LDFLAGS             := $(OPTIMIZATION_FLAGS) -arch $(MEMO_ARCH) -isysroot $(TARGET_SYSROOT) $(PLATFORM_VERSION_MIN) -L$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib -L$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)$(MEMO_ALT_PREFIX)/lib -F$(BUILD_BASE)$(MEMO_PREFIX)/System/Library/Frameworks -F$(BUILD_BASE)$(MEMO_PREFIX)/Library/Frameworks
-#PKG_CONFIG_PATH     := $(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig:$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)$(MEMO_ALT_PREFIX)/lib/pkgconfig:$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/pkgconfig:$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)$(MEMO_ALT_PREFIX)/share/pkgconfig
-#PKG_CONFIG_LIBDIR   := $(PKG_CONFIG_PATH)
+PKG_CONFIG_PATH     := $(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig:$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)$(MEMO_ALT_PREFIX)/lib/pkgconfig:$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/pkgconfig:$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)$(MEMO_ALT_PREFIX)/share/pkgconfig
+PKG_CONFIG_LIBDIR   := $(PKG_CONFIG_PATH)
 ACLOCAL_PATH        := $(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/aclocal
 
 DEFAULT_CMAKE_FLAGS := \
@@ -413,7 +434,7 @@ export PLATFORM MEMO_ARCH TARGET_SYSROOT MACOSX_SYSROOT GNU_HOST_TRIPLE MEMO_PRE
 export CC CXX AR LD CPP RANLIB STRIP NM LIPO OTOOL I_N_T INSTALL
 export BUILD_ROOT BUILD_BASE BUILD_INFO BUILD_WORK BUILD_STAGE BUILD_DIST BUILD_STRAP BUILD_TOOLS
 export DEB_ARCH DEB_ORIGIN DEB_MAINTAINER
-export CFLAGS CXXFLAGS CPPFLAGS LDFLAGS ACLOCAL_PATH #PKG_CONFIG_PATH PKG_CONFIG_LIBDIR
+export CFLAGS CXXFLAGS CPPFLAGS LDFLAGS ACLOCAL_PATH PKG_CONFIG_PATH PKG_CONFIG_LIBDIR
 export DEFAULT_CMAKE_FLAGS DEFAULT_CONFIGURE_FLAGS DEFAULT_PERL_MAKE_FLAGS DEFAULT_PERL_BUILD_FLAGS DEFAULT_GOLANG_FLAGS
 
 HAS_COMMAND = $(shell type $(1) >/dev/null 2>&1 && echo 1)
@@ -586,19 +607,7 @@ endif
 
 TAR  := tar # TODO: remove
 
-ifneq ($(shell PATH=$(PATH) tar --version | grep -q GNU && echo 1),1)
-$(error Install GNU tar)
-endif
-
 SED  := sed # TODO: remove
-
-ifneq ($(shell PATH=$(PATH) sed --version | grep -q GNU && echo 1),1)
-$(error Install GNU sed)
-endif
-
-ifneq ($(shell PATH=$(PATH) grep --version | grep -q GNU && echo 1),1)
-$(error Install GNU grep)
-endif
 
 ifeq ($(call HAS_COMMAND,ldid),1)
 export LDID := ldid
@@ -646,48 +655,15 @@ ifneq ($(call HAS_COMMAND,m4),1)
 $(error Install m4)
 endif
 
-ifneq ($(shell PATH=$(PATH) groff --version | grep -q 'version 1.2' && echo 1),1)
-$(error Install newer groff)
-endif
 
-ifneq ($(shell PATH=$(PATH) patch --version | grep -q 'GNU patch' && echo 1),1)
-$(error Install GNU patch)
-endif
-
-ifneq ($(shell PATH=$(PATH) find --version | grep -q 'GNU find' && echo 1),1)
-$(error Install GNU findutils)
-endif
-
-ifneq ($(shell PATH=$(PATH) rmdir --version | grep -q 'GNU coreutils' && echo 1),1)
-$(error Install GNU coreutils)
-endif
-
-ifeq ($(shell PATH=$(PATH) install --version | grep -q 'GNU coreutils' && echo 1),1)
 export GINSTALL := install # TODO: remove
 export INSTALL  := $(shell PATH=$(PATH) which install) --strip-program=$(STRIP)
-else
-$(error Install GNU coreutils)
-endif
 
-ifeq ($(shell PATH=$(PATH) wc --version | grep -q 'GNU coreutils' && echo 1),1)
 WC := wc
-else
-$(error Install GNU coreutils)
-endif
 
-ifeq ($(shell PATH=$(PATH) cp --version | grep -q 'GNU coreutils' && echo 1),1)
 CP := cp
-else
-$(error Install GNU coreutils)
-endif
-export CP
 
-ifeq ($(shell PATH=$(PATH) ln --version | grep -q 'GNU coreutils' && echo 1),1)
 LN := ln
-else
-$(error Install GNU coreutils)
-endif
-export LN
 
 ifneq ($(call HAS_COMMAND,fakeroot),1)
 $(error Install fakeroot)
@@ -730,8 +706,6 @@ else ifneq (,$(wildcard /usr/share/xsl/docbook))
 DOCBOOK_XSL := /usr/share/xsl/docbook
 else ifneq (,$(wildcard /usr/share/xml/docbook/xsl-stylesheets-1.79.2))
 DOCBOOK_XSL := /usr/share/xml/docbook/xsl-stylesheets-1.79.2
-else
-$(error Install docbook-xsl)
 endif
 
 ifneq ($(call HAS_COMMAND,yacc),1)

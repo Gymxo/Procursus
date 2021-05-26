@@ -3,11 +3,11 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS    += qtbase
-QTBASE_VERSION := 6.0.3
+QTBASE_VERSION := 5.15.2
 DEB_QTBASE_V   ?= $(QTBASE_VERSION)
 
 qtbase-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://download.qt.io/official_releases/qt/6.0/6.0.3/single/qt-everywhere-src-6.0.3.tar.xz
+	wget -q -nc -P $(BUILD_SOURCE) https://download.qt.io/official_releases/qt/5.15/5.15.2/single/qt-everywhere-src-5.15.2.tar.xz
 	$(call EXTRACT_TAR,qt-everywhere-src-$(QTBASE_VERSION).tar.xz,qt-everywhere-src-$(QTBASE_VERSION),qtbase)
 
 ifneq ($(wildcard $(BUILD_WORK)/qtbase/.build_complete),)
@@ -15,17 +15,36 @@ qtbase:
 	@echo "Using previously built qtbase."
 else
 qtbase: qtbase-setup
-	cd $(BUILD_WORK)/qtbase/qtbase && ./configure -h \
-		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
-		--localstatedir=$(MEMO_PREFIX)/var \
-		--sysconfdir=$(MEMO_PREFIX)/etc \
-		--bindir=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin \
-		--mandir=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/man
-		--gui=yes \
-		--widgets=yes \
-		--xcb=yes \
-		--qt-host-path=/usr/local/Cellar/qt/6.0.3
+	cd $(BUILD_WORK)/qtbase && ./configure \
+		-xplatform macx-ios-clang \
+		-xcb \
+		-xcb-xlib \
+		-L$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
+		-I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include \
+		-prefix $(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
+		-sysconfdir $(MEMO_PREFIX)/etc \
+		-bindir $(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin \
+		-gui \
+		-widgets \
+		-release \
+        -opensource \
+        -confirm-license \
+        -shared \
+        -nomake examples \
+        -nomake tests \
+        -verbose \
+        -skip wayland \
+        -qt-pcre \
+        -xkbcommon \
+        -dbus \
+        -no-linuxfb \
+        -no-libudev \
+        -no-avx \
+        -no-avx2 \
+        -optimize-size \
+		-sysroot $(TARGET_SYSROOT) \
+		-continue \
+		QMAKE_LFLAGS+="$(LDFLAGS)"
 	+$(MAKE) -C $(BUILD_WORK)/qtbase
 	+$(MAKE) -C $(BUILD_WORK)/qtbase install \
 		DESTDIR=$(BUILD_STAGE)/qtbase
