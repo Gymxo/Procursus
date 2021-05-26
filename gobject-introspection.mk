@@ -19,12 +19,14 @@ gobject-introspection-setup: setup bison glib2.0
 	system = 'darwin'\n \
 	[properties]\n \
 	root = '$(BUILD_BASE)'\n \
+	needs_exe_wrapper = true\n \
 	[paths]\n \
 	prefix ='$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)'\n \
 	[binaries]\n \
 	c = '$(CC)'\n \
 	objc = '$(CC)'\n \
-	cpp = '$(CXX)'\n" > $(BUILD_WORK)/gobject-introspection/build/cross.txt
+	cpp = '$(CXX)'\n \
+	pkgconfig = '$(BUILD_TOOLS)/cross-pkg-config'\n" > $(BUILD_WORK)/gobject-introspection/build/cross.txt
 
 
 ifneq ($(wildcard $(BUILD_WORK)/gobject-introspection/.build_complete),)
@@ -36,21 +38,27 @@ ifeq ($(MEMO_TARGET),iphoneos-arm64)
 	cd $(BUILD_WORK)/gobject-introspection && \
 	mkdir -p build-host && \
 	pushd "build-host" && \
-	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR && \
-	export LDFLAGS=-Wl,-dead_strip_dylibs && \
-	PKG_CONFIG="pkg-config" meson \
+	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS && \
+	export LDFLAGS='$(BUILD_LDFLAGS)' && export CFLAGS='$(BUILD_CFLAGS)' \
+	&& PKG_CONFIG="pkg-config" meson \
 	--buildtype=release \
-	--prefix="/opt/procursus" \
+	--includedir="/opt/procursus/include" \
+	--prefix=/opt/procursus \
 	--backend=ninja \
 	--libdir="/opt/procursus/lib" \
 	-Dpython="/opt/procursus/bin/python3" \
 	..
+	find $(BUILD_WORK)/gobject-introspection/build-host -type f -exec sed -i 's|/usr/include|/opt/procursus|g' {} \;	
+	find $(BUILD_WORK)/gobject-introspection/build-host -type f -exec sed -i 's|/usr/lib|/opt/procursus/lib|g' {} \;
+	find $(BUILD_WORK)/gobject-introspection/build-host -type f -exec sed -i 's|/opt/procursus/glib-2.0|/opt/procursus/include/glib-2.0|g' {} \;
 	cd $(BUILD_WORK)/gobject-introspection/build-host && \
 	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR ACLOCAL_PATH && \
+	export CFLAGS='$(BUILD_CFLAGS)' && \
+	export LDFLAGS='$(BUILD_LDFLAGS)' && \
 	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-save.sh && \
 	ninja -C $(BUILD_WORK)/gobject-introspection/build-host
 	cd $(BUILD_WORK)/gobject-introspection/build && \
-	PKG_CONFIG="pkg-config" meson \
+	PKG_CONFIG="$(BUILD_TOOLS)/cross-pkg-config" meson \
 		--cross-file cross.txt \
 		-Dgi_cross_use_prebuilt_gi=True \
 		-Dbuild_introspection_data=true \
