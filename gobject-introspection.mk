@@ -2,16 +2,23 @@ ifneq ($(PROCURSUS),1)
 $(error Use the main Makefile)
 endif
 
-SUBPROJECTS      += gobject-introspection
+SUBPROJECTS                  += gobject-introspection
 GOBJECT-INTROSPECTION_VERSION := 1.68.0
 DEB_GOBJECT-INTROSPECTION_V   ?= $(GOBJECT-INTROSPECTION_VERSION)
 
-gobject-introspection-setup: setup bison glib2.0
-	wget -q -nc -P$(BUILD_SOURCE) https://download-fallback.gnome.org/sources/gobject-introspection/1.68/gobject-introspection-1.68.0.tar.xz
+CROSS_LOAD := GI_CROSS_LAUNCHER=$(BUILD_TOOLS)/gi-cross-launcher-load.sh
+CROSS_SAVE := GI_CROSS_LAUNCHER=$(BUILD_TOOLS)/gi-cross-launcher-save.sh
+#### This will currently only build for the system you're building on.
+# You need libffi-dev, libglib2.0-dev, libpython3.9-dev
+
+gobject-introspection-setup: setup
+	wget -q -nc -P $(BUILD_SOURCE) https://download.gnome.org/sources/gobject-introspection/$(shell echo $(GOBJECT-INTROSPECTION_VERSION) | cut -f-2 -d.)/gobject-introspection-$(GOBJECT-INTROSPECTION_VERSION).tar.xz
 	$(call EXTRACT_TAR,gobject-introspection-$(GOBJECT-INTROSPECTION_VERSION).tar.xz,gobject-introspection-$(GOBJECT-INTROSPECTION_VERSION),gobject-introspection)
 	$(call DO_PATCH,gobject-introspection,gobject-introspection,-p1)
+	$(SED) -i 's/required: true/required: false/g' $(BUILD_WORK)/gobject-introspection/meson.build
 	mkdir -p $(BUILD_WORK)/gobject-introspection/build
 
+ifeq ($(MEMO_TARGET),iphoneos-arm64)
 	echo -e "[host_machine]\n \
 	cpu_family = '$(shell echo $(GNU_HOST_TRIPLE) | cut -d- -f1)'\n \
 	cpu = '$(MEMO_ARCH)'\n \
@@ -26,85 +33,121 @@ gobject-introspection-setup: setup bison glib2.0
 	c = '$(CC)'\n \
 	objc = '$(CC)'\n \
 	cpp = '$(CXX)'\n \
-	pkgconfig = '$(BUILD_TOOLS)/cross-pkg-config'\n" > $(BUILD_WORK)/gobject-introspection/build/cross.txt
+	pkgconfig = '$(shell which pkg-config)'\n" > $(BUILD_WORK)/gobject-introspection/build/cross.txt
+endif
 
+ifneq ($(MEMO_TARGET),darwin-amd64)
+else ifneq ($(MEMO_TARGET),darwin-arm64)
+else ifneq ($(shell sw_vers -productName),iPhone OS)
+	$(SED) -i 's|\$${MEMO_TARGET}|$(MEMO_TARGET)|g' $(BUILD_TOOLS)/gi-cross-launcher-save.sh
+	$(SED) -i 's|\$${MEMO_CFVER}|$(MEMO_CFVER)|g' $(BUILD_TOOLS)/gi-cross-launcher-save.sh
+	$(SED) -i 's|\$${MEMO_TARGET}|$(MEMO_TARGET)|g' $(BUILD_TOOLS)/gi-cross-launcher-load.sh
+	$(SED) -i 's|\$${MEMO_CFVER}|$(MEMO_CFVER)|g' $(BUILD_TOOLS)/gi-cross-launcher-load.sh
+	echo -e "[paths]\n \
+	prefix ='$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)'\n \
+	[binaries]\n \
+	pkgconfig = '$(shell which pkg-config)'\n" > $(BUILD_WORK)/gobject-introspection/build/cross.txt
+endif
 
 ifneq ($(wildcard $(BUILD_WORK)/gobject-introspection/.build_complete),)
 gobject-introspection:
 	@echo "Using previously built gobject-introspection."
 else
-gobject-introspection: gobject-introspection-setup libx11 mesa
+gobject-introspection: gobject-introspection-setup #glib2.0 libffi python3
+ifneq ($(MEMO_TARGET),darwin-amd64)
+else ifneq ($(MEMO_TARGET),darwin-arm64)
+	$(SED) -i 's|/usr/share|$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share|g' $(BUILD_WORK)/gobject-introspection/giscanner/transformer.py
+	$(SED) -i -e "s|extra_giscanner_cflags = \[]|extra_giscanner_cflags = ['$(PLATFORM_VERSION_MIN)']|" \
+		-e "s|extra_giscanner_args = \[]|extra_giscanner_args = ['--cflags-begin'] + extra_giscanner_cflags + ['--cflags-end']|" $(BUILD_WORK)/gobject-introspection/meson.build
+	export GI_SCANNER_DISABLE_CACHE=true; \
+	cd $(BUILD_WORK)/gobject-introspection/build && meson \
+		--cross-file cross.txt \
+		-Dpython="$(shell which python3)" \
+		-Dbuild_introspection_data=true \
+		-Dgi_cross_use_prebuilt_gi=false \
+		-Dgi_cross_pkgconfig_sysroot_path=$(BUILD_BASE) \
+		..; \
+	unset MACOSX_DEPLOYMENT_TARGET && export $(CROSS_SAVE) && ninja -C $(BUILD_WORK)/gobject-introspection/build
+	+DESTDIR="$(BUILD_STAGE)/gobject-introspection" ninja -C $(BUILD_WORK)/gobject-introspection/build install
+	+DESTDIR="$(BUILD_BASE)" ninja -C $(BUILD_WORK)/gobject-introspection/build install
+	touch $(BUILD_WORK)/gobject-introspection/.build_complete
+	$(SED) -i "s|$$(cat $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/g-ir-scanner | grep \#! | sed 's/#!//')|$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/python3|" $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/*
+	touch $(BUILD_WORK)/gobject-introspection/.build_complete
+endif
 ifeq ($(MEMO_TARGET),iphoneos-arm64)
-	cd $(BUILD_WORK)/gobject-introspection && \
-	mkdir -p build-host && \
-	pushd "build-host" && \
-	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS && \
-	export LDFLAGS='$(BUILD_LDFLAGS)' && export CFLAGS='$(BUILD_CFLAGS)' \
-	&& PKG_CONFIG="pkg-config" meson \
-	--buildtype=release \
-	--includedir="/opt/procursus/include" \
-	--prefix=/opt/procursus \
-	--backend=ninja \
-	--libdir="/opt/procursus/lib" \
-	-Dpython="/opt/procursus/bin/python3" \
-	..
-	find $(BUILD_WORK)/gobject-introspection/build-host -type f -exec sed -i 's|/usr/include|/opt/procursus|g' {} \;	
-	find $(BUILD_WORK)/gobject-introspection/build-host -type f -exec sed -i 's|/usr/lib|/opt/procursus/lib|g' {} \;
-	find $(BUILD_WORK)/gobject-introspection/build-host -type f -exec sed -i 's|/opt/procursus/glib-2.0|/opt/procursus/include/glib-2.0|g' {} \;
-	cd $(BUILD_WORK)/gobject-introspection/build-host && \
-	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR ACLOCAL_PATH && \
-	export CFLAGS='$(BUILD_CFLAGS)' && \
-	export LDFLAGS='$(BUILD_LDFLAGS)' && \
-	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-save.sh && \
-	ninja -C $(BUILD_WORK)/gobject-introspection/build-host
-	cd $(BUILD_WORK)/gobject-introspection/build && \
-	PKG_CONFIG="$(BUILD_TOOLS)/cross-pkg-config" meson \
+	$(SED) -i 's|/usr/share|$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share|g' $(BUILD_WORK)/gobject-introspection/giscanner/transformer.py
+	$(SED) -i -e "s|extra_giscanner_cflags = \[]|extra_giscanner_cflags = ['$(PLATFORM_VERSION_MIN)']|" \
+		-e "s|extra_giscanner_args = \[]|extra_giscanner_args = ['--cflags-begin'] + extra_giscanner_cflags + ['--cflags-end']|" $(BUILD_WORK)/gobject-introspection/meson.build
+	export GI_SCANNER_DISABLE_CACHE=true; \
+	cd $(BUILD_WORK)/gobject-introspection/build && meson \
 		--cross-file cross.txt \
 		-Dgi_cross_use_prebuilt_gi=True \
 		-Dbuild_introspection_data=true \
 		--buildtype=release \
 		--backend=ninja \
-		-Dpython="/opt/procursus/bin/python3" \
+		-Dpython="$(shell which python3)" \
 		-Dgi_cross_pkgconfig_sysroot_path=$(BUILD_BASE) \
 		..
-	cd $(BUILD_WORK)/gobject-introspection/build && sed -i 's/--cflags-begin/--cflags-begin -arch $(MEMO_ARCH)/g' build.ninja && \
-	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-load.sh && \
-	ninja -v -C $(BUILD_WORK)/gobject-introspection/build
+	$(SED) -i 's/--cflags-begin/--cflags-begin -arch $(MEMO_ARCH)/g' $(BUILD_WORK)/gobject-introspection/build/build.ninja
+	unset MACOSX_DEPLOYMENT_TARGET && export $(CROSS_LOAD) && ninja -C $(BUILD_WORK)/gobject-introspection/build
 	+DESTDIR="$(BUILD_STAGE)/gobject-introspection" ninja -C $(BUILD_WORK)/gobject-introspection/build install
-	+DESTDIR="$(BUILD_BASE)" ninja -k 0 -C $(BUILD_WORK)/gobject-introspection/build install
+	+DESTDIR="$(BUILD_BASE)" ninja -C $(BUILD_WORK)/gobject-introspection/build install
 	touch $(BUILD_WORK)/gobject-introspection/.build_complete
-else 
-	cd $(BUILD_WORK)/gobject-introspection/build && \
-	PKG_CONFIG="pkg-config" meson \
-		--cross-file cross.txt \
-		-Dbuild_introspection_data=true \
-		-Dgi_cross_use_prebuilt_gi=false \
-		--buildtype=release \
-		--backend=ninja \
-		-Dpython="/opt/procursus/bin/python3" \
-		..
-	ninja -C $(BUILD_WORK)/gobject-introspection/build
-	+DESTDIR="$(BUILD_STAGE)/gobject-introspection" ninja -C $(BUILD_WORK)/gobject-introspection/build install
-	+DESTDIR="$(BUILD_BASE)" ninja -k 0 -C $(BUILD_WORK)/gobject-introspection/build install
+	$(SED) -i "s|$$(cat $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/g-ir-scanner | grep \#! | sed 's/#!//')|$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/python3|" $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/*
 	touch $(BUILD_WORK)/gobject-introspection/.build_complete
 endif
 endif
 
 gobject-introspection-package: gobject-introspection-stage
 	# gobject-introspection.mk Package Structure
-	rm -rf $(BUILD_DIST)/gobject-introspection
-	mkdir -p $(BUILD_DIST)/gobject-introspection
-	
+	rm -rf $(BUILD_DIST)/libgirepository-1.0-{1,dev} $(BUILD_DIST)/gobject-introspection $(BUILD_DIST)/gir1.2-{freedesktop,glib-2.0}
+	mkdir -p $(BUILD_DIST)/libgirepository-1.0-1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
+		$(BUILD_DIST)/libgirepository-1.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{lib,share} \
+		$(BUILD_DIST)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{lib,share} \
+		$(BUILD_DIST)/gir1.2-{freedesktop,glib-2.0}/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0
+
+	# gobject-introspection.mk Prep libgirepository-1.0-1
+	cp -a $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libgirepository-1.0.1.dylib $(BUILD_DIST)/libgirepository-1.0-1/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+
+	# gobject-introspection.mk Prep libgirepository-1.0-dev
+	cp -a $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/{libgirepository-1.0.dylib,pkgconfig} $(BUILD_DIST)/libgirepository-1.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include $(BUILD_DIST)/libgirepository-1.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+	cp -a $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/gir-1.0 $(BUILD_DIST)/libgirepository-1.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share
+
 	# gobject-introspection.mk Prep gobject-introspection
-	cp -a $(BUILD_STAGE)/gobject-introspection $(BUILD_DIST)
-	
+	cp -a $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin $(BUILD_DIST)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)
+	cp -a $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/gobject-introspection $(BUILD_DIST)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/!(gir-1.0) $(BUILD_DIST)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share
+
+	# gobject-introspection.mk Prep gir1.2-glib-2.0
+	cp -a $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/{GIRepository,GLib,GModule,GObject,Gio}-2.0.typelib $(BUILD_DIST)/gir1.2-glib-2.0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0
+
+	# gobject-introspection.mk Prep gir1.2-freedesktop
+	cp -a $(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/cairo-1.0.typelib \
+		$(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/DBus-1.0.typelib \
+		$(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/DBusGLib-1.0.typelib \
+		$(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/fontconfig-2.0.typelib \
+		$(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/freetype2-2.0.typelib \
+		$(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/GL-1.0.typelib \
+		$(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/libxml2-2.0.typelib \
+		$(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/Vulkan-1.0.typelib \
+		$(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/xfixes-4.0.typelib \
+		$(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/xft-2.0.typelib \
+		$(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/xlib-2.0.typelib \
+		$(BUILD_STAGE)/gobject-introspection/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0/xrandr-1.3.typelib $(BUILD_DIST)/gir1.2-freedesktop/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/girepository-1.0
+
 	# gobject-introspection.mk Sign
+	$(call SIGN,libgirepository-1.0-1,general.xml)
 	$(call SIGN,gobject-introspection,general.xml)
-	
+
 	# gobject-introspection.mk Make .debs
+	$(call PACK,libgirepository-1.0-1,DEB_GOBJECT-INTROSPECTION_V)
+	$(call PACK,libgirepository-1.0-dev,DEB_GOBJECT-INTROSPECTION_V)
 	$(call PACK,gobject-introspection,DEB_GOBJECT-INTROSPECTION_V)
-	
+	$(call PACK,gir1.2-glib-2.0,DEB_GOBJECT-INTROSPECTION_V)
+	$(call PACK,gir1.2-freedesktop,DEB_GOBJECT-INTROSPECTION_V)
+
 	# gobject-introspection.mk Build cleanup
-	rm -rf $(BUILD_DIST)/gobject-introspection
+	rm -rf $(BUILD_DIST)/libgirepository-1.0-{1,dev} $(BUILD_DIST)/gobject-introspection $(BUILD_DIST)/gir1.2-{freedesktop,glib-2.0}
 
 .PHONY: gobject-introspection gobject-introspection-package
