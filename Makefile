@@ -65,7 +65,7 @@ else ifeq ($(shell [ "$(CFVER_WHOLE)" -ge 1700 ] && [ "$(CFVER_WHOLE)" -lt 1800 
 IPHONEOS_DEPLOYMENT_TARGET  := 14.0
 APPLETVOS_DEPLOYMENT_TARGET := 14.0
 WATCHOS_DEPLOYMENT_TARGET   := 7.0
-MACOSX_DEPLOYMENT_TARGET    := 11.0
+MACOSX_DEPLOYMENT_TARGET    := 10.15
 MACOSX_SUITE_NAME           := big_sur
 override MEMO_CFVER         := 1700
 else
@@ -179,23 +179,6 @@ GNU_PREFIX           := g
 ON_DEVICE_SDK_PATH   := /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 BARE_PLATFORM        := MacOSX
 
-else ifeq ($(HOST_MEMO_TARGET),darwin-amd64)
-ifneq ($(MEMO_QUIET),1)
-$(warning Building for macOS amd64)
-endif # ($(MEMO_QUIET),1)
-HOST_MEMO_ARCH            := x86_64
-HOST_PLATFORM             := macosx
-HOST_DEB_ARCH             := darwin-amd64
-HOST_GNU_HOST_TRIPLE      := x86_64-apple-darwin
-HOST_RUST_TARGET          := $(GNU_HOST_TRIPLE)
-HOST_PLATFORM_VERSION_MIN := -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
-HOST_MEMO_PREFIX          ?= /opt/procursus
-HOST_MEMO_SUB_PREFIX      ?=
-HOST_MEMO_ALT_PREFIX      ?=
-HOST_GNU_PREFIX           := g
-HOST_ON_DEVICE_SDK_PATH   := /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
-HOST_BARE_PLATFORM        := MacOSX
-
 else
 $(error Platform not supported)
 endif
@@ -261,11 +244,6 @@ CC              := $(shell xcrun --sdk $(PLATFORM) --find cc)
 CXX             := $(shell xcrun --sdk $(PLATFORM) --find c++)
 CPP             := $(shell xcrun --sdk $(PLATFORM) --find cc) -E
 PATH            := /opt/procursus/bin:/opt/procursus/libexec/gnubin:/usr/bin:$(PATH)
-
-BUILD_CFLAGS   := $(OPTIMIZATION_FLAGS) -arch $(HOST_MEMO_ARCH) -isysroot $(MACOSX_SYSROOT) $(HOST_PLATFORM_VERSION_MIN) -isystem $(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)/include -isystem $(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)$(HOST_MEMO_ALT_PREFIX)/include -F$(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)/System/Library/Frameworks -F$(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)/Library/Frameworks
-BUILD_CXXFLAGS := $(BUILD_CFLAGS)
-BUILD_CPPFLAGS := -arch $(HOST_MEMO_ARCH) $(HOST_PLATFORM_VERSION_MIN) -isysroot $(MACOSX_SYSROOT) -isystem $(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)/include -isystem $(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)$(HOST_MEMO_ALT_PREFIX)/include -Wno-error-implicit-function-declaration
-BUILD_LDFLAGS  := $(OPTIMIZATION_FLAGS) -arch $(HOST_MEMO_ARCH) -isysroot $(TARGET_SYSROOT) $(HOST_PLATFORM_VERSION_MIN) -L$(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)/lib -L$(HOST_BUILD_BASE)$(HOST_MEMO_PREFIX)$(HOST_MEMO_SUB_PREFIX)$(HOST_MEMO_ALT_PREFIX)/lib -F$(BUILD_BASE)$(MEMO_PREFIX)/System/Library/Frameworks -F$(BUILD_BASE)$(MEMO_PREFIX)/Library/Frameworks
 
 else
 ifneq ($(MEMO_QUIET),1)

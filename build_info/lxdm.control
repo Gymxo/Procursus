@@ -1,0 +1,17 @@
+Package: lxdm
+Version: @DEB_LXDM_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Depends: libcairo2, libglib2.0-0
+Recommends: desktop-base
+Suggests: lxde-common
+Provides: x-display-manager
+Section: X11
+Priority: optional
+Homepage: http://www.lxde.org/
+Description: LXDE display manager
+ LXDM is a GUI application for the Lightweight X11 Desktop Environment
+ (LXDE).
+ .
+ It's a lightweight login manager which can be used as a replacement for
+ GDM or KDM.

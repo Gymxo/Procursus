@@ -6,6 +6,8 @@ SUBPROJECTS      += gtk+3
 GTK+3_VERSION := 3.24.29
 DEB_GTK+3_V   ?= $(GTK+3_VERSION)
 
+ #CROSS_LOAD := GI_CROSS_LAUNCHER=$(BUILD_TOOLS)/gi-cross-launcher-load.sh
+
 gtk+3-setup: setup
 	wget -q -nc -P$(BUILD_SOURCE) https://download.gnome.org/sources/gtk+/3.24/gtk+-3.24.29.tar.xz
 	$(call EXTRACT_TAR,gtk+-$(GTK+3_VERSION).tar.xz,gtk+-$(GTK+3_VERSION),gtk+3)
@@ -51,6 +53,7 @@ gtk+3: gtk+3-setup libx11 libxau libxmu xorgproto xxhash
 	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR ACLOCAL_PATH && \
 	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-save.sh && \
 	ninja -k 0
+# upload without gir bindings for now
 	cd $(BUILD_WORK)/gtk+3/build && PKG_CONFIG="pkg-config" meson \
 	--cross-file cross.txt \
 	-Dgtk_doc=false \
@@ -63,7 +66,7 @@ gtk+3: gtk+3-setup libx11 libxau libxmu xorgproto xxhash
 	--buildtype=release \
 	..
 	cd $(BUILD_WORK)/gtk+3/build && sed -i 's/--cflags-begin/--cflags-begin -arch arm64/g' build.ninja && \
-	ninja -C $(BUILD_WORK)/gtk+3/build
+	export $(CROSS_LOAD) && ninja -C $(BUILD_WORK)/gtk+3/build
 	+DESTDIR="$(BUILD_STAGE)/gtk+3" ninja -C $(BUILD_WORK)/gtk+3/build install
 	+DESTDIR="$(BUILD_BASE)" ninja -C $(BUILD_WORK)/gtk+3/build install
 	touch $(BUILD_WORK)/gtk+3/.build_complete
