@@ -7,7 +7,7 @@ QTBASE_VERSION := 5.15.2
 DEB_QTBASE_V   ?= $(QTBASE_VERSION)
 
 qtbase-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://download.qt.io/official_releases/qt/5.15/5.15.2/single/qt-everywhere-src-5.15.2.tar.xz
+	wget -q -nc -P $(BUILD_SOURCE) https://download.qt.io/official_releases/qt/5.15/$(QTBASE_VERSION)/single/qt-everywhere-src-$(QTBASE_VERSION).tar.xz
 	$(call EXTRACT_TAR,qt-everywhere-src-$(QTBASE_VERSION).tar.xz,qt-everywhere-src-$(QTBASE_VERSION),qtbase)
 
 ifneq ($(wildcard $(BUILD_WORK)/qtbase/.build_complete),)
@@ -16,39 +16,56 @@ qtbase:
 else
 qtbase: qtbase-setup
 	cd $(BUILD_WORK)/qtbase && ./configure \
-		-xplatform macx-ios-clang \
-		-xcb \
-		-xcb-xlib \
+	    -confirm-license \
+		-platform macx-clang \
+		-xplatform linux-clang \
 		-L$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
 		-I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include \
 		-prefix $(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
 		-sysconfdir $(MEMO_PREFIX)/etc \
 		-bindir $(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin \
-		-gui \
-		-widgets \
-		-release \
         -opensource \
-        -confirm-license \
-        -shared \
-        -nomake examples \
-        -nomake tests \
-        -verbose \
-        -skip wayland \
-        -qt-pcre \
-        -xkbcommon \
-        -dbus \
-        -no-linuxfb \
-        -no-libudev \
-        -no-avx \
-        -no-avx2 \
-        -optimize-size \
-		-sysroot $(TARGET_SYSROOT) \
+	    -plugin-sql-mysql \
+	    -plugin-sql-odbc \
+	    -plugin-sql-psql \
+	    -plugin-sql-sqlite \
+	    -no-sql-sqlite2 \
+	    -plugin-sql-tds \
+	    -system-sqlite \
+	    -system-harfbuzz \
+	    -system-zlib \
+	    -system-libpng \
+	    -system-libjpeg \
+	    -system-doubleconversion \
+	    -system-pcre \
+	    -openssl \
+	    -no-rpath \
+	    -verbose \
+	    -optimized-qmake \
+	    -dbus-linked \
+	    -no-strip \
+	    -no-separate-debug-info \
+	    -qpa xcb \
+	    -xcb \
+		-no-pch \
+	    -glib \
+	    -icu \
+	    -accessibility \
+	    -compile-examples \
+	    -no-directfb \
+	    -no-use-gold-linker \
+	    -no-mimetype-database \
+	    -no-feature-relocatable \
+	    -xcb-native-painting \
+		-sysroot $(BUILD_BASE) \
 		-continue \
-		QMAKE_LFLAGS+="$(LDFLAGS)"
-	+$(MAKE) -C $(BUILD_WORK)/qtbase
-	+$(MAKE) -C $(BUILD_WORK)/qtbase install \
+	    QMAKE_CFLAGS="$(CFLAGS)" \
+	    QMAKE_CXXFLAGS="$(CXXFLAGS)" \
+	    QMAKE_LFLAGS="$(LDFLAGS)"
+	+$(MAKE) -i -C $(BUILD_WORK)/qtbase
+	+$(MAKE) -i -C $(BUILD_WORK)/qtbase install \
 		DESTDIR=$(BUILD_STAGE)/qtbase
-	+$(MAKE) -C $(BUILD_WORK)/qtbase install \
+	+$(MAKE) -i -C $(BUILD_WORK)/qtbase install \
 		DESTDIR=$(BUILD_BASE)
 	touch $(BUILD_WORK)/qtbase/.build_complete
 endif

@@ -1,0 +1,19 @@
+Package: nix
+Maintainer: @DEB_MAINTAINER@
+Architecture: @DEB_ARCH@
+Version: @DEB_NIX_V@
+Section: Utilities
+Priority: optional
+Homepage: https://nixos.org/nix
+Description: Purely functional package manager (binaries)
+ A powerful package manager for Linux and other Unix systems that
+ makes package management reliable and reproducible. Nix provides
+ atomic upgrades and rollbacks, side-by-side installation of multiple
+ versions of a package, multi-user package management and easy setup
+ of build environments.
+ .
+ NOTE: This package only provides the nix binaries. One still needs
+ to setup directories, environments variables and configuration files
+ to use nix as described in the nix manual.
+ The package nix-setup-systemd provides such a setup using systemd
+ mechanisms, also see /usr/share/doc/nix-bin/README.Debian.
