@@ -17,7 +17,10 @@ else
 mc: mc-setup slang2 glib2.0 gettext libssh2
 	cd $(BUILD_WORK)/mc && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
-		PKG_CONFIG="pkg-config --define-prefix"
+		--with-x \
+		--x-libraries=$(BUILD_BASE)/usr/lib \
+		--x-includes=$(BUILD_BASE)/usr/include \
+		--enable-aspell
 	+$(MAKE) -C $(BUILD_WORK)/mc
 	+$(MAKE) -C $(BUILD_WORK)/mc install \
 		DESTDIR=$(BUILD_STAGE)/mc
