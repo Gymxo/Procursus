@@ -4,7 +4,7 @@ endif
 
 SUBPROJECTS   += cairo
 CAIRO_VERSION := 1.16.0
-DEB_CAIRO_V   ?= $(CAIRO_VERSION)-1
+DEB_CAIRO_V   ?= $(CAIRO_VERSION)-2
 
 cairo-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://cairographics.org/releases/cairo-$(CAIRO_VERSION).tar.xz
@@ -14,7 +14,7 @@ ifneq ($(wildcard $(BUILD_WORK)/cairo/.build_complete),)
 cairo:
 	@echo "Using previously built cairo."
 else
-cairo: cairo-setup freetype fontconfig glib2.0 libpng16 liblzo2 libpixman
+cairo: cairo-setup freetype gettext fontconfig glib2.0 libpng16 liblzo2 libpixman libxcb libxrender libx11 libxext
 	cd $(BUILD_WORK)/cairo && ./autogen.sh \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--enable-pdf \

@@ -3,8 +3,8 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS      += harfbuzz
-HARFBUZZ_VERSION := 2.7.4
-DEB_HARFBUZZ_V   ?= $(HARFBUZZ_VERSION)-1
+HARFBUZZ_VERSION := 2.8.1
+DEB_HARFBUZZ_V   ?= $(HARFBUZZ_VERSION)
 
 ifneq ($(MEMO_TARGET),darwin-amd64)
 else ifneq ($(MEMO_TARGET),darwin-arm64)
@@ -34,14 +34,8 @@ harfbuzz: harfbuzz-setup cairo freetype glib2.0 graphite2 icu4c fontconfig
 		--with-gobject=yes \
 		--with-graphite2 \
 		--with-coretext \
-		--with-sysroot=$(BUILD_BASE) \
-		FONTCONFIG_CFLAGS="-I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/fontconfig" \
-		FREETYPE_CFLAGS="-I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/freetype2 -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/libpng16" \
-		GOBJECT_CFLAGS="-I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/glib-2.0 -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/glib-2.0/include" \
-		GLIB_CFLAGS="-I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/glib-2.0 -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/glib-2.0/include -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/glib-2.0/include" \
-		CAIRO_CFLAGS="-I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/cairo -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/glib-2.0 -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/glib-2.0/include -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/pixman-1 -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/freetype2 -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/libpng16" \
-		CAIRO_FT_CFLAGS="-I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/cairo -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/glib-2.0 -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/glib-2.0/include -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/pixman-1 -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/freetype2 -I$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/libpng16"
-	unset MACOSX_DEPLOYMENT_TARGET && export $(CROSS) && $(MAKE) -C $(BUILD_WORK)/harfbuzz
+		--enable-introspection=no # Remove this when introspection is proper.
+	+$(MAKE) -C $(BUILD_WORK)/harfbuzz
 	+$(MAKE) -C $(BUILD_WORK)/harfbuzz install \
 		DESTDIR="$(BUILD_STAGE)/harfbuzz"
 	+$(MAKE) -C $(BUILD_WORK)/harfbuzz install \
