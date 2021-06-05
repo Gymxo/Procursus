@@ -20,7 +20,7 @@ dbus: dbus-setup expat glib2.0 libx11 libsm libice
         --disable-doxygen-docs \
         --disable-xml-docs \
 		--enable-launchd \
-		--with-dbus-user=mobile \
+		--with-dbus-user=nathan \
 		--with-x \
 		--with-launchd-agent-dir=$(MEMO_PREFIX)/Library/LaunchDaemons \
         --with-console-auth-dir=$(MEMO_PREFIX)/var/run/console \
@@ -41,6 +41,8 @@ endif
 dbus-package: dbus-stage
 	# dbus.mk Package Structure
 	rm -rf $(BUILD_DIST)/dbus
+	mkdir -p $(BUILD_STAGE)/dbus/etc/profile.d
+	cp -a $(BUILD_MISC)/dbus/dbus.sh $(BUILD_STAGE)/dbus/etc/profile.d
 
 	# dbus.mk Prep dbus
 	cp -a $(BUILD_STAGE)/dbus $(BUILD_DIST)

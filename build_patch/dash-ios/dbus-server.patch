@@ -1,0 +1,22 @@
+--- a/dbus/dbus-server-unix.c	2018-12-03 11:31:46.000000000 -0500
++++ b/dbus/dbus-server-unix.c	2021-05-31 16:02:29.000000000 -0400
+@@ -101,16 +101,16 @@
+               return DBUS_SERVER_LISTEN_BAD_ADDRESS;
+             }
+ 
+-          runtimedir = _dbus_getenv ("XDG_RUNTIME_DIR");
++          runtimedir = _dbus_getenv ("DBUS_LAUNCHD_SESSION_BUS_SOCKET");
+ 
+           if (runtimedir == NULL)
+             {
+               dbus_set_error (error,
+-                  DBUS_ERROR_NOT_SUPPORTED, "\"XDG_RUNTIME_DIR\" is not set");
++                  DBUS_ERROR_NOT_SUPPORTED, "\"DBUS_LAUNCHD_SESSION_BUS_SOCKET\" is not set");
+               return DBUS_SERVER_LISTEN_DID_NOT_CONNECT;
+             }
+ 
+-          _dbus_string_init_const (&filename, "bus");
++          _dbus_string_init_const (&filename, "unix_domain_listener");
+ 
+           if (!_dbus_string_init (&full_path))
+             {

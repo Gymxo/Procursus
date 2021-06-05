@@ -2,11 +2,7 @@ Package: xserver-xorg-dev
 Version: @DEB_XORG-SERVER_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
-<<<<<<< HEAD
-Depends: libpixman-1-dev, x11proto-dev, libxfont-dev, libxkbfile-dev, mesa-common-dev
-=======
 Depends: libpixman-1-dev (>= 0.27.2), x11proto-dev (>= 2018.4), libxfont-dev, libxkbfile-dev, mesa-common-dev
->>>>>>> 53a5466 (more stuff)
 Section: Development
 Priority: optional
 Description: Xorg X server - development files

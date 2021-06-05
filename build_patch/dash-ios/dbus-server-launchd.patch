@@ -1,0 +1,11 @@
+--- a/dbus/dbus-server-launchd.c	2017-10-30 08:26:18.000000000 -0400
++++ b/dbus/dbus-server-launchd.c	2021-05-31 15:49:04.000000000 -0400
+@@ -75,7 +75,7 @@
+     launch_data_t environment_dict, environment_param;
+     const char *launchd_socket_path, *display;
+ 
+-    launchd_socket_path = _dbus_getenv (launchd_env_var);
++    launchd_socket_path = _dbus_getenv ("DBUS_LAUNCHD_SESSION_BUS_SOCKET");
+     display = _dbus_getenv ("DISPLAY");
+ 
+     _DBUS_ASSERT_ERROR_IS_CLEAR (error);

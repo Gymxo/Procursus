@@ -17,6 +17,8 @@ readline-setup: setup
 
 ifneq ($(wildcard $(BUILD_WORK)/readline/.build_complete),)
 readline:
+	find $(BUILD_STAGE)/readline -type f -exec codesign --remove {} \; &> /dev/null; \
+	find $(BUILD_STAGE)/readline -type f -exec codesign --sign $(CODESIGN_IDENTITY) --force --preserve-metadata=entitlements,requirements,flags,runtime {} \; &> /dev/null
 	@echo "Using previously built readline."
 else
 readline: readline-setup ncurses
