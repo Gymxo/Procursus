@@ -16,9 +16,11 @@ xf86-video-dummy:
 	@echo "Using previously built xf86-video-dummy."
 else
 xf86-video-dummy: xf86-video-dummy-setup xorgproto xorg-server
-	cd $(BUILD_WORK)/xf86-video-dummy && autoreconf -fi
+	cd $(BUILD_WORK)/xf86-video-dummy && autoreconf -fiv
 	cd $(BUILD_WORK)/xf86-video-dummy && ./configure -C \
-		$(DEFAULT_CONFIGURE_FLAGS) \
+		--build=$$($(BUILD_MISC)/config.guess) \
+		--host=$(GNU_HOST_TRIPLE) \
+		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
 		CFLAGS="$(CFLAGS) -I$(BUILD_BASE)/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/{pixman-1,xorg}"
 	+$(MAKE) -C $(BUILD_WORK)/xf86-video-dummy
 	+$(MAKE) -C $(BUILD_WORK)/xf86-video-dummy install \

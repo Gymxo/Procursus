@@ -1,0 +1,3 @@
+#!/bin/sh
+
+"/bin/launchctl" "unload" "/opt/procursus/Library/LaunchDaemons/org.freedesktop.dbus-session.plist"

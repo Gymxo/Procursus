@@ -3,11 +3,7 @@ Version: @DEB_XORG-SERVER_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
 Depends: xdmx, libdmx1, libx11-6, libxaw7, libxext6, libxmu6, libxpm4, libxt6
-<<<<<<< HEAD
-Section: x11
-=======
 Section: X11
->>>>>>> 07d9fb6e4182e2de4d01175e229348545cc588a4
 Priority: optional
 Description: Distributed Multihead X tools
  This package provides a collection of tools used for administration of

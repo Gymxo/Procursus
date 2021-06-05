@@ -1,0 +1,3 @@
+#!/bin/sh
+"/opt/procursus/bin/dbus-uuidgen" "--ensure=/opt/procursus/var/lib/dbus/machine-id"
+"/bin/launchctl" "load" "/opt/procursus/Library/LaunchDaemons/org.freedesktop.dbus-session.plist"
