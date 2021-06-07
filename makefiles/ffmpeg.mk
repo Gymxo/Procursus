@@ -49,7 +49,7 @@ ffmpeg: ffmpeg-setup aom dav1d fontconfig freetype frei0r gnutls lame libass lib
 		--enable-libsnappy \
 		--enable-libsrt \
 		--enable-libtesseract \
-		--enable-libtheora \
+		--disable-libtheora \
 		--enable-libvidstab \
 		--enable-libvorbis \
 		--enable-libvpx \

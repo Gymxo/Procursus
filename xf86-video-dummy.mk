@@ -7,7 +7,7 @@ DUMMY_VERSION := 0.3.8
 DEB_DUMMY_V   ?= $(DUMMY_VERSION)
 
 xf86-video-dummy-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://gitlab.freedesktop.org/xorg/driver/xf86-video-dummy/-/archive/xf86-video-dummy-0.3.8/xf86-video-dummy-xf86-video-dummy-0.3.8.tar.gz
+	wget -q -nc -P $(BUILD_SOURCE) https://gitlab.freedesktop.org/xorg/driver/xf86-video-dummy/-/archive/xf86-video-dummy-$(DUMMY_VERSION)/xf86-video-dummy-xf86-video-dummy-$(DUMMY_VERSION).tar.gz
 	$(call EXTRACT_TAR,xf86-video-dummy-xf86-video-dummy-$(DUMMY_VERSION).tar.gz,xf86-video-dummy-xf86-video-dummy-$(DUMMY_VERSION),xf86-video-dummy)
 
 ifneq ($(wildcard $(BUILD_WORK)/xf86-video-dummy/.build_complete),)
@@ -15,11 +15,8 @@ xf86-video-dummy:
 	@echo "Using previously built xf86-video-dummy."
 else
 xf86-video-dummy: xf86-video-dummy-setup xorgproto xorg-server
-	cd $(BUILD_WORK)/xf86-video-dummy && autoreconf -fiv
-	cd $(BUILD_WORK)/xf86-video-dummy && ./configure -C \
-		--build=$$($(BUILD_MISC)/config.guess) \
-		--host=$(GNU_HOST_TRIPLE) \
-		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
+	cd $(BUILD_WORK)/xf86-video-dummy && unset LDFLAGS && ./autogen.sh -C \
+		$(DEFAULT_CONFIGURE_FLAGS) \
 		CFLAGS="$(CFLAGS) -I$(BUILD_BASE)/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/{pixman-1,xorg}"
 	+$(MAKE) -C $(BUILD_WORK)/xf86-video-dummy
 	+$(MAKE) -C $(BUILD_WORK)/xf86-video-dummy install \

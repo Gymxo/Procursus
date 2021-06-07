@@ -1,0 +1,8 @@
+Package: xquartz
+Version: @DEB_XORG-SERVER_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Provides: xserver
+Section: X11
+Priority: optional
+Description: Display server for Mac OS

@@ -6,14 +6,6 @@ SUBPROJECTS      += harfbuzz
 HARFBUZZ_VERSION := 2.8.1
 DEB_HARFBUZZ_V   ?= $(HARFBUZZ_VERSION)
 
-ifneq ($(MEMO_TARGET),darwin-amd64)
-else ifneq ($(MEMO_TARGET),darwin-arm64)
-CROSS := GI_CROSS_LAUNCHER=$(BUILD_TOOLS)/gi-cross-launcher-save.sh
-ifeq ($(MEMO_TARGET),iphoneos-arm64)
-CROSS := GI_CROSS_LAUNCHER=$(BUILD_TOOLS)/gi-cross-launcher-load.sh
-endif
-endif
-
 harfbuzz-setup: setup
 	$(call GITHUB_ARCHIVE,harfbuzz,harfbuzz,$(HARFBUZZ_VERSION),$(HARFBUZZ_VERSION))
 	$(call EXTRACT_TAR,harfbuzz-$(HARFBUZZ_VERSION).tar.gz,harfbuzz-$(HARFBUZZ_VERSION),harfbuzz)
@@ -23,13 +15,12 @@ harfbuzz:
 	@echo "Using previously built harfbuzz."
 else
 harfbuzz: harfbuzz-setup cairo freetype glib2.0 graphite2 icu4c fontconfig
-	cd $(BUILD_WORK)/harfbuzz && ./autogen.sh -h \
+	cd $(BUILD_WORK)/harfbuzz && ./autogen.sh \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--with-cairo \
 		--with-freetype \
 		--with-fontconfig \
 		--with-glib \
-		--enable-introspection=yes \
 		--with-icu \
 		--with-gobject=yes \
 		--with-graphite2 \

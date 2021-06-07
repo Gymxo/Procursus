@@ -16,7 +16,8 @@ hicolor-icon-theme:
 else
 hicolor-icon-theme: hicolor-icon-theme-setup
 	cd $(BUILD_WORK)/hicolor-icon-theme && ./autogen.sh -C \
-		$(DEFAULT_CONFIGURE_FLAGS)
+		--prefix=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX) \
+		--datarootdir=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share
 	+$(MAKE) -C $(BUILD_WORK)/hicolor-icon-theme install \
 		DESTDIR=$(BUILD_STAGE)/hicolor-icon-theme
 	touch $(BUILD_WORK)/hicolor-icon-theme/.build_complete

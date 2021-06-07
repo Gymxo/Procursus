@@ -3,20 +3,15 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS      += ruby
-RUBY_VERSION     := 3.0
-RUBY_API_VERSION := $(RUBY_VERSION).1
-DEB_RUBY_V       ?= $(RUBY_API_VERSION)-1
+RUBY_VERSION     := 2.6
+RUBY_API_VERSION := $(RUBY_VERSION).7
+DEB_RUBY_V       ?= $(RUBY_API_VERSION)
 
 ruby-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://cache.ruby-lang.org/pub/ruby/$(RUBY_VERSION)/ruby-$(RUBY_API_VERSION).tar.gz
 	$(call EXTRACT_TAR,ruby-$(RUBY_API_VERSION).tar.gz,ruby-$(RUBY_API_VERSION),ruby)
-	$(call DO_PATCH,ruby,ruby,-p1)
-
-
-ifneq (,$(findstring amd64,$(MEMO_TARGET)))
-RUBY_CONFIGURE_ARGS := --with-coroutine=amd64
-else
-RUBY_CONFIGURE_ARGS := --with-coroutine=arm64
+ifeq (,$(findstring darwin,$(MEMO_TARGET)))
+	$(SED) -i '1s/^/#include <libiosexec.h>\n/' $(BUILD_WORK)/ruby/process.c
 endif
 
 ifneq ($(wildcard $(BUILD_WORK)/ruby/.build_complete),)
@@ -54,8 +49,8 @@ endif
 			--enable-ipv6 \
 			--with-baseruby="$(shell which ruby)" \
 			$(RUBY_CONFIGURE_ARGS)
-	+$(MAKE) -C $(BUILD_WORK)/ruby
-	+$(MAKE) -C $(BUILD_WORK)/ruby install \
+	+$(MAKE) -i -C $(BUILD_WORK)/ruby
+	+$(MAKE) -i -C $(BUILD_WORK)/ruby install \
 		DESTDIR="$(BUILD_STAGE)/ruby"
 	sed -i 's/.*DLDFLAGS=.*/DLDFLAGS=/' $(BUILD_STAGE)/ruby/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/pkgconfig/ruby-$(RUBY_VERSION).pc
 	$(call AFTER_BUILD)

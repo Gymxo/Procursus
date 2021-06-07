@@ -3,11 +3,11 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS    += xpra
-XPRA_VERSION := 4.1.2
+XPRA_VERSION := 4.2
 DEB_XPRA_V   ?= $(XPRA_VERSION)
 
 xpra-setup: setup
-	wget -q -nc -P $(BUILD_SOURCE) https://github.com/Xpra-org/xpra/archive/refs/tags/v4.1.2.tar.gz
+	wget -q -nc -P $(BUILD_SOURCE) https://github.com/Xpra-org/xpra/archive/refs/tags/v4.2.tar.gz
 	$(call EXTRACT_TAR,v$(XPRA_VERSION).tar.gz,xpra-$(XPRA_VERSION),xpra)
 
 ifneq ($(wildcard $(BUILD_WORK)/xpra/.build_complete),)
@@ -15,11 +15,12 @@ xpra:
 	@echo "Using previously built xpra."
 else
 xpra: xpra-setup
-	cd $(BUILD_WORK)/xpra && python3 setup.py build \
-	--without-gtk3 \
+	cd $(BUILD_WORK)/xpra && $(DEFAULT_SETUP_PY_ENV) python3 ./setup.py install \
+	--prefix="$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)" \
+	--root="$(BUILD_STAGE)/xpra" \
+	--with-Xdummy \
 	--with-x11 \
-	--without-cython \
-	--without-gtk_x11 
+	--with-debug
 endif
 
 xpra-package: xpra-stage
