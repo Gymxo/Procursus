@@ -11,49 +11,30 @@ at-spi2-atk-setup: setup
 	$(call EXTRACT_TAR,at-spi2-atk-$(AT-SPI2-ATK_VERSION).tar.xz,at-spi2-atk-$(AT-SPI2-ATK_VERSION),at-spi2-atk)
 	mkdir -p $(BUILD_WORK)/at-spi2-atk/build
 	echo -e "[host_machine]\n \
-	system = 'darwin'\n \
 	cpu_family = '$(shell echo $(GNU_HOST_TRIPLE) | cut -d- -f1)'\n \
 	cpu = '$(MEMO_ARCH)'\n \
 	endian = 'little'\n \
+	system = 'darwin'\n \
 	[properties]\n \
 	root = '$(BUILD_BASE)'\n \
+	needs_exe_wrapper = true\n \
 	[paths]\n \
-	prefix ='/usr'\n \
-	sysconfdir='$(MEMO_PREFIX)/etc'\n \
-	localstatedir='$(MEMO_PREFIX)/var'\n \
+	prefix ='$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)'\n \
 	[binaries]\n \
 	c = '$(CC)'\n \
-	cpp = '$(CXX)'\n" > $(BUILD_WORK)/at-spi2-atk/build/cross.txt
+	objc = '$(CC)'\n \
+	cpp = '$(CXX)'\n \
+	pkgconfig = '$(BUILD_TOOLS)/cross-pkg-config'\n" > $(BUILD_WORK)/at-spi2-atk/build/cross.txt
 
 ifneq ($(wildcard $(BUILD_WORK)/at-spi2-atk/.build_complete),)
 at-spi2-atk:
 	@echo "Using previously built at-spi2-atk."
 else
 at-spi2-atk: at-spi2-atk-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/at-spi2-atk && \
-	mkdir -p build-host && \
-	pushd "build-host" && \
-	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR && \
-	export LDFLAGS=-Wl,-dead_strip_dylibs && \
-	PKG_CONFIG="pkg-config" meson \
-	-Denable_docs=false \
-	--libdir=/usr/local/lib \
-	--wrap-mode=nofallback \
-	--prefix="/usr/local" \
+	cd $(BUILD_WORK)/at-spi2-atk/build && meson \
+	--cross-file cross.txt \
+	-Dintrospection=false \
 	..
-	cd $(BUILD_WORK)/at-spi2-atk/build-host && \
-	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR ACLOCAL_PATH && \
-	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-save.sh && \
-	ninja && sudo ninja install
-	cd $(BUILD_WORK)/at-spi2-atk/build && \
-	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-load.sh && \
-	PKG_CONFIG="pkg-config" meson \
-		--cross-file cross.txt \
-		-Denable_docs=false \
-		--wrap-mode=nofallback \
-		..
-	cd $(BUILD_WORK)/at-spi2-atk/build && sed -i 's/--cflags-begin/--cflags-begin -arch arm64/g' build.ninja && \
-	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-load.sh && \
 	ninja -C $(BUILD_WORK)/at-spi2-atk/build
 	+DESTDIR="$(BUILD_STAGE)/at-spi2-atk" ninja -C $(BUILD_WORK)/at-spi2-atk/build install
 	+DESTDIR="$(BUILD_BASE)" ninja -k 0 -C $(BUILD_WORK)/at-spi2-atk/build install
