@@ -469,7 +469,7 @@ endif
 
 # Link everything to libiosexec, as it's preinstalled on every Procursus system.
 ifeq (,$(findstring darwin,$(MEMO_TARGET)))
-LDFLAGS             += -liosexec
+LDFLAGS             += -liosexec -lintl
 endif
 
 DEFAULT_CMAKE_FLAGS := \

@@ -16,9 +16,9 @@ busybox:
 	@echo "Using previously built busybox."
 else
 busybox: busybox-setup libx11 libxau libxmu xorgproto ncurses
-	+$(MAKE) ARCH=arm64 -C $(BUILD_WORK)/busybox menuconfig
-	+$(MAKE) ARCH=arm64 -C $(BUILD_WORK)/busybox
-	+$(MAKE) ARCH=arm64 -C $(BUILD_WORK)/busybox install \
+	+$(MAKE) -i -C $(BUILD_WORK)/busybox defconfig
+	+$(MAKE) -C $(BUILD_WORK)/busybox
+	+$(MAKE) -C $(BUILD_WORK)/busybox install \
 		DESTDIR=$(BUILD_STAGE)/busybox
 	+$(MAKE) ARCH=arm64 -C $(BUILD_WORK)/busybox install \
 		DESTDIR=$(BUILD_BASE)

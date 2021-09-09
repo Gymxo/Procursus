@@ -1,0 +1,9 @@
+Package: rpm
+Version: @DEB_RPM_V@
+Architecture: @DEB_ARCH@
+Maintainer: @DEB_MAINTAINER@
+Section: Utilities
+Priority: optional
+Description: The RPM was developed at RedHat for keeping track of the files each program or package
+ installed as well as noting what other packages it depended on or depended on it, 
+ some information about the source of the package and a brief synopsis
