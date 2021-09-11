@@ -15,7 +15,7 @@ libpthread-stubs:
 	@echo "Using previously built libpthread-stubs."
 else
 libpthread-stubs: libpthread-stubs-setup
-	cd $(BUILD_WORK)/libpthread-stubs && ./configure -C \
+#	cd $(BUILD_WORK)/libpthread-stubs && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS)
 	+$(MAKE) -C $(BUILD_WORK)/libpthread-stubs
 	+$(MAKE) -C $(BUILD_WORK)/libpthread-stubs install \

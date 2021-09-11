@@ -15,7 +15,7 @@ ifneq ($(wildcard $(BUILD_WORK)/xinput/.build_complete),)
 xinput:
 	@echo "Using previously built xinput."
 else
-xinput: xinput-setup libx11 libxau libxmu xorgproto xxhash
+xinput: xinput-setup libx11 libxi libxrandr
 	cd $(BUILD_WORK)/xinput && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS)
 	+$(MAKE) -C $(BUILD_WORK)/xinput

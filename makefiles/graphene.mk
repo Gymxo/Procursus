@@ -15,23 +15,15 @@ graphene:
 	@echo "Using previously built graphene."
 else
 graphene: graphene-setup libx11 libxau libxmu xorgproto xxhash
-	cd $(BUILD_WORK)/graphene && autoreconf -vfi && mkdir -p "native-build" && \
-	pushd "native-build" && \
-	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS PKG_CONFIG_PATH PKG_CONFIG_LIBDIR ACLOCAL_PATH && export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig && ../configure \
-    	--enable-introspection=yes \
-		--prefix=/usr/local
-	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-save.sh && \
-	$(MAKE) -C $(BUILD_WORK)/graphene/native-build
 	cd $(BUILD_WORK)/graphene && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--enable-introspection=no
-	export GI_CROSS_LAUNCHER=$(PWD)/build_tools/gi-cross-launcher-load.sh && \
-	$(MAKE) CFLAGS="-arch arm64 $(CFLAGS)" -C $(BUILD_WORK)/graphene
+	+$(MAKE) -C $(BUILD_WORK)/graphene
 	+$(MAKE) -C $(BUILD_WORK)/graphene install \s
 		DESTDIR=$(BUILD_STAGE)/graphene
 	+$(MAKE) -C $(BUILD_WORK)/graphene install \
 		DESTDIR=$(BUILD_BASE)
-	touch $(BUILD_WORK)/graphene/.build_complete
+	$(call AFTER_BUILD)
 endif
 
 graphene-package: graphene-stage
