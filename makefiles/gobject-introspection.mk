@@ -19,7 +19,10 @@ gobject-introspection-setup: setup
 	[binaries]\n \
 	pkgconfig = '$(shell which pkg-config)'\n" > $(BUILD_WORK)/gobject-introspection/build/cross.txt
 
-ifneq ($(wildcard $(BUILD_WORK)/gobject-introspection/.build_complete),)
+ifeq ("$(wildcard $(HOST_BUILD_STAGE)/gobject-introspection/))", "")
+gobject-introspection:
+	@echo "Build Gobject-introspection for the host system first."
+else ifneq ($(wildcard $(BUILD_WORK)/gobject-introspection/.build_complete),)
 gobject-introspection:
 	@echo "Using previously built gobject-introspection."
 else

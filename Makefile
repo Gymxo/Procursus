@@ -22,7 +22,7 @@ endif
 
 RELATIVE_RPATH       := 0
 
-MEMO_TARGET          ?= darwin-arm64
+MEMO_TARGET          ?= iphoneos-arm64
 MEMO_CFVER           ?= 1700
 # iOS 13.0 == 1665.15.
 CFVER_WHOLE          := $(shell echo $(MEMO_CFVER) | cut -d. -f1)
@@ -67,6 +67,23 @@ DARWIN_DEPLOYMENT_VERSION   := 18
 override MEMO_CFVER         := 1500
 else
 $(error Unsupported CoreFoundation version)
+endif
+
+
+ifeq ($(shell sw_vers -productVersion | cut -f1 -d.),12)
+HOST_MEMO_CFVER := 1800
+else ifeq ($(shell sw_vers -productVersion | cut -f1 -d.),11)
+HOST_MEMO_CFVER := 1700
+else ifeq  ($(shell sw_vers -productVersion | cut -d . -f -2),10.15)
+HOST_MEMO_CFVER := 1600
+else ifeq ($(shell sw_vers -productVersion | cut -d . -f -2),10.14)
+HOST_MEMO_CFVER := 1500
+endif
+
+ifeq ($(shell uname -m),x86_64)
+HOST_MEMO_TARGET := darwin-amd64
+else ifeq ($(shell uname -m),arm64)
+HOST_MEMO_TARGET := darwin-arm64
 endif
 
 export MACOSX_DEPLOYMENT_TARGET
@@ -426,6 +443,8 @@ BUILD_MISC     := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))/bui
 BUILD_PATCH    := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))/build_patch
 # Extracted source working directory
 BUILD_WORK     := $(BUILD_ROOT)/build_work/$(MEMO_TARGET)/$(MEMO_CFVER)
+# Host Bootstrap working area
+HOST_BUILD_STAGE     := $(BUILD_ROOT)/build_stage/$(HOST_MEMO_TARGET)/$(HOST_MEMO_CFVER)
 # Bootstrap working area
 BUILD_STAGE    := $(BUILD_ROOT)/build_stage/$(MEMO_TARGET)/$(MEMO_CFVER)
 # Final output
@@ -572,7 +591,7 @@ DEFAULT_RUST_FLAGS := \
 	SDKROOT="$(TARGET_SYSROOT)" \
 	PKG_CONFIG="$(RUST_TARGET)-pkg-config"
 
-export PLATFORM MEMO_ARCH TARGET_SYSROOT MACOSX_SYSROOT GNU_HOST_TRIPLE MEMO_PREFIX MEMO_SUB_PREFIX MEMO_ALT_PREFIX
+export PLATFORM MEMO_ARCH TARGET_SYSROOT MACOSX_SYSROOT GNU_HOST_TRIPLE MEMO_PREFIX MEMO_SUB_PREFIX MEMO_ALT_PREFIX HOST_MEMO_CFVER HOST_MEMO_TARGET
 export CC CXX AR LD CPP RANLIB STRIP NM LIPO OTOOL I_N_T INSTALL
 export BUILD_ROOT BUILD_BASE BUILD_INFO BUILD_WORK BUILD_STAGE BUILD_DIST BUILD_STRAP BUILD_TOOLS
 export DEB_ARCH DEB_ORIGIN DEB_MAINTAINER

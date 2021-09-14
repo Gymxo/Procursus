@@ -29,7 +29,7 @@ icu4c: icu4c-setup
 		--disable-tests \
 		LDFLAGS="$(LDFLAGS) -headerpad_max_install_names"
 	+$(MAKE) -C $(BUILD_WORK)/icu4c/source
-	+$(MAKE) -C $(BUILD_WORK)/icu4c/source install \
+	sudo $(MAKE) -C $(BUILD_WORK)/icu4c/source install \
 		DESTDIR=$(BUILD_STAGE)/icu4c
 	$(call AFTER_BUILD,copy)
 
