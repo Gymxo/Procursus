@@ -1,3 +1,14 @@
 #!/bin/sh
-"/usr/bin/dbus-uuidgen" "--ensure=/var/lib/dbus/machine-id"
-"/bin/launchctl" "load" "/Library/LaunchDaemons/org.freedesktop.dbus-session.plist"
+
+
+if [ $1 = upgrade ]; then
+    /bin/launchctl unload @MEMO_PREFIX@/Library/LaunchDaemons/org.freedesktop.dbus-session.plist
+    /bin/launchctl load @MEMO_PREFIX@/Library/LaunchDaemons/org.freedesktop.dbus-session.plist
+fi
+
+if [ $1 = install ]; then
+    @MEMO_PREFIX@@MEMO_SUB_PREFIX@/bin/dbus-uuidgen "--ensure=@MEMO_PREFIX@/var/lib/dbus/machine-id"
+    /bin/launchctl load @MEMO_PREFIX@/Library/LaunchDaemons/org.freedesktop.dbus-session.plist
+fi
+
+exit 0

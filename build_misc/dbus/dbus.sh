@@ -1,1 +1,0 @@
-export DBUS_LAUNCHD_SESSION_BUS_SOCKET="$(launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET | cut -f-4 -d/)"

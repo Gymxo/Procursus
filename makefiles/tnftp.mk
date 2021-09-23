@@ -18,7 +18,7 @@ ifneq ($(wildcard $(BUILD_WORK)/tnftp/.build_complete),)
 tnftp:
 	@echo "Using previously built tnftp."
 else
-tnftp: tnftp-setup openpam openssl
+tnftp: tnftp-setup openssl
 	cd $(BUILD_WORK)/tnftp && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--enable-ssl
