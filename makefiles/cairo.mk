@@ -15,7 +15,7 @@ cairo:
 	@echo "Using previously built cairo."
 else
 cairo: cairo-setup freetype gettext fontconfig glib2.0 libpng16 liblzo2 libpixman libxcb libxrender libx11 libxext
-	cd $(BUILD_WORK)/cairo && ./autogen.sh \
+	cd $(BUILD_WORK)/cairo && ./autogen.sh -h \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--enable-pdf \
 		--enable-ps \

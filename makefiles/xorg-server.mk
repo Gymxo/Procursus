@@ -3,14 +3,19 @@ $(error Use the main Makefile)
 endif
 
 SUBPROJECTS         += xorg-server
-XORG-SERVER_VERSION := 1.20.11
+XORG-SERVER_VERSION := 21.0.99.901
 DEB_XORG-SERVER_V   ?= $(XORG-SERVER_VERSION)
+
+ifeq (,$(findstring darwin,$(MEMO_TARGET)))
+MITSHM := --disable-mitshm
+else
+MITSHM := --enable-mitshm
+endif
 
 xorg-server-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://www.x.org/archive//individual/xserver/xorg-server-$(XORG-SERVER_VERSION).tar.gz{,.sig}
 	$(call PGP_VERIFY,xorg-server-$(XORG-SERVER_VERSION).tar.gz)
 	$(call EXTRACT_TAR,xorg-server-$(XORG-SERVER_VERSION).tar.gz,xorg-server-$(XORG-SERVER_VERSION),xorg-server)
-	$(call DO_PATCH,xorg-server,xorg-server,-p1)
 	sed -i 's/__APPLE__/__PEAR__/' $(BUILD_WORK)/xorg-server/miext/rootless/rootlessWindow.c
 
 #   --enable-glamor needs GBM and libepoxy
@@ -24,16 +29,16 @@ xorg-server: xorg-server-setup libmd libx11 libxau libxmu xorgproto font-util li
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		--enable-xorg \
 		--with-default-font-path \
-		--enable-dmx \
 		--enable-xephyr \
+		--enable-xvfb \
+		--enable-xnest \
 		--enable-kdrive \
 		--disable-glamor \
 		--disable-xquartz \
 		--with-sha1=libmd \
 		--disable-glx \
+		$(MITSHM) \
 		CFLAGS="$(CFLAGS) -I$(BUILD_BASE)/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/pixman-1"
-	sed -i 's|panoramiX.\$$(OBJEXT)||' $(BUILD_WORK)/xorg-server/hw/dmx/Makefile
-#   ^^ Wtf
 	+$(MAKE) -C $(BUILD_WORK)/xorg-server
 	+$(MAKE) -C $(BUILD_WORK)/xorg-server install \
 		DESTDIR=$(BUILD_STAGE)/xorg-server

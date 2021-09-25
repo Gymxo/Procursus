@@ -17,7 +17,7 @@ xf86-video-dummy:
 else
 xf86-video-dummy: xf86-video-dummy-setup xorgproto xorg-server
 	cd $(BUILD_WORK)/xf86-video-dummy && autoreconf -fi
-	cd $(BUILD_WORK)/xf86-video-dummy && ./configure -C \
+	cd $(BUILD_WORK)/xf86-video-dummy && ./configure -h \
 		$(DEFAULT_CONFIGURE_FLAGS) \
 		CFLAGS="$(CFLAGS) -I$(BUILD_BASE)/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/{pixman-1,xorg}"
 	+$(MAKE) -C $(BUILD_WORK)/xf86-video-dummy

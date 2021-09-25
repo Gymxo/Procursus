@@ -21,7 +21,7 @@ libxcb: libxcb-setup xcb-proto libxau libxdmcp libpthread-stubs
 		--with-launchd \
 		--enable-dri3 \
 		--enable-xevie \
-		--disable-shm
+		--enable-shm
 	+$(MAKE) -C $(BUILD_WORK)/libxcb \
 		XCBPROTO_XCBPYTHONDIR="$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/python3/dist-packages" \
 		XCBPROTO_XCBINCLUDEDIR="$(BUILD_BASE)$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/xcb"
