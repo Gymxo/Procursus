@@ -9,14 +9,13 @@ DEB_DBUS_V   ?= $(DBUS_VERSION)
 dbus-setup: setup
 	wget -q -nc -P $(BUILD_SOURCE) https://dbus.freedesktop.org/releases/dbus/dbus-$(DBUS_VERSION).tar.gz
 	$(call EXTRACT_TAR,dbus-$(DBUS_VERSION).tar.gz,dbus-$(DBUS_VERSION),dbus)
-	$(call DO_PATCH,dbus,dbus,-p1)
+#	$(call DO_PATCH,dbus,dbus,-p1)
 
 ifneq ($(wildcard $(BUILD_WORK)/dbus/.build_complete),)
 dbus:
 	@echo "Using previously built dbus."
 else
 dbus: dbus-setup expat glib2.0 libx11 libsm libice
-	cd $(BUILD_WORK)/dbus && autoreconf -fiv
 	cd $(BUILD_WORK)/dbus && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
         --disable-doxygen-docs \
@@ -29,7 +28,6 @@ dbus: dbus-setup expat glib2.0 libx11 libsm libice
         --with-console-auth-dir=$(MEMO_PREFIX)/var/run/console \
         --with-system-pid-file=$(MEMO_PREFIX)/var/run/dbus/pid \
         --with-system-socket=$(MEMO_PREFIX)/var/run/dbus/system_bus_socket \
-		--with-dbus-session-bus-listen-address=unix:runtime=yes \
 		EXPAT_CFLAGS="-I$(TARGET_SYSROOT)/usr/include" \
 		EXPAT_LIBS="-L$(TARGET_SYSROOT)/usr/lib -lexpat" \
 		PKG_CONFIG="pkg-config --define-prefix"

@@ -2,12 +2,12 @@ ifneq ($(PROCURSUS),1)
 $(error Use the main Makefile)
 endif
 
-SUBPROJECTS      += at-spi2-atk
+SUBPROJECTS         += at-spi2-atk
 AT-SPI2-ATK_VERSION := 2.38.0
 DEB_AT-SPI2-ATK_V   ?= $(AT-SPI2-ATK_VERSION)
 
 at-spi2-atk-setup: setup
-	wget -q -nc -P$(BUILD_SOURCE) https://download.gnome.org/sources/at-spi2-atk/2.38.0/at-spi2-atk-2.38.0.tar.xz
+	wget -q -nc -P$(BUILD_SOURCE) https://download-fallback.gnome.org/sources/at-spi2-atk/$(shell echo $(AT-SPI2-ATK_VERSION) | cut -f-2 -d.)/at-spi2-atk-$(AT-SPI2-ATK_VERSION).tar.xz
 	$(call EXTRACT_TAR,at-spi2-atk-$(AT-SPI2-ATK_VERSION).tar.xz,at-spi2-atk-$(AT-SPI2-ATK_VERSION),at-spi2-atk)
 	mkdir -p $(BUILD_WORK)/at-spi2-atk/build
 	echo -e "[host_machine]\n \
@@ -30,7 +30,7 @@ ifneq ($(wildcard $(BUILD_WORK)/at-spi2-atk/.build_complete),)
 at-spi2-atk:
 	@echo "Using previously built at-spi2-atk."
 else
-at-spi2-atk: at-spi2-atk-setup libx11 libxau libxmu xorgproto xxhash
+at-spi2-atk: at-spi2-atk-setup
 	cd $(BUILD_WORK)/at-spi2-atk/build && meson \
 	--cross-file cross.txt \
 	-Dintrospection=false \
@@ -41,37 +41,47 @@ at-spi2-atk: at-spi2-atk-setup libx11 libxau libxmu xorgproto xxhash
 endif
 
 at-spi2-atk-package: at-spi2-atk-stage
-	# at-spi2-atk.mk Package Structure
+	# at-spi2-core.mk Package Structure
 	rm -rf $(BUILD_DIST)/at-spi2-core $(BUILD_DIST)/libatspi2.0-{0,dev}
-	mkdir -p $(BUILD_DIST)/at-spi2-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
-		$(BUILD_DIST)/libatspi2.0-0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{lib/pkgconfig,include} \
-		$(BUILD_DIST)/libatspi2.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
+	mkdir -p $(BUILD_DIST)/at-spi2-core/$(MEMO_PREFIX){$(MEMO_SUB_PREFIX)/{share/dbus-1/{accessibility-services,services},libexec},/Library/LaunchDaemons} \
+		$(BUILD_DIST)/libatspi2.0-0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
+		$(BUILD_DIST)/libatspi2.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{lib/pkgconfig,include}
 
-	# at-spi2-atk.mk at-spi2-core
-	cp -a $(BUILD_STAGE)/at-spi2-atk/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(pkgconfig|libgdk_pixbuf-2.0.dylib) \
-		$(BUILD_DIST)/libgdk-pixbuf-2.0-0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	# at-spi2-core.mk at-spi2-core glib2.0 dbus gettext libx11 libxi libxtst
+	cp -a $(BUILD_MISC)/at-spi2-core/org.a11y.Bus.plist \
+		$(BUILD_DIST)/at-spi2-core/$(MEMO_PREFIX)/Library/LaunchDaemons/org.a11y.Bus.plist
+	cp -a $(BUILD_STAGE)/at-spi2-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/!(dbus-1) \
+		$(BUILD_DIST)/at-spi2-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share
+	cp -a $(BUILD_STAGE)/at-spi2-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/libexec \
+		$(BUILD_DIST)/at-spi2-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/
+	cp -a $(BUILD_STAGE)/at-spi2-core/$(MEMO_PREFIX)/etc \
+		$(BUILD_DIST)/at-spi2-core/$(MEMO_PREFIX)/
+	cp -a $(BUILD_MISC)/at-spi2-core/org.a11y.Bus.plist \
+		$(BUILD_DIST)/at-spi2-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/dbus-1/services
+	cp -a $(BUILD_MISC)/at-spi2-core/org.a11y.atspi.Registry.plist \
+		$(BUILD_DIST)/at-spi2-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/dbus-1/accessibility-services
 
-	# at-spi2-atk.mk Prep libatspi2.0-0
-	cp -a $(BUILD_STAGE)/at-spi2-atk/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libgdk_pixbuf-2.0.0.dylib|at-spi2-atk-2.0) \
-		$(BUILD_DIST)/libgdk-pixbuf-2.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
-	cp -a $(BUILD_STAGE)/at-spi2-atk/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/at-spi2-atk-2.0 \
-		$(BUILD_DIST)/libgdk-pixbuf-2.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include
+	# at-spi2-core.mk Prep libatspi2.0-0
+	cp -a $(BUILD_STAGE)/at-spi2-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/libatspi.0.dylib \
+		$(BUILD_DIST)/libatspi2.0-0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 
-	# at-spi2-atk.mk Prep libatspi2.0-dev
-	cp -a $(BUILD_STAGE)/at-spi2-atk/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin \
-		$(BUILD_DIST)/libgdk-pixbuf2.0-bin/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/
+	# at-spi2-core.mk Prep libatspi2.0-dev
+	cp -a $(BUILD_STAGE)/at-spi2-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libatspi.0.dylib|systemd) \
+		$(BUILD_DIST)/libatspi2.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
+	cp -a $(BUILD_STAGE)/at-spi2-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/at-spi-2.0 \
+		$(BUILD_DIST)/libatspi2.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include
 
 
-	# at-spi2-atk.mk Sign
-	$(call SIGN,libgdk-pixbuf-2.0-0,general.xml)
-	$(call SIGN,libgdk-pixbuf2.0-bin,general.xml)
+	# at-spi2-core.mk Sign
+	$(call SIGN,at-spi2-core,general.xml)
+	$(call SIGN,libatspi2.0-0,general.xml)
 
-	# at-spi2-atk.mk Make .debs
-	$(call PACK,libgdk-pixbuf-2.0-0,DEB_GDK-PIXBUF_V)
-	$(call PACK,libgdk-pixbuf-2.0-dev,DEB_GDK-PIXBUF_V)
-	$(call PACK,libgdk-pixbuf2.0-bin,DEB_GDK-PIXBUF_V)
+	# at-spi2-core.mk Make .debs
+	$(call PACK,at-spi2-core,DEB_AT-SPI2-CORE_V)
+	$(call PACK,libatspi2.0-0,DEB_AT-SPI2-CORE_V)
+	$(call PACK,libatspi2.0-dev,DEB_AT-SPI2-CORE_V)
 
-	# at-spi2-atk.mk Build cleanup
+	# at-spi2-core.mk Build cleanup
 	rm -rf $(BUILD_DIST)/at-spi2-core $(BUILD_DIST)/libatspi2.0-{0,dev}
 
 .PHONY: at-spi2-atk at-spi2-atk-package

@@ -2,7 +2,7 @@ ifneq ($(PROCURSUS),1)
 $(error Use the main Makefile)
 endif
 
-SUBPROJECTS      += at-spi2-core
+SUBPROJECTS          += at-spi2-core
 AT-SPI2-CORE_VERSION := 2.42.0
 DEB_AT-SPI2-CORE_V   ?= $(AT-SPI2-CORE_VERSION)
 
@@ -30,7 +30,7 @@ ifneq ($(wildcard $(BUILD_WORK)/at-spi2-core/.build_complete),)
 at-spi2-core:
 	@echo "Using previously built at-spi2-core."
 else
-at-spi2-core: at-spi2-core-setup libx11 libxau libxmu xorgproto xxhash
+at-spi2-core: at-spi2-core-setup
 	cd $(BUILD_WORK)/at-spi2-core/build && meson \
 		--cross-file cross.txt \
 		--wrap-mode=nofallback \
@@ -49,7 +49,7 @@ at-spi2-core-package: at-spi2-core-stage
 		$(BUILD_DIST)/libatspi2.0-0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib \
 		$(BUILD_DIST)/libatspi2.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/{lib/pkgconfig,include}
 
-	# at-spi2-core.mk at-spi2-core glib2.0 dbus gettext libx11 libxi libxtst
+	# at-spi2-core.mk at-spi2-core
 	cp -a $(BUILD_MISC)/at-spi2-core/org.a11y.Bus.plist \
 		$(BUILD_DIST)/at-spi2-core/$(MEMO_PREFIX)/Library/LaunchDaemons/org.a11y.Bus.plist
 	cp -a $(BUILD_STAGE)/at-spi2-core/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/!(dbus-1) \
