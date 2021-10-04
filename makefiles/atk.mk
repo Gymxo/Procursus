@@ -30,7 +30,7 @@ ifneq ($(wildcard $(BUILD_WORK)/atk/.build_complete),)
 atk:
 	@echo "Using previously built atk."
 else
-atk: atk-setup at-spi2-core libxtst glib2.0 dbus libxi
+atk: atk-setup glib2.0
 	cd $(BUILD_WORK)/atk/build && meson \
 	--cross-file cross.txt \
 	-Dintrospection=false \
@@ -56,7 +56,7 @@ atk-package: atk-stage
 		$(BUILD_DIST)/libatk1.0-0/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 
 	# atk.mk Prep libatk1.0-dev
-	cp -a $(BUILD_STAGE)/atk/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libatk-1.0.dylib) \
+	cp -a $(BUILD_STAGE)/atk/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib/!(libatk-1.0.0.dylib) \
 		$(BUILD_DIST)/libatk1.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/lib
 	cp -a $(BUILD_STAGE)/atk/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include/atk-1.0 \
 		$(BUILD_DIST)/libatk1.0-dev/$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/include
